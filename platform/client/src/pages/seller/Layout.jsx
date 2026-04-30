@@ -20,6 +20,7 @@ export default function SellerLayout() {
   return (
     <PortalShell
       title="Seller"
+      showStorefrontLink
       nav={[
         { to: '/seller', label: 'Dashboard', end: true, icon: <LayoutDashboard size={18} /> },
         { to: '/seller/products', label: 'Products', icon: <Package size={18} /> },

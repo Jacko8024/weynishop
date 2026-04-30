@@ -7,6 +7,7 @@ export default function DeliveryLayout() {
     <PortalShell
       title="Delivery"
       mobileBottom
+      showStorefrontLink
       nav={[
         { to: '/delivery', label: 'Available', end: true, icon: <Inbox size={18} /> },
         { to: '/delivery/active', label: 'Active', icon: <Truck size={18} /> },

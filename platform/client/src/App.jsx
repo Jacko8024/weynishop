@@ -13,6 +13,12 @@ import SearchPage from './pages/public/SearchPage.jsx';
 import StorePage from './pages/public/StorePage.jsx';
 import DealsPage from './pages/public/DealsPage.jsx';
 import WishlistPage from './pages/public/WishlistPage.jsx';
+import AboutPage from './pages/public/AboutPage.jsx';
+import ContactPage from './pages/public/ContactPage.jsx';
+import FAQPage from './pages/public/FAQPage.jsx';
+import TermsPage from './pages/public/TermsPage.jsx';
+import PrivacyPage from './pages/public/PrivacyPage.jsx';
+import NotFoundPage from './pages/public/NotFoundPage.jsx';
 
 // Buyer-protected (cart/checkout/orders only)
 import BuyerLayout from './pages/buyer/Layout.jsx';
@@ -67,6 +73,12 @@ export default function App() {
         <Route path="/store/:sellerId" element={<StorePage />} />
         <Route path="/deals" element={<DealsPage />} />
         <Route path="/wishlist" element={<WishlistPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/faq" element={<FAQPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
 
       <Route path="/login" element={<Login />} />
@@ -109,7 +121,6 @@ export default function App() {
         <Route path="categories" element={<AdminCategories />} />
       </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
     </>
   );
