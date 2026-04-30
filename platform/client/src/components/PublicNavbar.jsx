@@ -146,12 +146,14 @@ export default function PublicNavbar() {
       {menuOpen && (
         <div className="md:hidden border-t animate-fadeIn px-4 py-3 space-y-2"
              style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
-          <div className="flex items-center justify-between">
-            <LangSwitcher />
+          <div className="flex items-center justify-end">
             <Link to={user ? '/buyer/cart' : '/login'} className="btn-ghost relative" onClick={() => setMenuOpen(false)}>
               <ShoppingCart size={18} /> {t('nav.cart')}
               {cartCount > 0 && <span className="ml-1 text-xs font-bold text-brand-600">({cartCount})</span>}
             </Link>
+          </div>
+          <div className="pt-1 pb-2 border-b border-slate-200">
+            <LangSwitcher inline />
           </div>
           <Link to="/deals" onClick={() => setMenuOpen(false)} className="block btn-ghost w-full justify-start text-sm">
             <Zap size={16} className="text-flash" /> {t('nav.deals')}

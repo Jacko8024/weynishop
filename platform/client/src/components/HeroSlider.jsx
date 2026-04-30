@@ -40,22 +40,14 @@ export default function HeroSlider({ slides = [], interval = 5000 }) {
 
   return (
     <section
-      className="relative rounded-2xl overflow-hidden bg-slate-100"
-      style={{ aspectRatio: '16 / 7', minHeight: 200 }}
+      className="relative rounded-2xl overflow-hidden bg-slate-100 h-44 sm:h-56 md:h-64 lg:h-72 xl:h-80"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={() => setPaused(true)}
       onTouchEnd={() => setPaused(false)}
       aria-roledescription="carousel"
     >
-      {/* Mobile aspect-ratio override: shorter on phones, fuller on desktop. */}
-      <style>{`
-        @media (max-width: 640px) {
-          [data-hero-slider] { aspect-ratio: 4 / 3 !important; }
-        }
-      `}</style>
-
-      <div data-hero-slider className="absolute inset-0">
+      <div className="absolute inset-0">
         {slides.map((s, i) => {
           const isActive = i === idx;
           const inner = (
@@ -83,19 +75,19 @@ export default function HeroSlider({ slides = [], interval = 5000 }) {
 
               {/* Text + CTA */}
               {(s.title || s.subtitle || s.ctaLabel || s.linkUrl) && (
-                <div className="relative h-full flex flex-col justify-center px-5 sm:px-10 md:px-14 max-w-2xl text-white">
+                <div className="relative h-full flex flex-col justify-center px-4 sm:px-8 md:px-12 max-w-xl md:max-w-2xl text-white">
                   {s.title && (
-                    <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold leading-tight drop-shadow-md font-localized">
+                    <h2 className="text-lg sm:text-2xl md:text-4xl font-extrabold leading-tight drop-shadow-md font-localized line-clamp-2">
                       {s.title}
                     </h2>
                   )}
                   {s.subtitle && (
-                    <p className="mt-2 sm:mt-3 text-sm sm:text-base md:text-lg opacity-95 max-w-md drop-shadow">
+                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm md:text-base opacity-95 max-w-md drop-shadow line-clamp-2">
                       {s.subtitle}
                     </p>
                   )}
                   {(s.ctaLabel || s.linkUrl) && (
-                    <span className="mt-4 sm:mt-5 inline-flex items-center justify-center self-start px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-white text-slate-900 font-bold text-sm sm:text-base shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition">
+                    <span className="mt-2.5 sm:mt-4 inline-flex items-center justify-center self-start px-4 sm:px-6 py-2 sm:py-2.5 rounded-full bg-white text-slate-900 font-semibold text-xs sm:text-sm md:text-base shadow-md hover:shadow-lg active:scale-95 transition whitespace-nowrap">
                       {s.ctaLabel || 'Shop now'}
                     </span>
                   )}

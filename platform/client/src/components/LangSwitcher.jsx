@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Globe, Check } from 'lucide-react';
 import { SUPPORTED_LANGS } from '../lib/i18n.js';
 
-export default function LangSwitcher({ compact = false }) {
+export default function LangSwitcher({ compact = false, inline = false }) {
   const { i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -15,6 +15,39 @@ export default function LangSwitcher({ compact = false }) {
   }, []);
 
   const current = SUPPORTED_LANGS.find((l) => l.code === i18n.language) || SUPPORTED_LANGS[0];
+
+  // Inline mode: render every language as a row of pills (used inside the
+  // mobile drawer where a floating dropdown is awkward / clipped).
+  if (inline) {
+    return (
+      <div className="w-full">
+        <div className="flex items-center gap-2 mb-2 text-xs font-semibold uppercase tracking-wide"
+             style={{ color: 'var(--color-muted)' }}>
+          <Globe size={14} /> Language
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {SUPPORTED_LANGS.map((l) => {
+            const active = l.code === i18n.language;
+            return (
+              <button
+                key={l.code}
+                type="button"
+                onClick={() => i18n.changeLanguage(l.code)}
+                className={`px-3 py-1.5 rounded-full border text-sm font-medium transition ${
+                  active
+                    ? 'bg-brand-50 border-brand-500 text-brand-700'
+                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                <span className="font-medium">{l.native}</span>
+                {active && <Check size={14} className="inline ml-1 -mt-0.5" />}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative" ref={ref}>
