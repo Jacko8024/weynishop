@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Download, Save } from 'lucide-react';
+import { Download, Save, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../../api/client.js';
 import { API_URL } from '../../api/client.js';
@@ -46,7 +46,8 @@ export default function AdminCommission() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const limit = 20;
-  const [filters, setFilters] = useState({ status: '', q: '', from: '', to: '' });
+  const [filters, setFilters] = useState({ status: '', type: '', q: '', from: '', to: '' });
+  const [backfilling, setBackfilling] = useState(false);
   const [selected, setSelected] = useState(new Set());
   const [bySeller, setBySeller] = useState([]);
   const [settings, setSettings] = useState(null);
@@ -118,6 +119,23 @@ export default function AdminCommission() {
       .catch(() => toast.error('Export failed'));
   };
 
+  const recompute = async () => {
+    setBackfilling(true);
+    try {
+      const { data } = await api.post('/admin/commission/backfill');
+      toast.success(
+        data.created > 0
+          ? `Created ${data.created} new commission row${data.created === 1 ? '' : 's'}`
+          : 'No new commissions — already up to date'
+      );
+      await loadAll(1);
+    } catch (e) {
+      toast.error(e.response?.data?.message || 'Backfill failed');
+    } finally {
+      setBackfilling(false);
+    }
+  };
+
   const saveSettings = async () => {
     setSavingSettings(true);
     try {
@@ -132,11 +150,22 @@ export default function AdminCommission() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-bold">Commission revenue</h1>
-        <p className="text-sm" style={{ color: 'var(--color-muted)' }}>
-          Platform fees collected from sellers when they publish products.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-bold">Commission revenue</h1>
+          <p className="text-sm" style={{ color: 'var(--color-muted)' }}>
+            Platform fees from product listings and from each delivered sale.
+          </p>
+        </div>
+        <button
+          className="btn-secondary text-sm"
+          onClick={recompute}
+          disabled={backfilling}
+          title="Re-scan every delivered order and create any missing sale-commission rows"
+        >
+          <RefreshCw size={14} className={backfilling ? 'animate-spin' : ''} />
+          {backfilling ? 'Recomputing…' : 'Recompute commissions'}
+        </button>
       </div>
 
       {/* Summary cards */}
@@ -149,26 +178,37 @@ export default function AdminCommission() {
 
       {/* Settings */}
       <div className="card p-5">
-        <h2 className="font-semibold mb-2">Listing-fee configuration</h2>
-        <div className="text-xs mb-3" style={{ color: 'var(--color-muted)' }}>
-          Current rate: <strong>{settings?.listingCommissionType === 'percentage'
-            ? `${settings?.listingCommissionValue}% of product price`
-            : `${fmt(settings?.listingCommissionValue || 0)} ${settings?.commissionCurrency || 'ETB'} per listing`}</strong>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <h2 className="font-semibold mb-2">Commission configuration</h2>
+        <div className="text-xs mb-3 space-y-0.5" style={{ color: 'var(--color-muted)' }}>
           <div>
-            <label className="label">Type</label>
+            Listing fee: <strong>{settings?.listingCommissionType === 'percentage'
+              ? `${settings?.listingCommissionValue}% of product price`
+              : `${fmt(settings?.listingCommissionValue || 0)} ${settings?.commissionCurrency || 'ETB'} per listing`}</strong>
+          </div>
+          <div>
+            Sale commission: <strong>{Number(settings?.commissionPercent || 0)}% of every delivered sale</strong>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div>
+            <label className="label">Listing fee type</label>
             <select className="input" value={settings?.listingCommissionType || 'fixed'}
                     onChange={(e) => setSettings({ ...settings, listingCommissionType: e.target.value })}>
-              <option value="fixed">Fixed fee per listing</option>
-              <option value="percentage">Percentage of price</option>
+              <option value="fixed">Fixed per listing</option>
+              <option value="percentage">% of price</option>
             </select>
           </div>
           <div>
-            <label className="label">Value</label>
+            <label className="label">Listing fee value</label>
             <input type="number" min={0} step="0.01" className="input"
                    value={settings?.listingCommissionValue ?? 0}
                    onChange={(e) => setSettings({ ...settings, listingCommissionValue: Number(e.target.value) })} />
+          </div>
+          <div>
+            <label className="label">Sale commission %</label>
+            <input type="number" min={0} step="0.1" className="input"
+                   value={settings?.commissionPercent ?? 0}
+                   onChange={(e) => setSettings({ ...settings, commissionPercent: Number(e.target.value) })} />
           </div>
           <div>
             <label className="label">Currency</label>
@@ -179,6 +219,9 @@ export default function AdminCommission() {
         <button className="btn-primary mt-3" onClick={saveSettings} disabled={savingSettings}>
           <Save size={16} /> Save settings
         </button>
+        <p className="text-xs mt-2" style={{ color: 'var(--color-muted)' }}>
+          Tip: after changing the sale commission %, click <strong>Recompute commissions</strong> above to apply it to existing delivered orders.
+        </p>
       </div>
 
       {/* Chart */}

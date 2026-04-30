@@ -3,6 +3,7 @@ import asyncHandler from 'express-async-handler';
 import { Op, fn, col, literal } from 'sequelize';
 import { CommissionLedger, Settings, User, Product } from '../../models/index.js';
 import { protect, requireRole } from '../../middleware/auth.js';
+import { backfillDeliveredCommissions } from '../../services/commission.service.js';
 
 const router = Router();
 router.use(protect, requireRole('admin'));
@@ -207,6 +208,7 @@ router.get(
     res.json({
       listingCommissionType: s.listingCommissionType,
       listingCommissionValue: Number(s.listingCommissionValue),
+      commissionPercent: Number(s.commissionPercent),
       commissionCurrency: s.commissionCurrency,
     });
   })
@@ -216,7 +218,7 @@ router.patch(
   '/settings',
   asyncHandler(async (req, res) => {
     const s = await Settings.getSingleton();
-    const { listingCommissionType, listingCommissionValue, commissionCurrency } = req.body;
+    const { listingCommissionType, listingCommissionValue, commissionPercent, commissionCurrency } = req.body;
     if (listingCommissionType && ['fixed', 'percentage'].includes(listingCommissionType)) {
       s.listingCommissionType = listingCommissionType;
     }
@@ -225,13 +227,29 @@ router.patch(
       if (!Number.isFinite(v) || v < 0) return res.status(400).json({ message: 'Invalid value' });
       s.listingCommissionValue = v;
     }
+    if (commissionPercent !== undefined) {
+      const v = Number(commissionPercent);
+      if (!Number.isFinite(v) || v < 0) return res.status(400).json({ message: 'Invalid commission %' });
+      s.commissionPercent = v;
+    }
     if (commissionCurrency) s.commissionCurrency = String(commissionCurrency).slice(0, 8);
     await s.save();
     res.json({
       listingCommissionType: s.listingCommissionType,
       listingCommissionValue: Number(s.listingCommissionValue),
+      commissionPercent: Number(s.commissionPercent),
       commissionCurrency: s.commissionCurrency,
     });
+  })
+);
+
+// Manually trigger sale-commission backfill for every delivered order. Safe
+// to call any time — chargeSaleCommission is idempotent per (orderId, productId).
+router.post(
+  '/backfill',
+  asyncHandler(async (_req, res) => {
+    const created = await backfillDeliveredCommissions();
+    res.json({ created });
   })
 );
 
