@@ -1,4 +1,4 @@
-import { sequelize } from '../config/db.js';
+﻿import { sequelize } from '../config/db.js';
 import { User } from './User.js';
 import { Product } from './Product.js';
 import { Order, STAGES, STAGE_LABELS } from './Order.js';
@@ -12,6 +12,8 @@ import { Review } from './Review.js';
 import { ProductQuestion } from './ProductQuestion.js';
 import { SellerFollow } from './SellerFollow.js';
 import { CommissionLedger } from './CommissionLedger.js';
+import { Banner } from './Banner.js';
+import { Category } from './Category.js';
 
 // Core associations
 Product.belongsTo(User, { as: 'seller', foreignKey: 'sellerId' });
@@ -71,6 +73,9 @@ export {
   ProductQuestion,
   SellerFollow,
   CommissionLedger,
+  Banner,
+  Category,
   STAGES,
   STAGE_LABELS,
 };
+

@@ -1,12 +1,12 @@
-import { DataTypes } from 'sequelize';
+﻿import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/db.js';
 
 export const Dispute = sequelize.define(
   'Dispute',
   {
-    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
-    orderId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
-    raisedById: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    orderId: { type: DataTypes.INTEGER, allowNull: false },
+    raisedById: { type: DataTypes.INTEGER, allowNull: false },
     against: { type: DataTypes.ENUM('buyer', 'seller', 'delivery'), allowNull: false },
     subject: { type: DataTypes.STRING(255), allowNull: false },
     description: { type: DataTypes.TEXT },
@@ -21,3 +21,4 @@ Dispute.prototype.toJSON = function () {
   v._id = String(v.id);
   return v;
 };
+

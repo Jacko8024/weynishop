@@ -1,15 +1,21 @@
-import { DataTypes } from 'sequelize';
+﻿import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/db.js';
 
 export const Product = sequelize.define(
   'Product',
   {
-    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
-    sellerId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    sellerId: { type: DataTypes.INTEGER, allowNull: false },
     name: { type: DataTypes.STRING(200), allowNull: false },
     description: { type: DataTypes.TEXT },
+    // `price` is the BUYER-FACING final price (basePrice + platform commission).
+    // It is what the storefront, cart, orders, and bulk-tier comparisons all use.
     price: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
-    stock: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false, defaultValue: 0 },
+    // `basePrice` is what the seller entered (their own earnings before commission).
+    basePrice: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
+    // Commission % snapshot at the time the product was saved (from Settings.commissionPercent).
+    commissionPercent: { type: DataTypes.DECIMAL(6, 2), allowNull: false, defaultValue: 0 },
+    stock: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
     category: { type: DataTypes.STRING(80), defaultValue: 'general' },
     image: { type: DataTypes.STRING(1000), defaultValue: '' },
     images: { type: DataTypes.JSON, defaultValue: [] }, // array of URLs
@@ -24,9 +30,9 @@ export const Product = sequelize.define(
     bulkPriceTiers: { type: DataTypes.JSON, defaultValue: [] },
 
     // Stats (denormalised for fast listings)
-    soldCount: { type: DataTypes.INTEGER.UNSIGNED, defaultValue: 0 },
-    ratingAvg: { type: DataTypes.DECIMAL(3, 2), defaultValue: 0 }, // 0.00 – 5.00
-    ratingCount: { type: DataTypes.INTEGER.UNSIGNED, defaultValue: 0 },
+    soldCount: { type: DataTypes.INTEGER, defaultValue: 0 },
+    ratingAvg: { type: DataTypes.DECIMAL(3, 2), defaultValue: 0 }, // 0.00 â€“ 5.00
+    ratingCount: { type: DataTypes.INTEGER, defaultValue: 0 },
     freeShipping: { type: DataTypes.BOOLEAN, defaultValue: false },
   },
   {
@@ -68,8 +74,11 @@ Product.prototype.toJSON = function () {
     .map((t) => ({ minQty: Number(t.minQty) || 0, price: Number(t.price) || 0 }))
     .filter((t) => t.minQty > 0 && t.price > 0);
 
-  // Numeric coercion (Sequelize DECIMAL → string by default)
+  // Numeric coercion (Sequelize DECIMAL â†’ string by default)
   v.price = Number(v.price);
+  v.basePrice = Number(v.basePrice);
+  v.commissionPercent = Number(v.commissionPercent);
+  v.commissionAmount = Math.round((v.price - v.basePrice) * 100) / 100;
   v.ratingAvg = Number(v.ratingAvg);
   if (v.flashSalePercent != null) v.flashSalePercent = Number(v.flashSalePercent);
 
@@ -84,3 +93,4 @@ Product.prototype.toJSON = function () {
 
   return v;
 };
+

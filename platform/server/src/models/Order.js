@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize';
+﻿import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/db.js';
 
 export const STAGES = [
@@ -22,10 +22,10 @@ export const STAGE_LABELS = {
 export const Order = sequelize.define(
   'Order',
   {
-    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
-    buyerId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
-    sellerId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
-    deliveryPersonId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    buyerId: { type: DataTypes.INTEGER, allowNull: false },
+    sellerId: { type: DataTypes.INTEGER, allowNull: false },
+    deliveryPersonId: { type: DataTypes.INTEGER, allowNull: true },
 
     subtotal: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
     deliveryFee: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
@@ -83,3 +83,4 @@ Order.prototype.toJSON = function () {
   if (v.stages) v.stages = v.stages;
   return v;
 };
+

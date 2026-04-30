@@ -3,7 +3,17 @@ import asyncHandler from 'express-async-handler';
 import { Op } from 'sequelize';
 import { Product } from '../../models/Product.js';
 import { User } from '../../models/User.js';
+import { Settings } from '../../models/Settings.js';
+import { chargeListingFee } from '../../services/commission.service.js';
 import { protect, requireRole } from '../../middleware/auth.js';
+
+// Compute the buyer-facing final price from a seller-entered base price
+// using the platform's current buyer-facing commission % (Settings.commissionPercent).
+const computeFinalPrice = (basePrice, commissionPercent) => {
+  const base = Number(basePrice) || 0;
+  const pct = Number(commissionPercent) || 0;
+  return Math.round(base * (1 + pct / 100) * 100) / 100;
+};
 
 const router = Router();
 
@@ -42,7 +52,8 @@ router.get(
       where.flashSaleStart = { [Op.lte]: now };
       where.flashSaleEnd = { [Op.gte]: now };
     }
-    if (q) where[Op.or] = [{ name: { [Op.like]: `%${q}%` } }, { description: { [Op.like]: `%${q}%` } }];
+    // Postgres: iLike for case-insensitive matching (LIKE is case-sensitive on PG).
+    if (q) where[Op.or] = [{ name: { [Op.iLike]: `%${q}%` } }, { description: { [Op.iLike]: `%${q}%` } }];
 
     const sellerWhere = verifiedSeller === 'true' || verifiedSeller === '1' ? { verified: true } : undefined;
 
@@ -135,11 +146,22 @@ router.post(
             bulkPriceTiers, freeShipping } = req.body;
     if (!name || price == null) return res.status(400).json({ message: 'name and price required' });
     const imgArr = Array.isArray(images) ? images.filter(Boolean) : [];
+
+    // Snapshot the current platform commission % and store both the seller's base
+    // price and the buyer-facing final price so the storefront never shows the
+    // breakdown and the seller's reports remain accurate even if the % changes later.
+    const settings = await Settings.getSingleton();
+    const commissionPercent = Number(settings.commissionPercent) || 0;
+    const basePrice = Number(price) || 0;
+    const finalPrice = computeFinalPrice(basePrice, commissionPercent);
+
     const product = await Product.create({
       sellerId: req.user.id,
       name,
       description: description || '',
-      price,
+      basePrice,
+      commissionPercent,
+      price: finalPrice,
       stock: stock || 0,
       category: category || 'general',
       image: imgArr[0] || '',
@@ -169,12 +191,22 @@ router.put(
   asyncHandler(async (req, res) => {
     const product = await Product.findOne({ where: { id: req.params.id, sellerId: req.user.id } });
     if (!product) return res.status(404).json({ message: 'Product not found' });
-    const allowed = ['name', 'description', 'price', 'stock', 'category', 'isActive',
+    const allowed = ['name', 'description', 'stock', 'category', 'isActive',
                      'flashSaleStart', 'flashSaleEnd', 'flashSalePercent',
                      'bulkPriceTiers', 'freeShipping'];
     allowed.forEach((f) => {
       if (req.body[f] !== undefined) product[f] = req.body[f];
     });
+    // Re-compute price/basePrice on every save so the buyer-facing value stays
+    // in sync with the seller's input + the latest commission %.
+    if (req.body.price !== undefined) {
+      const settings = await Settings.getSingleton();
+      const pct = Number(settings.commissionPercent) || 0;
+      const base = Number(req.body.price) || 0;
+      product.basePrice = base;
+      product.commissionPercent = pct;
+      product.price = computeFinalPrice(base, pct);
+    }
     if (req.body.images !== undefined) {
       const imgArr = Array.isArray(req.body.images) ? req.body.images.filter(Boolean) : [];
       product.image = imgArr[0] || '';

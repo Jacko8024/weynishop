@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize';
+﻿import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/db.js';
 
 /**
@@ -10,9 +10,9 @@ import { sequelize } from '../config/db.js';
 export const CommissionLedger = sequelize.define(
   'CommissionLedger',
   {
-    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
-    sellerId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
-    productId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    sellerId: { type: DataTypes.INTEGER, allowNull: false },
+    productId: { type: DataTypes.INTEGER, allowNull: true },
     productName: { type: DataTypes.STRING(200), allowNull: false, defaultValue: '' },
     amount: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
     currency: { type: DataTypes.STRING(8), defaultValue: 'ETB' },
@@ -41,3 +41,4 @@ CommissionLedger.prototype.toJSON = function () {
   v.amount = Number(v.amount);
   return v;
 };
+

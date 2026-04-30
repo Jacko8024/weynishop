@@ -14,7 +14,7 @@ router.get(
     const where = {};
     if (role) where.role = role;
     if (status) where.status = status;
-    if (q) where[Op.or] = [{ name: { [Op.like]: `%${q}%` } }, { email: { [Op.like]: `%${q}%` } }];
+    if (q) where[Op.or] = [{ name: { [Op.iLike]: `%${q}%` } }, { email: { [Op.iLike]: `%${q}%` } }];
     const users = await User.findAll({ where, order: [['createdAt', 'DESC']] });
     res.json({ users });
   })

@@ -1,16 +1,16 @@
-import { DataTypes } from 'sequelize';
+﻿import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/db.js';
 
 export const ProductQuestion = sequelize.define(
   'ProductQuestion',
   {
-    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
-    productId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
-    userId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    productId: { type: DataTypes.INTEGER, allowNull: false },
+    userId: { type: DataTypes.INTEGER, allowNull: false },
     text: { type: DataTypes.TEXT, allowNull: false },
     answer: { type: DataTypes.TEXT },
     answeredAt: { type: DataTypes.DATE, allowNull: true },
-    answeredById: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
+    answeredById: { type: DataTypes.INTEGER, allowNull: true },
   },
   {
     tableName: 'product_questions',
@@ -23,3 +23,4 @@ ProductQuestion.prototype.toJSON = function () {
   v._id = String(v.id);
   return v;
 };
+

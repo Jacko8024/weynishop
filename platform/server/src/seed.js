@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { sequelize, User, Product, Settings, Review } from './models/index.js';
+import { sequelize, User, Product, Settings, Review, Banner, Category } from './models/index.js';
 import { connectDB } from './config/db.js';
 
 const ACCOUNTS = [
@@ -128,13 +128,52 @@ const run = async () => {
   }
 
   console.log('Creating settings...');
-  await Settings.create({});
+  const settings = await Settings.create({ commissionPercent: 10 });
+
+  console.log('Creating default categories...');
+  const DEFAULT_CATEGORIES = [
+    { key: 'grocery',     label: 'Grocery',     emoji: '🛒', displayOrder: 1 },
+    { key: 'fashion',     label: 'Fashion',     emoji: '👗', displayOrder: 2 },
+    { key: 'electronics', label: 'Electronics', emoji: '📱', displayOrder: 3 },
+    { key: 'home',        label: 'Home',        emoji: '🏠', displayOrder: 4 },
+    { key: 'beauty',      label: 'Beauty',      emoji: '💄', displayOrder: 5 },
+    { key: 'sports',      label: 'Sports',      emoji: '⚽', displayOrder: 6 },
+    { key: 'kids',        label: 'Kids',        emoji: '🧸', displayOrder: 7 },
+    { key: 'general',     label: 'Other',       emoji: '🎁', displayOrder: 99 },
+  ];
+  for (const c of DEFAULT_CATEGORIES) await Category.create(c);
+
+  console.log('Creating default banners...');
+  const DEFAULT_BANNERS = [
+    {
+      title: 'Local. Fresh. Delivered.', subtitle: 'Cash on delivery across Ethiopia.',
+      imageUrl: 'https://images.unsplash.com/photo-1481437156560-3205f6a55735?w=1600',
+      linkUrl: '/search', displayOrder: 1, isActive: true,
+    },
+    {
+      title: 'Flash Deals up to 30% off', subtitle: 'Limited time. While stock lasts.',
+      imageUrl: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600',
+      linkUrl: '/deals', displayOrder: 2, isActive: true,
+    },
+    {
+      title: 'Verified sellers only', subtitle: 'Quality you can trust, every time.',
+      imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1600',
+      linkUrl: '/search?verifiedSeller=1', displayOrder: 3, isActive: true,
+    },
+  ];
+  for (const b of DEFAULT_BANNERS) await Banner.create(b);
 
   console.log('Creating sample products...');
+  const pct = Number(settings.commissionPercent) || 0;
+  const finalize = (base) => Math.round(base * (1 + pct / 100) * 100) / 100;
   const created = [];
   for (const p of SAMPLE_PRODUCTS) {
+    const basePrice = Number(p.price);
     const prod = await Product.create({
       ...p,
+      basePrice,
+      commissionPercent: pct,
+      price: finalize(basePrice),
       sellerId: users.seller.id,
       image: p.images?.[0] || '',
     });

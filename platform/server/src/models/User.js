@@ -1,15 +1,18 @@
-import { DataTypes } from 'sequelize';
+﻿import { DataTypes } from 'sequelize';
 import bcrypt from 'bcryptjs';
 import { sequelize } from '../config/db.js';
 
 export const User = sequelize.define(
   'User',
   {
-    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     name: { type: DataTypes.STRING(120), allowNull: false },
     email: { type: DataTypes.STRING(180), allowNull: false, unique: true },
     phone: { type: DataTypes.STRING(40), defaultValue: '' },
     password: { type: DataTypes.STRING(120), allowNull: false },
+    // Firebase Auth linkage (Google sign-in). Null for password-only accounts.
+    firebaseUid: { type: DataTypes.STRING(128), allowNull: true, unique: true },
+    photoUrl: { type: DataTypes.STRING(500), defaultValue: '' },
     role: { type: DataTypes.ENUM('buyer', 'seller', 'delivery', 'admin'), allowNull: false },
     status: { type: DataTypes.ENUM('pending', 'active', 'suspended'), defaultValue: 'active' },
     flagged: { type: DataTypes.BOOLEAN, defaultValue: false },
@@ -28,11 +31,11 @@ export const User = sequelize.define(
     currentLng: { type: DataTypes.DECIMAL(10, 7), allowNull: true },
 
     isOnline: { type: DataTypes.BOOLEAN, defaultValue: false },
-    activeOrderId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
+    activeOrderId: { type: DataTypes.INTEGER, allowNull: true },
 
     // Marketplace fields
     verified: { type: DataTypes.BOOLEAN, defaultValue: false }, // verified seller badge
-    followerCount: { type: DataTypes.INTEGER.UNSIGNED, defaultValue: 0 },
+    followerCount: { type: DataTypes.INTEGER, defaultValue: 0 },
     storeBanner: { type: DataTypes.STRING(1000), defaultValue: '' },
     storeDescription: { type: DataTypes.TEXT },
     locale: { type: DataTypes.STRING(8), defaultValue: 'en' },
@@ -86,3 +89,4 @@ User.prototype.toJSON = function () {
 
   return v;
 };
+

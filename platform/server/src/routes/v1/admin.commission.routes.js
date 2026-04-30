@@ -93,7 +93,7 @@ router.get(
       if (from) where.createdAt[Op.gte] = new Date(from);
       if (to) where.createdAt[Op.lte] = new Date(to);
     }
-    if (q) where.productName = { [Op.like]: `%${q}%` };
+    if (q) where.productName = { [Op.iLike]: `%${q}%` };
 
     const { rows, count } = await CommissionLedger.findAndCountAll({
       where,

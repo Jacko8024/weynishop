@@ -1,10 +1,10 @@
-import { DataTypes } from 'sequelize';
+﻿import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/db.js';
 
 export const Settings = sequelize.define(
   'Settings',
   {
-    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     deliveryRadiusKm: { type: DataTypes.INTEGER, defaultValue: 10 },
     commissionPercent: { type: DataTypes.INTEGER, defaultValue: 0 },
     flatDeliveryFee: { type: DataTypes.DECIMAL(12, 2), defaultValue: 50 },
@@ -31,3 +31,4 @@ Settings.getSingleton = async function () {
   if (!s) s = await Settings.create({});
   return s;
 };
+
