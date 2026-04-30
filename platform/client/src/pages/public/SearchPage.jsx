@@ -3,13 +3,14 @@ import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { SlidersHorizontal, X } from 'lucide-react';
 import { api } from '../../api/client.js';
-import { CATEGORIES } from '../../lib/format.js';
+import { useCategories } from '../../lib/categories.js';
 import ProductGrid from '../../components/ProductGrid.jsx';
 
 const SORT_KEYS = ['best', 'priceLow', 'priceHigh', 'mostSold', 'newest', 'topRated'];
 
 export default function SearchPage() {
   const { t } = useTranslation();
+  const CATEGORIES = useCategories();
   const [params, setParams] = useSearchParams();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);

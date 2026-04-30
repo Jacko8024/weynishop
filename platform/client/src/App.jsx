@@ -43,6 +43,8 @@ import AdminLiveMap from './pages/admin/LiveMap.jsx';
 import AdminDisputes from './pages/admin/Disputes.jsx';
 import AdminCommission from './pages/admin/Commission.jsx';
 import AdminSettings from './pages/admin/Settings.jsx';
+import AdminBanners from './pages/admin/Banners.jsx';
+import AdminCategories from './pages/admin/Categories.jsx';
 
 const Protected = ({ role, children }) => {
   const { user } = useAuth();
@@ -85,6 +87,7 @@ export default function App() {
         <Route path="products" element={<SellerProducts />} />
         <Route path="orders" element={<SellerOrders />} />
         <Route path="profile" element={<SellerProfile />} />
+        <Route path="commission" element={<SellerCommission />} />
       </Route>
 
       {/* DELIVERY */}
@@ -102,6 +105,8 @@ export default function App() {
         <Route path="disputes" element={<AdminDisputes />} />
         <Route path="settings" element={<AdminSettings />} />
         <Route path="commission" element={<AdminCommission />} />
+        <Route path="banners" element={<AdminBanners />} />
+        <Route path="categories" element={<AdminCategories />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

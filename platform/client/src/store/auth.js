@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api } from '../api/client.js';
+import { signInWithGoogle, signOutFirebase } from '../lib/firebase.js';
 
 const stored = () => {
   try {
@@ -28,11 +29,21 @@ export const useAuth = create((set, get) => ({
     set({ user: data.user, token: data.token });
     return data.user;
   },
+  loginWithGoogle: async (role) => {
+    const { idToken } = await signInWithGoogle();
+    const { data } = await api.post('/auth/google', { idToken, role });
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    set({ user: data.user, token: data.token });
+    return data.user;
+  },
 
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     set({ user: null, token: null });
+    // Best-effort: clear Firebase session too (ignore errors when not signed-in).
+    signOutFirebase().catch(() => {});
   },
 
   refreshMe: async () => {

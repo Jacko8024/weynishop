@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../store/auth.js';
+import GoogleSignInButton from '../../components/GoogleSignInButton.jsx';
 
 export default function Login() {
   const { login } = useAuth();
@@ -67,6 +68,19 @@ export default function Login() {
             {loading ? 'Logging in…' : 'Log in'}
           </button>
         </form>
+
+        <div className="flex items-center gap-3 my-5 text-xs text-slate-400">
+          <div className="flex-1 h-px bg-slate-200" />
+          OR
+          <div className="flex-1 h-px bg-slate-200" />
+        </div>
+
+        <GoogleSignInButton
+          onSuccess={(user) => {
+            toast.success(`Welcome, ${user.name}`);
+            nav(`/${user.role}`, { replace: true });
+          }}
+        />
 
         <div className="mt-5 text-sm">
           <div className="text-slate-500 mb-2">Quick demo logins:</div>

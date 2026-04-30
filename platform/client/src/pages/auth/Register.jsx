@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../store/auth.js';
+import GoogleSignInButton from '../../components/GoogleSignInButton.jsx';
 
 export default function Register() {
   const { register } = useAuth();
@@ -76,6 +77,21 @@ export default function Register() {
             {loading ? 'Creating…' : 'Create account'}
           </button>
         </form>
+
+        <div className="flex items-center gap-3 my-5 text-xs text-slate-400">
+          <div className="flex-1 h-px bg-slate-200" />
+          OR
+          <div className="flex-1 h-px bg-slate-200" />
+        </div>
+
+        <GoogleSignInButton
+          role={form.role}
+          label={`Sign up with Google as ${form.role}`}
+          onSuccess={(user) => {
+            toast.success('Account ready');
+            nav(`/${user.role}`, { replace: true });
+          }}
+        />
         <div className="mt-6 text-sm text-slate-600">
           Already have an account? <Link to="/login" className="text-brand-600 font-medium">Log in</Link>
         </div>

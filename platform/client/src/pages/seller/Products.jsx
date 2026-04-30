@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
-import { Plus, Edit, Trash2, X, Zap, Image as ImageIcon } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Plus, Edit, Trash2, X, Zap, Upload, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../../api/client.js';
 import { formatMoney } from '../../lib/helpers.js';
-import { CATEGORIES } from '../../lib/format.js';
+import { useCategories } from '../../lib/categories.js';
+import { useCommissionPercent } from '../../lib/commission.js';
 
 const empty = {
   name: '', description: '', price: '', stock: 0, category: 'general',
-  images: [''], isActive: true, freeShipping: false,
+  images: [], isActive: true, freeShipping: false,
   flashSaleStart: '', flashSaleEnd: '', flashSalePercent: '',
   bulkPriceTiers: [],
 };
@@ -21,24 +22,46 @@ const toLocalInput = (d) => {
 };
 
 export default function SellerProducts() {
+  const CATEGORIES = useCategories();
+  const commissionPercent = useCommissionPercent();
+
   const [items, setItems] = useState([]);
   const [editing, setEditing] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const load = () => api.get('/products/mine').then(({ data }) => setItems(data.items));
   useEffect(() => { load(); }, []);
 
+  // When opening the form, prefer the seller's stored basePrice (their own input)
+  // — that's what they care about. The buyer-facing final price is computed live.
   const startEdit = (p) => setEditing({
     ...empty,
     ...p,
-    images: p.images?.length ? p.images : [''],
+    price: p.basePrice != null ? String(p.basePrice) : (p.price ?? ''),
+    images: Array.isArray(p.images) ? p.images.filter(Boolean) : [],
     flashSaleStart: toLocalInput(p.flashSaleStart),
     flashSaleEnd: toLocalInput(p.flashSaleEnd),
     flashSalePercent: p.flashSalePercent ?? '',
     bulkPriceTiers: Array.isArray(p.bulkPriceTiers) ? p.bulkPriceTiers : [],
   });
 
+  // ---- live commission preview --------------------------------------------
+  const basePriceNum = Number(editing?.price) || 0;
+  const commissionAmount = useMemo(
+    () => Math.round(basePriceNum * (commissionPercent / 100) * 100) / 100,
+    [basePriceNum, commissionPercent]
+  );
+  const finalPrice = useMemo(
+    () => Math.round((basePriceNum + commissionAmount) * 100) / 100,
+    [basePriceNum, commissionAmount]
+  );
+
   const save = async (e) => {
     e.preventDefault();
+    if (!editing.images.length) {
+      toast.error('Please upload at least one product image');
+      return;
+    }
     const payload = {
       ...editing,
       price: Number(editing.price),
@@ -69,12 +92,31 @@ export default function SellerProducts() {
     load();
   };
 
-  const setImg = (i, v) => {
-    const imgs = [...editing.images]; imgs[i] = v;
-    setEditing({ ...editing, images: imgs });
+  // ---- image upload --------------------------------------------------------
+  // Server normalises every uploaded image to the standard product size with a
+  // cover-crop (no stretching), so the seller doesn't pre-process anything.
+  const handleFiles = async (fileList) => {
+    const files = Array.from(fileList || []).filter((f) => f.type.startsWith('image/'));
+    if (!files.length) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      files.forEach((f) => fd.append('images', f));
+      const { data } = await api.post('/uploads/products', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const urls = data.urls || [];
+      setEditing((cur) => ({ ...cur, images: [...(cur.images || []), ...urls] }));
+      toast.success(`${urls.length} image${urls.length === 1 ? '' : 's'} uploaded`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Upload failed');
+    } finally {
+      setUploading(false);
+    }
   };
-  const addImgRow = () => setEditing({ ...editing, images: [...editing.images, ''] });
-  const removeImgRow = (i) => setEditing({ ...editing, images: editing.images.filter((_, idx) => idx !== i) });
+
+  const removeImg = (i) =>
+    setEditing((cur) => ({ ...cur, images: cur.images.filter((_, idx) => idx !== i) }));
 
   const setTier = (i, key, v) => {
     const tiers = [...editing.bulkPriceTiers];
@@ -103,7 +145,17 @@ export default function SellerProducts() {
               <div className="text-xs" style={{ color: 'var(--color-muted)' }}>
                 {p.category} · stock {p.stock} · sold {p.soldCount || 0}
               </div>
-              <div className="font-semibold mt-1 price-num" style={{ color: 'var(--color-brand)' }}>{formatMoney(p.price)}</div>
+              <div className="mt-1 space-y-0.5">
+                <div className="font-semibold price-num" style={{ color: 'var(--color-brand)' }}>
+                  {formatMoney(p.basePrice ?? p.price)}{' '}
+                  <span className="text-[10px] font-normal" style={{ color: 'var(--color-muted)' }}>your price</span>
+                </div>
+                {Number(p.price) !== Number(p.basePrice ?? p.price) && (
+                  <div className="text-xs" style={{ color: 'var(--color-muted)' }}>
+                    Buyers see: <span className="price-num font-medium" style={{ color: 'var(--color-text)' }}>{formatMoney(p.price)}</span>
+                  </div>
+                )}
+              </div>
               <div className="flex gap-1 mt-2">
                 <button onClick={() => startEdit(p)} className="btn-secondary text-xs flex-1"><Edit size={14} /> Edit</button>
                 <button onClick={() => remove(p._id)} className="btn-danger text-xs"><Trash2 size={14} /></button>
@@ -126,8 +178,41 @@ export default function SellerProducts() {
             <div><label className="label">Name</label><input className="input" required value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} /></div>
             <div><label className="label">Description</label><textarea className="input" rows={3} value={editing.description} onChange={(e) => setEditing({ ...editing, description: e.target.value })} /></div>
 
-            <div className="grid grid-cols-3 gap-3">
-              <div><label className="label">Price (ETB)</label><input className="input" type="number" required value={editing.price} onChange={(e) => setEditing({ ...editing, price: e.target.value })} /></div>
+            {/* Pricing block: base price input + read-only commission % +
+                live commission amount + final buyer price */}
+            <div className="rounded-xl p-3 space-y-2" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">Product price (ETB)</label>
+                  <input className="input" type="number" min="0" step="0.01" required
+                         value={editing.price}
+                         onChange={(e) => setEditing({ ...editing, price: e.target.value })} />
+                </div>
+                <div>
+                  <label className="label">Commission %</label>
+                  <input className="input" type="number" readOnly tabIndex={-1}
+                         value={commissionPercent}
+                         title="Set by the platform admin"
+                         style={{ background: 'var(--color-surface)', cursor: 'not-allowed' }} />
+                </div>
+              </div>
+              <div className="text-sm flex flex-wrap gap-x-4 gap-y-1 pt-1">
+                <span style={{ color: 'var(--color-muted)' }}>
+                  Commission:{' '}
+                  <span className="price-num font-semibold" style={{ color: 'var(--color-text)' }}>
+                    {commissionAmount.toFixed(2)} ETB
+                  </span>
+                </span>
+                <span style={{ color: 'var(--color-muted)' }}>
+                  Final price (shown to buyers):{' '}
+                  <span className="price-num font-bold" style={{ color: 'var(--color-brand)' }}>
+                    {finalPrice.toFixed(2)} ETB
+                  </span>
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
               <div><label className="label">Stock</label><input className="input" type="number" value={editing.stock} onChange={(e) => setEditing({ ...editing, stock: e.target.value })} /></div>
               <div>
                 <label className="label">Category</label>
@@ -142,22 +227,59 @@ export default function SellerProducts() {
               <span>Offer free shipping</span>
             </label>
 
+            {/* Image upload — replaces the old "paste link" inputs.
+                Server crops every upload to the standard product size. */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="label mb-0 inline-flex items-center gap-1"><ImageIcon size={14} /> Image URLs</label>
-                <button type="button" onClick={addImgRow} className="text-xs underline" style={{ color: 'var(--color-brand)' }}>+ Add image</button>
-              </div>
-              <div className="space-y-2">
-                {editing.images.map((img, i) => (
-                  <div key={i} className="flex gap-2">
-                    <input className="input flex-1" placeholder="https://..." value={img} onChange={(e) => setImg(i, e.target.value)} />
-                    {editing.images.length > 1 && (
-                      <button type="button" onClick={() => removeImgRow(i)} className="btn-ghost p-2"><X size={14} /></button>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs mt-1" style={{ color: 'var(--color-muted)' }}>First image is the main photo. Others appear in the gallery.</p>
+              <label className="label">Product images</label>
+              <label
+                htmlFor="product-image-input"
+                className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-6 cursor-pointer hover:bg-[var(--color-bg)] transition"
+                style={{ borderColor: 'var(--color-border)' }}
+                onDragOver={(e) => { e.preventDefault(); }}
+                onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}
+              >
+                {uploading ? (
+                  <><Loader2 size={22} className="animate-spin" /><span className="text-sm">Uploading…</span></>
+                ) : (
+                  <>
+                    <Upload size={22} style={{ color: 'var(--color-muted)' }} />
+                    <span className="text-sm font-medium">Click or drag images here</span>
+                    <span className="text-xs" style={{ color: 'var(--color-muted)' }}>
+                      JPEG / PNG / WEBP — multiple images supported · auto-cropped to 800×800
+                    </span>
+                  </>
+                )}
+              </label>
+              <input
+                id="product-image-input"
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => { handleFiles(e.target.files); e.target.value = ''; }}
+              />
+              {editing.images.length > 0 && (
+                <div className="grid grid-cols-4 gap-2 mt-3">
+                  {editing.images.map((src, i) => (
+                    <div key={i} className="relative aspect-square rounded-lg overflow-hidden border" style={{ borderColor: 'var(--color-border)' }}>
+                      <img src={src} alt="" className="w-full h-full object-cover" />
+                      <button type="button" onClick={() => removeImg(i)}
+                              className="absolute top-1 right-1 w-6 h-6 grid place-items-center rounded-full bg-black/60 text-white hover:bg-black/80"
+                              aria-label="Remove image">
+                        <X size={12} />
+                      </button>
+                      {i === 0 && (
+                        <span className="absolute bottom-1 left-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-white/90 text-black">
+                          Main
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p className="text-xs mt-1" style={{ color: 'var(--color-muted)' }}>
+                First image is the main photo. Drag-drop or click to add more.
+              </p>
             </div>
 
             <div className="rounded-xl p-3" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
@@ -191,7 +313,7 @@ export default function SellerProducts() {
               </div>
             </div>
 
-            <button className="btn-primary w-full">Save</button>
+            <button className="btn-primary w-full" disabled={uploading}>Save</button>
           </form>
         </div>
       )}

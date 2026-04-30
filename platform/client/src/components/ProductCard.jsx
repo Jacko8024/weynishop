@@ -7,6 +7,7 @@ import { useAuth } from '../store/auth.js';
 import { useWishlist } from '../store/wishlist.js';
 import { useLoginGate } from '../store/loginGate.js';
 import { fmtPrice, fmtCompact } from '../lib/format.js';
+import { findCategory } from '../lib/categories.js';
 import Stars from './Stars.jsx';
 import FlashCountdown from './FlashCountdown.jsx';
 
@@ -108,6 +109,7 @@ export default function ProductCard({ product, compact = false }) {
       {/* Body */}
       <div className="p-2.5 flex flex-col gap-1 flex-1">
         <div className="text-sm font-medium line-clamp-2 leading-snug min-h-[2.5em] font-localized">
+          <span className="mr-1" aria-hidden="true">{findCategory(product.category).icon}</span>
           {product.name}
         </div>
 

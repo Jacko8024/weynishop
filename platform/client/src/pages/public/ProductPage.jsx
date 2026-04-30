@@ -11,6 +11,7 @@ import { useAuth } from '../../store/auth.js';
 import { useWishlist } from '../../store/wishlist.js';
 import { useLoginGate } from '../../store/loginGate.js';
 import { fmtPrice, fmtCompact, effectivePrice } from '../../lib/format.js';
+import { useCategories, findCategory } from '../../lib/categories.js';
 import Stars from '../../components/Stars.jsx';
 import FlashCountdown from '../../components/FlashCountdown.jsx';
 import ProductCard from '../../components/ProductCard.jsx';
@@ -20,6 +21,7 @@ export default function ProductPage() {
   const { t } = useTranslation();
   const nav = useNavigate();
   const { user, addToCart } = useAuth();
+  useCategories(); // ensure category cache is warm so findCategory returns emoji
   const wished = useWishlist((s) => s.ids.has(String(id)));
   const toggleWish = useWishlist((s) => s.toggle);
   const openGate = useLoginGate((s) => s.open);
@@ -153,7 +155,10 @@ export default function ProductPage() {
         {/* Info */}
         <div className="space-y-4">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold font-localized">{product.name}</h1>
+            <h1 className="text-xl md:text-2xl font-bold font-localized">
+              <span className="mr-1.5" aria-hidden="true">{findCategory(product.category).icon}</span>
+              {product.name}
+            </h1>
             <div className="flex items-center gap-3 mt-2 text-sm">
               <Stars value={product.ratingAvg} showNumber count={product.ratingCount} />
               {product.soldCount > 0 && (
