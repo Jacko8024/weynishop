@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Noto+Serif+Ethiopic:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ----------- Design tokens ----------- */
+:root {
+  --color-brand: #EC5C2C;
+  --color-brand-dark: #D14617;
+  --color-accent: #F5A623;
+  --color-bg: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-text: #1A1A1A;
+  --color-muted: #757575;
+  --color-border: #E5E5E5;
+  --color-success: #00A650;
+  --color-flash: #EB5824;
+}
+
+[data-theme='dark'] {
+  --color-bg: #0F0F0F;
+  --color-surface: #1E1E1E;
+  --color-text: #F0F0F0;
+  --color-muted: #9CA3AF;
+  --color-border: #2E2E2E;
+}
+
+/* Ethiopic locales: switch font on <html> element */
+html[lang='am'] body,
+html[lang='ti'] body,
+html[lang='am'] .font-localized,
+html[lang='ti'] .font-localized {
+  font-family: 'Noto Serif Ethiopic', 'Plus Jakarta Sans', serif;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply antialiased;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+  ::selection { background: var(--color-brand); color: #fff; }
+}
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed; }
+  .btn-primary { @apply btn text-white; background: var(--color-brand); }
+  .btn-primary:hover:not(:disabled) { background: var(--color-brand-dark); }
+  .btn-secondary { @apply btn; background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-border); }
+  .btn-secondary:hover:not(:disabled) { background: var(--color-bg); }
+  .btn-danger { @apply btn bg-danger-500 hover:bg-danger-600 text-white; }
+  .btn-ghost { @apply btn; color: var(--color-text); }
+  .btn-ghost:hover:not(:disabled) { background: var(--color-bg); }
+  .btn-accent { @apply btn text-black; background: var(--color-accent); }
+
+  .input {
+    @apply w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2;
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    --tw-ring-color: var(--color-brand);
+  }
+  .label { @apply block text-sm font-medium mb-1; color: var(--color-text); }
+  .card { @apply rounded-xl shadow-sm; background: var(--color-surface); border: 1px solid var(--color-border); }
+  .badge { @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium; }
+
+  .price-num { font-family: 'DM Mono', ui-monospace, monospace; font-feature-settings: 'tnum'; }
+
+  .skeleton {
+    background: linear-gradient(90deg, var(--color-border) 25%, var(--color-bg) 50%, var(--color-border) 75%);
+    background-size: 800px 100%;
+    @apply animate-shimmer rounded;
+  }
+
+  .nav-blur { backdrop-filter: blur(8px); background: color-mix(in srgb, var(--color-surface) 85%, transparent); }
+
+  /* Flash sale ribbon */
+  .flash-ribbon {
+    background: linear-gradient(135deg, #EB5824 0%, #C7461A 100%);
+    @apply absolute top-2 left-2 px-2 py-0.5 text-[10px] font-bold uppercase text-white rounded shadow-md;
+  }
+
+  /* Verified seller checkmark */
+  .verified-tick {
+    @apply inline-flex items-center justify-center w-3.5 h-3.5 rounded-full text-white text-[9px] font-bold;
+    background: var(--color-success);
+  }
+
+  /* Hide scrollbar utility for category strip */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+}
+
+/* Progress bar pulse */
+.progress-pulse { animation: pulse-ring 1.6s ease-out infinite; }
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(236,92,44,.6); }
+  70% { box-shadow: 0 0 0 12px rgba(236,92,44,0); }
+  100% { box-shadow: 0 0 0 0 rgba(236,92,44,0); }
+}
+
+/* Heart pop on wishlist toggle */
+.heart-pop { animation: heartPop 400ms ease-out; }
+@keyframes heartPop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.45); }
+  70%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}

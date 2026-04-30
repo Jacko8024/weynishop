@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Weynishop | ወይኒ ገበያ | Ethiopian Online Shopping in Beirut</title>
+
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="Weynishop | Ethiopian Online Shopping in Beirut">
+  <meta name="description"
+    content="Weynishop is the online marketplace for Ethiopians in Beirut. Buy clothes, shoes, cosmetics, accessories, Ethiopian products and food. Order via phone, WhatsApp or Telegram.">
+  <meta name="keywords"
+    content="Ethiopian online shopping, Weynishop, Ashu kargo, Ethiopian food Beirut, Ethiopian clothes, Ethiopian products, online marketplace Beirut, order Ethiopian food, Ethiopian stores, clothes online Beirut, shop Ethiopian items">
+
+  <meta name="author" content="Weynishop">
+  <meta name="robots" content="index, follow">
+
+  <!-- Mobile Friendly -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Weynishop | Ethiopian Online Shopping in Beirut">
+  <meta property="og:description"
+    content="Buy clothes, shoes, cosmetics, accessories, Ethiopian products and food from Ethiopian stores in Beirut. Order via phone, WhatsApp or Telegram.">
+  <meta property="og:image" content="img/logo.jpg ">
+  <meta property="og:url" content="https://www.weynishop.com/">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="Weynishop | Ethiopian Online Shopping in Beirut">
+  <meta property="twitter:description"
+    content="Buy clothes, shoes, cosmetics, accessories, Ethiopian products and food from Ethiopian stores in Beirut. Order via phone, WhatsApp or Telegram.">
+  <meta property="twitter:image" content="img/logo.jpg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="img/logo.png">
+
+
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+
+
+  <!-- HERO BANNER SLIDER -->
+  <!-- HERO SLIDER -->
+
+  <header class="site-header" id="header">
+
+    <div class="header-content" id="hero">
+
+
+      <img src="img/logo.jpg" class="logo" alt="Weynushop Logo">
+
+
+
+      <h1 id="tagline-en"> Weynishop</h1> <br>
+
+      <h1 id="tagline-am" class="hidden">ወይኒ ገበያ </h1>
+
+      <p id="tagline-en"> Ethiopian Online Marketplace for the Ethiopian Community in Beirut, Lebanon </p> <br>
+      <p id="tagline-am" class="hidden"> ወይኒ ገበያ - የኢትዮጵያውያን የገበያ ቦታ በቤሩት | ሊባኖስ ውስጥ ይግዙ, ይሽጡ
+      </p>
+      <button onclick="toggleLanguage()">🌐 አማርኛ / English</button>
+    </div>
+  </header>
+
+  <section class="about-weynishop">
+
+    <h2 id="tagline-en"> Made for Ethiopians Living in Lebanon</h2>
+
+    <h2 id="tagline-am" class="hidden"> በሊባኖስ ለሚኖሩ ኢትዮጵያውያን የተሰራ </h2>
+
+
+
+    <p class="about-intro">
+    <p id="tagline-en">
+      A safe and trusted marketplace where our community can buy and sell with confidence.
+    </p>
+    </p>
+
+    <p class="about-intro">
+    <p id="tagline-am" class="hidden">
+      ማህበረሰባችን በልበ ሙሉነት የሚገዛበት እና የሚሸጥበት ደህንነቱ የተጠበቀ እና የታመነ የገበያ ቦታ።
+
+    </p>
+    </p>
+    <br>
+
+
+
+    <div class="about-content">
+
+      <h3 id="tagline-en"> Why Weynishop Exists</h3>
+      <h3 id="tagline-am" class="hidden"> ወይኒ ገበያ ለምን ተዘጋጀ? </h3>
+
+      <p id="tagline-en">
+        Many Ethiopians in Lebanon cannot easily go out to shop.
+        Weynishop was created to support our community and make buying and selling
+        simple, safe, and accessible for everyone.
+      </p>
+
+      <p id="tagline-am" class="hidden">
+        በሊባኖስ የሚኖሩ ብዙ ኢትዮጵያውያን በቀላሉ ወደ ገበያ መውጣት አይችሉም። ወይኒ ገበያ የተፈጠረው ማህበረሰባችንን ለመደገፍ እና መግዛትና መሸጥ ቀላል፣ ደህንነቱ የተጠበቀ እና
+        ለሁሉም ሰው ተደራሽ ለማድረግ ነው።
+      </p>
+
+    </div>
+  </section>
+
+
+  <!-- ── CATEGORIES ── -->
+  <section class="categories">
+    <h2 id="categories-en">Shop by Category</h2>
+    <h2 id="categories-am" class="hidden">በክፍል ይግዙ</h2>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="🔍  Search store or product..." onkeyup="searchStore()">
+    </div>
+
+    <div class="category-container" id="categoryButtons">
+      <button class="active" onclick="filterCategory('all', this)"> ሁሉንም </button>
+      <button onclick="filterCategory('clothes', this)">👗 የሴቶች ልብስ </button>
+      <button onclick="filterCategory('clothes', this)"> 👔 የወንዶች ልብስ </button>
+      <button onclick="filterCategory('shoes', this)">👟 ጫማ </button>
+      <button onclick="filterCategory('cosmetics', this)">💄 ኮስሞቲክስ </button>
+      <button onclick="filterCategory('accessories', this)">👜 ቦርሳ & ጌጣጌጦች </button>
+      <button onclick="filterCategory('household', this)">🏠 የቤት መገልገያዎች </button>
+      <button onclick="filterCategory('ethiopian', this)">🇪🇹 የባልትና ውጤቶች </button>
+      <button onclick="filterCategory('restaurant', this)">🍽️ የኢትዮፕያ ምግቦች </button>
+      <button onclick="filterCategory('wig', this)">💇 ዊግ &amp; የፀጉር ቅባት </button>
+    </div>
+  </section>
+
+  <!-- ── STORES ── -->
+  <section>
+    <div class="card-container">
+
+
+      <!-- Frita -->
+      <div class="card" data-category="wig">
+        <div class="card-body">
+          <h3><a href="frita.html"><img src="img/frita/frita-6.jpg" alt="Frita">ፍሪታ ሳሎን </a></h3>
+          <span class="store-type">ዊግ & የፀጉር ቅባት </span>
+          <p> የተለያዮ ሂውን ሄር እና የፀጉር ቅባት መሸጪያ </p>
+          <span class="click-hint">የፍሪታን ምርቶች በስፋት ለመመልከት ፎቶውን ይጫኑ</span>
+        </div>
+        <div class="card-buttons">
+          <a href="tel:+96181616248" class="btn phone"><i class="fas fa-phone"></i> Call</a>
+          <a href="https://wa.me/96181616248" class="btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://t.me/fifasweee" class="btn telegram"><i class="fab fa-telegram"></i> Telegram</a>
+        </div>
+      </div>
+
+
+      <!-- Abebe Fashion -->
+      <div class="card" data-category="clothes">
+
+        <div class="card-body">
+          <h3><a href="zeha.html"><img src="img/zeha-yetebeb-albasat/zeha1.jpg" alt="Abebe Fashion">ዘሐ_ፈትል </a> </h3>
+          <span class="store-type"> ዘሐ የባህል አልባሳት </span>
+          <p>ዘሐ የኢትዮጵያ ባህል አልባሳት መሸጫ </p>
+          <span class="click-hint">የዘሐን ምርቶች በስፋት ለመመልከት ፎቶውን ይጫኑ</span>
+        </div>
+        <div class="card-buttons">
+          <a href="tel:+251973524086" class="btn phone"><i class="fas fa-phone"></i> Call</a>
+          <a href="https://wa.me/251973524086" class="btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://t.me/zeha_fetel" class="btn telegram"><i class="fab fa-telegram"></i> Telegram</a>
+        </div>
+      </div>
+
+      <!-- Ashu Cargo -->
+      <div class="card" data-category="ethiopian text-dark">
+        <div class="card-body">
+          <h3><a href="ashu-cargo.html"> <img src="img/ashu cargo/ashu cargo logo.jpg" alt="Ashu Cargo"> Ashu Cargo | አሹ
+              ካርጎ</a></h3>
+          <span class="store-type">የኢትዮጵያ ምርቶች</span>
+          <p>የባህል ልብስ፣ የባልትና ውጤቶች እና ዘመናዊ ጫማዎች</p>
+          <span class="click-hint">ምርቶችን በዝርዝር ለማየት ፎቶውን ይጫኑ</span>
+        </div>
+        <div class="card-buttons">
+          <a href="tel:+251952655404" class="btn phone"><i class="fas fa-phone"></i> Call</a>
+          <a href="https://wa.me/251952655404" class="btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://t.me/weynishop_ceo" class="btn telegram"><i class="fab fa-telegram"></i> Telegram</a>
+        </div>
+      </div>
+
+      <!-- Beauty Queen -->
+      <div class="card" data-category="cosmetics">
+        <div class="card-body">
+          <h3><a href="Beauty-Queen.html"> <img src="img/cosmo2.jpg" alt="Beauty Queen"> Beauty Queen</a></h3>
+          <span class="store-type">Cosmetics</span>
+          <p>Cosmetics &amp; Makeup</p>
+          <span class="click-hint">የ Beauty Queen ምርቶችን ለማየት ፎቶውን ይጫኑ</span>
+        </div>
+        <div class="card-buttons">
+          <a href="tel:+251952655404" class="btn phone"><i class="fas fa-phone"></i> Call</a>
+          <a href="https://wa.me/251952655404" class="btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://t.me/weynishop_ceo" class="btn telegram"><i class="fab fa-telegram"></i> Telegram</a>
+        </div>
+      </div>
+
+      <!-- Golden Touch -->
+      <div class="card" data-category="accessories">
+        <div class="card-body">
+          <h3><a href="Golden-Toch.html"> <img src="img/bag2.jpg" alt="Golden Touch">Golden Touch</a></h3>
+          <span class="store-type">Accessories</span>
+          <p>Bags &amp; Accessories</p>
+          <span class="click-hint">የ Golden Touch ምርቶችን ለማየት ፎቶውን ይጫኑ</span>
+        </div>
+        <div class="card-buttons">
+          <a href="tel:+251952655404" class="btn phone"><i class="fas fa-phone"></i> Call</a>
+          <a href="https://wa.me/251952655404" class="btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://t.me/weynishop_ceo" class="btn telegram"><i class="fab fa-telegram"></i> Telegram</a>
+        </div>
+      </div>
+
+      <!-- Home Market -->
+      <div class="card" data-category="household">
+        <div class="card-body">
+          <h3><a href="Home-Market.html"><img src="img/jus-mefecha.jpg" alt="Home Market">Home Market</a></h3>
+          <span class="store-type">Household</span>
+          <p>Kitchen &amp; Home Items</p>
+          <span class="click-hint">የ Home Market ምርቶችን ለማየት ፎቶውን ይጫኑ</span>
+        </div>
+        <div class="card-buttons">
+          <a href="tel:+251952655404" class="btn phone"><i class="fas fa-phone"></i> Call</a>
+          <a href="https://wa.me/251952655404" class="btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://t.me/weynishop_ceo" class="btn telegram"><i class="fab fa-telegram"></i> Telegram</a>
+        </div>
+      </div>
+
+      <!-- Habesha Store -->
+      <div class="card" data-category="ethiopian">
+        <div class="card-body">
+          <h3><a href="Habesh-Store.html"><img src="img/bereber2.jpg" alt="Habesha Store"> Habesha Store</a></h3>
+          <span class="store-type">Ethiopian Products</span>
+          <p>Ethiopian Coffee &amp; Spices</p>
+          <span class="click-hint">የ Habesha Store ምርቶችን ለማየት ፎቶውን ይጫኑ</span>
+        </div>
+        <div class="card-buttons">
+          <a href="tel:+251952655404" class="btn phone"><i class="fas fa-phone"></i> Call</a>
+          <a href="https://wa.me/251952655404" class="btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://t.me/weynishop_ceo" class="btn telegram"><i class="fab fa-telegram"></i> Telegram</a>
+        </div>
+      </div>
+
+      <!-- Addis Restaurant -->
+      <div class="card" data-category="restaurant">
+        <div class="card-body">
+          <h3><a href="Addis-Restaurant.html"><img src="img/etho food.jpg" alt="Addis Restaurant"> Addis Restaurant</a>
+          </h3>
+          <span class="store-type">Restaurant</span>
+          <p>Ethiopian Traditional Food</p>
+          <span class="click-hint">የ Addis Restaurant ምርቶችን ለማየት ፎቶውን ይጫኑ</span>
+        </div>
+        <div class="card-buttons">
+          <a href="tel:+251952655404" class="btn phone"><i class="fas fa-phone"></i> Call</a>
+          <a href="https://wa.me/251952655404" class="btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://t.me/weynishop_ceo" class="btn telegram"><i class="fab fa-telegram"></i> Telegram</a>
+        </div>
+      </div>
+
+      <!-- Aseter Human Hair -->
+      <div class="card" data-category="wig">
+        <div class="card-body">
+          <h3><a href="Aseter-Human-hair.html"><img src="img/ferta.jpg" alt="Aseter Human Hair"> Aseter Human Hair</a>
+          </h3>
+          <span class="store-type">Hair &amp; Wigs</span>
+          <p>Premium Human Hair Wigs</p>
+          <span class="click-hint">የ Aseter Human Hair ምርቶችን ለማየት ፎቶውን ይጫኑ</span>
+        </div>
+        <div class="card-buttons">
+          <a href="tel:+251952655404" class="btn phone"><i class="fas fa-phone"></i> Call</a>
+          <a href="https://wa.me/251952655404" class="btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://t.me/weynishop_ceo" class="btn telegram"><i class="fab fa-telegram"></i> Telegram</a>
+        </div>
+      </div>
+
+
+    </div>
+  </section>
+
+  <!-- ── TRUST SECTION ── -->
+  <section class="trust-section">
+    <div class="trust-box">
+      <i class="fas fa-truck"></i>
+      <h4>Fast Delivery</h4>
+      <p>Delivery to your door quickly</p>
+    </div>
+    <div class="trust-box">
+      <i class="fas fa-credit-card"></i>
+      <h4>Secure Payment</h4>
+      <p>100% safe payment methods</p>
+    </div>
+    <div class="trust-box">
+      <i class="fas fa-rotate-left"></i>
+      <h4>Easy Returns</h4>
+      <p>Simple and easy returns</p>
+    </div>
+    <div class="trust-box">
+      <i class="fas fa-headset"></i>
+      <h4>24/7 Support</h4>
+      <p>Our team is always ready</p>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="footer">
+    <h3>Weynishop</h3>
+    <p>Follow us on social media</p>
+    <div class="social-icons">
+      <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="https://t.me/weynishop_ceo" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+      <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://www.tiktok.com/@weynishop.berut?lang=en" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+      <a href="https://www.youtube.com/@weynishopbeiut" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+    </div>
+    <p class="copyright">&copy; 2025 Weynishop. All rights reserved.</p>
+  </footer>
+
+  <script src="js/style.js"></script>
+</body>
+
+</html>
