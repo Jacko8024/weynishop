@@ -8,6 +8,7 @@ import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
 import { sequelize, Settings, CommissionLedger, User, Product, Banner, Category, ContactInquiry } from './models/index.js';
 import { errorHandler, notFound } from './middleware/error.js';
+import { backfillDeliveredCommissions } from './services/commission.service.js';
 
 import authRoutes from './routes/v1/auth.routes.js';
 import userRoutes from './routes/v1/user.routes.js';
@@ -128,6 +129,15 @@ const start = async () => {
   } catch (e) {
     console.warn('[migrate] basePrice backfill skipped:', e.message);
   }
+
+  // Backfill sale-commission ledger rows for any order that already reached
+  // 'delivered_paid' before this feature shipped. Idempotent — safe every boot.
+  try {
+    await backfillDeliveredCommissions();
+  } catch (e) {
+    console.warn('[migrate] commission backfill skipped:', e.message);
+  }
+
   server.listen(env.PORT, () => {
     console.log(`[api] listening on http://localhost:${env.PORT}`);
   });

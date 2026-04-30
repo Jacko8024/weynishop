@@ -76,28 +76,65 @@ export const chargeSaleCommission = async (order) => {
     const qty = Number(it.qty) || 0;
 
     let amount;
+    let basis;
     if (baseUnit > 0 && unitPrice > baseUnit) {
+      // Commission was baked into buyer price at product-create time.
       amount = Math.round((unitPrice - baseUnit) * qty * 100) / 100;
+      basis = `markup (${unitPrice}-${baseUnit}) x ${qty}`;
     } else if (fallbackPct > 0) {
-      // Legacy product without basePrice snapshot — derive commission from
-      // current platform rate applied to the buyer-facing price.
-      amount = Math.round(((unitPrice * qty * fallbackPct) / (100 + fallbackPct)) * 100) / 100;
+      // Apply current platform rate to the buyer-facing price.
+      amount = Math.round(((unitPrice * qty * fallbackPct) / 100) * 100) / 100;
+      basis = `${unitPrice} x ${qty} x ${fallbackPct}%`;
     } else {
       amount = 0;
+      basis = 'no commission configured';
     }
+    console.log(
+      `[commission] order=${order.id} product=${it.productId} ${basis} = ${amount} ${currency}`
+    );
     if (amount <= 0) continue;
 
-    const row = await CommissionLedger.create({
-      sellerId: order.sellerId,
-      productId: it.productId,
-      orderId: order.id,
-      productName: it.name || product?.name || `Product #${it.productId}`,
-      amount,
-      currency,
-      type: 'sale_commission',
-      status: 'pending',
-    });
-    created.push(row);
+    try {
+      const row = await CommissionLedger.create({
+        sellerId: order.sellerId,
+        productId: it.productId,
+        orderId: order.id,
+        productName: it.name || product?.name || `Product #${it.productId}`,
+        amount,
+        currency,
+        type: 'sale_commission',
+        status: 'pending',
+      });
+      created.push(row);
+    } catch (e) {
+      console.error(
+        `[commission] insert failed for order=${order.id} product=${it.productId}:`,
+        e.message
+      );
+    }
   }
   return created;
+};
+
+/**
+ * Backfill sale_commission rows for every order that's already at
+ * 'delivered_paid' but has no ledger entries yet. Safe to run on every boot —
+ * chargeSaleCommission is idempotent per (orderId, productId).
+ */
+export const backfillDeliveredCommissions = async () => {
+  // Lazy-import to avoid circular deps on first load.
+  const { Order } = await import('../models/index.js');
+  const orders = await Order.findAll({ where: { currentStage: 'delivered_paid' } });
+  if (!orders.length) return 0;
+  let total = 0;
+  for (const o of orders) {
+    try {
+      const rows = await chargeSaleCommission(o);
+      total += rows.length;
+    } catch (e) {
+      console.error(`[commission] backfill failed for order ${o.id}:`, e.message);
+    }
+  }
+  if (total) console.log(`[commission] backfill created ${total} sale_commission rows`);
+  return total;
 };
