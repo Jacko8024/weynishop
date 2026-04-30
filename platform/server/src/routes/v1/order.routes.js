@@ -4,6 +4,7 @@ import { Op, literal } from 'sequelize';
 import { sequelize, Order, OrderItem, OrderStage, Product, User, Settings, STAGES } from '../../models/index.js';
 import { protect, requireRole } from '../../middleware/auth.js';
 import { broadcastStage } from '../../sockets/index.js';
+import { chargeSaleCommission } from '../../services/commission.service.js';
 
 const router = Router();
 
@@ -37,6 +38,15 @@ const advanceStage = async (order, target, io) => {
   await OrderStage.create({ orderId: order.id, stage: target });
   const stages = await OrderStage.findAll({ where: { orderId: order.id }, order: [['at', 'ASC']] });
   broadcastStage(io, order, stages);
+
+  // When the order is paid (cash collected on delivery), record the
+  // platform's sale commission. Idempotent — safe even if this runs twice.
+  // Fire-and-forget: a commission failure must not break the stage transition.
+  if (target === 'delivered_paid') {
+    chargeSaleCommission(order).catch((err) =>
+      console.error('[commission] failed to record sale commission for order', order.id, err)
+    );
+  }
   return order;
 };
 

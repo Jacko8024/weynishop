@@ -13,6 +13,7 @@ export const CommissionLedger = sequelize.define(
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     sellerId: { type: DataTypes.INTEGER, allowNull: false },
     productId: { type: DataTypes.INTEGER, allowNull: true },
+    orderId: { type: DataTypes.INTEGER, allowNull: true },
     productName: { type: DataTypes.STRING(200), allowNull: false, defaultValue: '' },
     amount: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
     currency: { type: DataTypes.STRING(8), defaultValue: 'ETB' },
@@ -30,6 +31,7 @@ export const CommissionLedger = sequelize.define(
       { fields: ['sellerId'] },
       { fields: ['status'] },
       { fields: ['type'] },
+      { fields: ['orderId'] },
       { fields: ['createdAt'] },
     ],
   }
