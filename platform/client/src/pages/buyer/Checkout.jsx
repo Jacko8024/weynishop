@@ -5,6 +5,8 @@ import { api } from '../../api/client.js';
 import { useAuth } from '../../store/auth.js';
 import { formatMoney } from '../../lib/helpers.js';
 import MapView, { AddressPicker } from '../../components/MapView.jsx';
+import GeolocationButton from '../../components/GeolocationButton.jsx';
+import useDocumentTitle from '../../lib/useDocumentTitle.js';
 
 export default function Checkout() {
   const { cart, clearCart, user } = useAuth();
@@ -19,6 +21,7 @@ export default function Checkout() {
       : null
   );
   const [placing, setPlacing] = useState(false);
+  useDocumentTitle('Checkout', 'Review your order and pay on delivery.');
 
   const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
 
@@ -50,7 +53,14 @@ export default function Checkout() {
           onChange={(v) => v.lat && setAddr(v)}
           placeholder="Search your address…"
         />
-        <div className="text-xs text-slate-500 mt-1">Or tap on the map to drop a pin.</div>
+        <div className="flex items-center justify-between gap-2 mt-2">
+          <div className="text-xs text-slate-500">Or tap on the map to drop a pin.</div>
+          <GeolocationButton
+            onLocate={({ lat, lng }) =>
+              setAddr({ lat, lng, address: `${lat.toFixed(5)}, ${lng.toFixed(5)}` })
+            }
+          />
+        </div>
         <div className="mt-3">
           <MapView
             height={300}

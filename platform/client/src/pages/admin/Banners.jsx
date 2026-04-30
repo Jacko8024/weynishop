@@ -3,7 +3,7 @@ import { Plus, Edit, Trash2, X, Upload, Loader2, Check, Eye, EyeOff } from 'luci
 import toast from 'react-hot-toast';
 import { api } from '../../api/client.js';
 
-const empty = { title: '', subtitle: '', imageUrl: '', linkUrl: '', displayOrder: 0, isActive: true };
+const empty = { title: '', subtitle: '', imageUrl: '', linkUrl: '', ctaLabel: '', displayOrder: 0, isActive: true };
 
 export default function AdminBanners() {
   const [items, setItems] = useState([]);
@@ -168,10 +168,19 @@ export default function AdminBanners() {
               <input className="input" value={editing.subtitle || ''}
                      onChange={(e) => setEditing({ ...editing, subtitle: e.target.value })} />
             </div>
-            <div><label className="label">Link URL</label>
-              <input className="input" placeholder="/search or https://..."
-                     value={editing.linkUrl || ''}
-                     onChange={(e) => setEditing({ ...editing, linkUrl: e.target.value })} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="label">CTA button text</label>
+                <input className="input" placeholder="Shop now"
+                       value={editing.ctaLabel || ''}
+                       onChange={(e) => setEditing({ ...editing, ctaLabel: e.target.value })} />
+              </div>
+              <div>
+                <label className="label">CTA link URL</label>
+                <input className="input" placeholder="/search or https://..."
+                       value={editing.linkUrl || ''}
+                       onChange={(e) => setEditing({ ...editing, linkUrl: e.target.value })} />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>

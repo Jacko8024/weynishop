@@ -9,6 +9,7 @@ export const Banner = sequelize.define(
     subtitle: { type: DataTypes.STRING(300), defaultValue: '' },
     imageUrl: { type: DataTypes.STRING(1000), allowNull: false },
     linkUrl: { type: DataTypes.STRING(1000), defaultValue: '' },
+    ctaLabel: { type: DataTypes.STRING(60), defaultValue: '' },
     displayOrder: { type: DataTypes.INTEGER, defaultValue: 0 },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
   },

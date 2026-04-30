@@ -14,6 +14,7 @@ import { SellerFollow } from './SellerFollow.js';
 import { CommissionLedger } from './CommissionLedger.js';
 import { Banner } from './Banner.js';
 import { Category } from './Category.js';
+import { ContactInquiry } from './ContactInquiry.js';
 
 // Core associations
 Product.belongsTo(User, { as: 'seller', foreignKey: 'sellerId' });
@@ -75,6 +76,7 @@ export {
   CommissionLedger,
   Banner,
   Category,
+  ContactInquiry,
   STAGES,
   STAGE_LABELS,
 };

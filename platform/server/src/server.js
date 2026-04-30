@@ -6,7 +6,7 @@ import { Server as SocketServer } from 'socket.io';
 
 import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
-import { sequelize, Settings, CommissionLedger, User, Product, Banner, Category } from './models/index.js';
+import { sequelize, Settings, CommissionLedger, User, Product, Banner, Category, ContactInquiry } from './models/index.js';
 import { errorHandler, notFound } from './middleware/error.js';
 
 import authRoutes from './routes/v1/auth.routes.js';
@@ -25,6 +25,7 @@ import configRoutes from './routes/v1/config.routes.js';
 import bannerRoutes from './routes/v1/banner.routes.js';
 import categoryRoutes from './routes/v1/category.routes.js';
 import uploadRoutes from './routes/v1/upload.routes.js';
+import contactRoutes from './routes/v1/contact.routes.js';
 
 import { registerSocketHandlers } from './sockets/index.js';
 
@@ -84,6 +85,7 @@ app.use('/api/v1/store', storeRoutes);
 app.use('/api/v1/banners', bannerRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/uploads', uploadRoutes);
+app.use('/api/v1/contact', contactRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
@@ -111,6 +113,7 @@ const start = async () => {
   await safeAlter('Product',          Product);         // adds basePrice + commissionPercent
   await safeAlter('Banner',           Banner);
   await safeAlter('Category',         Category);
+  await safeAlter('ContactInquiry',   ContactInquiry);
 
   // One-time backfill: any pre-existing product rows have basePrice = 0 from
   // the column default. Initialise them to the current price so seller

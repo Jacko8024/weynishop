@@ -54,10 +54,11 @@ router.get(
     since.setDate(1);
     since.setHours(0, 0, 0, 0);
 
+    // Postgres: to_char(timestamp, 'YYYY-MM'). MySQL's DATE_FORMAT does not exist on PG.
     const rows = await CommissionLedger.findAll({
       where: { createdAt: { [Op.gte]: since } },
       attributes: [
-        [fn('DATE_FORMAT', col('createdAt'), '%Y-%m'), 'month'],
+        [fn('to_char', col('createdAt'), 'YYYY-MM'), 'month'],
         [fn('COALESCE', fn('SUM', col('amount')), 0), 'totalAmount'],
       ],
       group: [literal('month')],
@@ -113,8 +114,9 @@ router.get(
     const rows = await CommissionLedger.findAll({
       attributes: [
         'sellerId',
-        [fn('SUM', literal("CASE WHEN `CommissionLedger`.`status`='pending' THEN `CommissionLedger`.`amount` ELSE 0 END")), 'pending'],
-        [fn('SUM', literal("CASE WHEN `CommissionLedger`.`status`='paid' THEN `CommissionLedger`.`amount` ELSE 0 END")), 'paid'],
+        // Postgres: identifiers in raw literals must be double-quoted (MySQL backticks would error).
+        [fn('SUM', literal(`CASE WHEN "CommissionLedger"."status"='pending' THEN "CommissionLedger"."amount" ELSE 0 END`)), 'pending'],
+        [fn('SUM', literal(`CASE WHEN "CommissionLedger"."status"='paid' THEN "CommissionLedger"."amount" ELSE 0 END`)), 'paid'],
         [fn('COUNT', col('CommissionLedger.id')), 'entries'],
         [fn('MAX', col('CommissionLedger.paidAt')), 'lastPaidAt'],
       ],

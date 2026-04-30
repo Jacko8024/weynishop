@@ -1,32 +1,38 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, Zap } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { api } from '../../api/client.js';
 import { useCategories } from '../../lib/categories.js';
 import ProductGrid from '../../components/ProductGrid.jsx';
 import ProductCard from '../../components/ProductCard.jsx';
 import FlashCountdown from '../../components/FlashCountdown.jsx';
+import HeroSlider from '../../components/HeroSlider.jsx';
+import useDocumentTitle from '../../lib/useDocumentTitle.js';
 
 const FALLBACK_BANNERS = [
-  { title: 'Welcome to WeyniShop', subtitle: 'Local. Fresh. Delivered.',
+  {
+    title: 'Welcome to WeyniShop',
+    subtitle: 'Local. Fresh. Delivered. Pay with cash on delivery.',
+    ctaLabel: 'Shop now',
     linkUrl: '/search',
-    imageUrl: 'https://images.unsplash.com/photo-1481437156560-3205f6a55735?w=1600' },
-];
-const BANNER_GRADIENTS = [
-  'from-brand-700 to-brand-500',
-  'from-flash to-brand-600',
-  'from-accent-600 to-accent-400',
+    imageUrl:
+      'https://images.unsplash.com/photo-1481437156560-3205f6a55735?w=1600&q=70&auto=format&fit=crop',
+  },
 ];
 
 export default function HomePage() {
   const { t } = useTranslation();
   const categories = useCategories();
-  const [bannerIdx, setBannerIdx] = useState(0);
   const [banners, setBanners] = useState(FALLBACK_BANNERS);
   const [flash, setFlash] = useState([]);
   const [trending, setTrending] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  useDocumentTitle(
+    null,
+    'WeyniShop — Ethiopia\'s cash-on-delivery marketplace. Shop local, pay on delivery, fast nationwide shipping.'
+  );
 
   // Load banners (admin-managed) — fall back to default on empty/error
   useEffect(() => {
@@ -36,13 +42,6 @@ export default function HomePage() {
       .catch(() => {});
     return () => { on = false; };
   }, []);
-
-  // Auto-rotate banner every 5s
-  useEffect(() => {
-    if (banners.length <= 1) return;
-    const id = setInterval(() => setBannerIdx((i) => (i + 1) % banners.length), 5000);
-    return () => clearInterval(id);
-  }, [banners.length]);
 
   useEffect(() => {
     let on = true;
@@ -65,50 +64,9 @@ export default function HomePage() {
 
   return (
     <div className="max-w-page mx-auto px-3 md:px-4 py-4 md:py-6 space-y-8">
-      {/* Banner carousel — admin-managed via /admin/banners */}
-      <section className="relative rounded-2xl overflow-hidden h-44 md:h-72">
-        {banners.map((b, i) => {
-          const grad = BANNER_GRADIENTS[i % BANNER_GRADIENTS.length];
-          const inner = (
-            <div className={`absolute inset-0 bg-gradient-to-br ${grad}`}>
-              {b.imageUrl && <img src={b.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60" />}
-              {(b.title || b.subtitle) && (
-                <div className="relative h-full flex flex-col justify-center px-6 md:px-12 text-white max-w-xl">
-                  {b.title && <h1 className="text-2xl md:text-4xl font-extrabold drop-shadow font-localized">{b.title}</h1>}
-                  {b.subtitle && <p className="mt-2 text-sm md:text-base opacity-95">{b.subtitle}</p>}
-                </div>
-              )}
-            </div>
-          );
-          const cls = `absolute inset-0 transition-opacity duration-500 ${i === bannerIdx ? 'opacity-100' : 'opacity-0 pointer-events-none'}`;
-          return b.linkUrl ? (
-            <Link key={b._id || i} to={b.linkUrl} className={cls} aria-label={b.title || `Banner ${i + 1}`}>{inner}</Link>
-          ) : (
-            <div key={b._id || i} className={cls}>{inner}</div>
-          );
-        })}
-        {banners.length > 1 && (
-          <>
-            <button
-              onClick={() => setBannerIdx((i) => (i - 1 + banners.length) % banners.length)}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center rounded-full bg-white/30 hover:bg-white/50 text-white z-10"
-              aria-label="Previous"
-            ><ChevronLeft size={20} /></button>
-            <button
-              onClick={() => setBannerIdx((i) => (i + 1) % banners.length)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center rounded-full bg-white/30 hover:bg-white/50 text-white z-10"
-              aria-label="Next"
-            ><ChevronRight size={20} /></button>
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-              {banners.map((_, i) => (
-                <button key={i} onClick={() => setBannerIdx(i)}
-                        className={`h-1.5 rounded-full transition-all ${i === bannerIdx ? 'w-6 bg-white' : 'w-1.5 bg-white/50'}`}
-                        aria-label={`Banner ${i + 1}`} />
-              ))}
-            </div>
-          </>
-        )}
-      </section>
+      {/* Hero carousel — admin-managed via /admin/banners */}
+      <HeroSlider slides={banners} />
+
 
       {/* Categories strip — admin-managed via /admin/categories (emoji + label) */}
       <section>

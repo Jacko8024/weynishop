@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../store/auth.js';
 import MapView, { AddressPicker } from '../../components/MapView.jsx';
+import GeolocationButton from '../../components/GeolocationButton.jsx';
 
 export default function SellerProfile() {
   const { user, refreshMe } = useAuth();
@@ -43,7 +44,12 @@ export default function SellerProfile() {
       <div>
         <h2 className="font-bold mb-2">Pickup location</h2>
         <AddressPicker defaultValue={pin?.address || ''} onChange={(v) => v.lat && setPin(v)} />
-        <div className="text-xs text-slate-500 mt-1">Tap the map to drop a pin.</div>
+        <div className="flex items-center justify-between gap-2 mt-2">
+          <div className="text-xs text-slate-500">Tap the map to drop a pin.</div>
+          <GeolocationButton
+            onLocate={({ lat, lng }) => setPin({ lat, lng, address: `${lat.toFixed(5)}, ${lng.toFixed(5)}` })}
+          />
+        </div>
         <div className="mt-3">
           <MapView
             height={320}

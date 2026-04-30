@@ -35,9 +35,9 @@ router.post(
   protect,
   requireRole('admin'),
   asyncHandler(async (req, res) => {
-    const { title = '', subtitle = '', imageUrl, linkUrl = '', displayOrder = 0, isActive = true } = req.body;
+    const { title = '', subtitle = '', imageUrl, linkUrl = '', ctaLabel = '', displayOrder = 0, isActive = true } = req.body;
     if (!imageUrl) return res.status(400).json({ message: 'imageUrl required' });
-    const b = await Banner.create({ title, subtitle, imageUrl, linkUrl, displayOrder, isActive });
+    const b = await Banner.create({ title, subtitle, imageUrl, linkUrl, ctaLabel, displayOrder, isActive });
     res.status(201).json({ banner: b });
   })
 );
@@ -49,7 +49,7 @@ router.put(
   asyncHandler(async (req, res) => {
     const b = await Banner.findByPk(req.params.id);
     if (!b) return res.status(404).json({ message: 'Banner not found' });
-    ['title', 'subtitle', 'imageUrl', 'linkUrl', 'displayOrder', 'isActive'].forEach((f) => {
+    ['title', 'subtitle', 'imageUrl', 'linkUrl', 'ctaLabel', 'displayOrder', 'isActive'].forEach((f) => {
       if (req.body[f] !== undefined) b[f] = req.body[f];
     });
     await b.save();
