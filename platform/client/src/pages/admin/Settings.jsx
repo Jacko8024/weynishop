@@ -26,8 +26,8 @@ export default function AdminSettings() {
         <div><label className="label">Delivery radius (km)</label>
           <input type="number" className="input" value={s.deliveryRadiusKm} onChange={(e) => set({ deliveryRadiusKm: Number(e.target.value) })} />
         </div>
-        <div><label className="label">Commission %</label>
-          <input type="number" className="input" value={s.commissionPercent} onChange={(e) => set({ commissionPercent: Number(e.target.value) })} />
+        <div className="text-xs p-3 rounded-lg bg-slate-50 border border-slate-200" style={{ color: 'var(--color-muted)' }}>
+          Commission rates are now managed on the dedicated <a className="text-brand-600 font-medium" href="/admin/commission">Commission page</a>.
         </div>
         <div><label className="label">Flat delivery fee</label>
           <input type="number" className="input" value={s.flatDeliveryFee} onChange={(e) => set({ flatDeliveryFee: Number(e.target.value) })} />
