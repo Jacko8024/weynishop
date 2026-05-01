@@ -56,12 +56,15 @@ export default function AdminCommission() {
   const loadAll = async (p = 1) => {
     const params = { page: p, limit, ...filters };
     Object.keys(params).forEach((k) => params[k] === '' && delete params[k]);
-    const [s, m, t, b, st] = await Promise.all([
+    const [s, m, t, b, st, plat] = await Promise.all([
       api.get('/admin/commission/summary'),
       api.get('/admin/commission/monthly'),
       api.get('/admin/commission/transactions', { params }),
       api.get('/admin/commission/by-seller'),
       api.get('/admin/commission/settings'),
+      // Fallback source for commissionPercent on older server deploys that
+      // don't yet expose it on the commission settings route.
+      api.get('/admin/settings').catch(() => ({ data: { settings: {} } })),
     ]);
     setSummary(s.data);
     setMonths(m.data.months);
@@ -69,7 +72,10 @@ export default function AdminCommission() {
     setTotal(t.data.total);
     setPage(t.data.page);
     setBySeller(b.data.sellers);
-    setSettings(st.data);
+    setSettings({
+      ...st.data,
+      commissionPercent: st.data?.commissionPercent ?? Number(plat.data?.settings?.commissionPercent) ?? 0,
+    });
     setSelected(new Set());
   };
 
@@ -139,8 +145,19 @@ export default function AdminCommission() {
   const saveSettings = async () => {
     setSavingSettings(true);
     try {
+      // Save listing-fee fields and (on new servers) commissionPercent via
+      // the dedicated commission endpoint…
       const { data } = await api.patch('/admin/commission/settings', settings);
-      setSettings(data);
+      // …and also persist commissionPercent through the legacy platform
+      // settings endpoint as a belt-and-suspenders fallback for older
+      // deployments that don't yet accept it on the commission route.
+      try {
+        await api.put('/admin/settings', { commissionPercent: Number(settings.commissionPercent) || 0 });
+      } catch { /* fallback save is best-effort */ }
+      // Merge so any field absent from the response keeps the value the
+      // admin just entered (avoids the "save resets to 0" symptom when the
+      // server hasn't redeployed yet).
+      setSettings((prev) => ({ ...prev, ...data, commissionPercent: data?.commissionPercent ?? (Number(settings.commissionPercent) || 0) }));
       toast.success('Commission settings saved');
     } catch { toast.error('Failed to save'); }
     finally { setSavingSettings(false); }
