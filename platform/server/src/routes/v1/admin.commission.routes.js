@@ -235,6 +235,16 @@ router.patch(
     }
     if (commissionCurrency) s.commissionCurrency = String(commissionCurrency).slice(0, 8);
     await s.save();
+
+    // If the sale commission % changed, immediately re-scan past delivered
+    // orders so the admin can see ledger rows without clicking Recompute.
+    // chargeSaleCommission is idempotent so this is safe.
+    if (commissionPercent !== undefined) {
+      backfillDeliveredCommissions().catch((err) =>
+        console.error('[commission] auto-backfill after settings save failed:', err.message)
+      );
+    }
+
     res.json({
       listingCommissionType: s.listingCommissionType,
       listingCommissionValue: Number(s.listingCommissionValue),

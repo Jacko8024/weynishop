@@ -6,7 +6,7 @@ export const Settings = sequelize.define(
   {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     deliveryRadiusKm: { type: DataTypes.INTEGER, defaultValue: 10 },
-    commissionPercent: { type: DataTypes.INTEGER, defaultValue: 0 },
+    commissionPercent: { type: DataTypes.DECIMAL(6, 2), defaultValue: 0 },
     flatDeliveryFee: { type: DataTypes.DECIMAL(12, 2), defaultValue: 50 },
 
     // Per-listing commission charged to sellers when they publish a product.
