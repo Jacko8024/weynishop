@@ -243,6 +243,13 @@ export default function AdminCommission() {
               <option value="pending">Pending</option>
               <option value="paid">Paid</option>
             </select>
+            <select className="input w-40" value={filters.type}
+                    onChange={(e) => setFilters({ ...filters, type: e.target.value })}>
+              <option value="">All types</option>
+              <option value="listing_fee">Listing fee</option>
+              <option value="sale_commission">Sale commission</option>
+              <option value="adjustment">Adjustment</option>
+            </select>
             <input type="date" className="input w-40" value={filters.from}
                    onChange={(e) => setFilters({ ...filters, from: e.target.value })} />
             <input type="date" className="input w-40" value={filters.to}

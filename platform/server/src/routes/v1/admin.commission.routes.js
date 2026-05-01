@@ -86,9 +86,10 @@ router.get(
   asyncHandler(async (req, res) => {
     const page = Math.max(1, Number(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
-    const { status, sellerId, from, to, q } = req.query;
+    const { status, type, sellerId, from, to, q } = req.query;
     const where = {};
     if (status && ['pending', 'paid'].includes(status)) where.status = status;
+    if (type && ['listing_fee', 'sale_commission', 'adjustment'].includes(type)) where.type = type;
     if (sellerId) where.sellerId = sellerId;
     if (from || to) {
       where.createdAt = {};
