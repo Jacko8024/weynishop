@@ -6,9 +6,10 @@ import { Server as SocketServer } from 'socket.io';
 
 import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
-import { sequelize, Settings, CommissionLedger, User, Product, Banner, Category, ContactInquiry } from './models/index.js';
+import { sequelize, Settings, CommissionLedger, DeliveryEarning, SellerEarning, OrderItem, User, Product, Banner, Category, ContactInquiry } from './models/index.js';
 import { errorHandler, notFound } from './middleware/error.js';
 import { backfillDeliveredCommissions } from './services/commission.service.js';
+import { backfillWalletsForDelivered } from './services/wallet.service.js';
 
 import authRoutes from './routes/v1/auth.routes.js';
 import userRoutes from './routes/v1/user.routes.js';
@@ -112,6 +113,9 @@ const start = async () => {
   await safeAlter('Settings',         Settings);
   await safeAlter('CommissionLedger', CommissionLedger);
   await safeAlter('Product',          Product);         // adds basePrice + commissionPercent
+  await safeAlter('OrderItem',        OrderItem);       // adds basePriceSnapshot + commissionPercentSnapshot + commissionAmountSnapshot
+  await safeAlter('DeliveryEarning',  DeliveryEarning); // courier wallet
+  await safeAlter('SellerEarning',    SellerEarning);   // seller wallet
   await safeAlter('Banner',           Banner);
   await safeAlter('Category',         Category);
   await safeAlter('ContactInquiry',   ContactInquiry);
@@ -136,6 +140,13 @@ const start = async () => {
     await backfillDeliveredCommissions();
   } catch (e) {
     console.warn('[migrate] commission backfill skipped:', e.message);
+  }
+
+  // Backfill seller / courier wallets for past delivered orders.
+  try {
+    await backfillWalletsForDelivered();
+  } catch (e) {
+    console.warn('[migrate] wallet backfill skipped:', e.message);
   }
 
   server.listen(env.PORT, () => {

@@ -4,7 +4,7 @@ import { Op, literal } from 'sequelize';
 import { sequelize, Order, OrderItem, OrderStage, Product, User, Settings, STAGES } from '../../models/index.js';
 import { protect, requireRole } from '../../middleware/auth.js';
 import { broadcastStage } from '../../sockets/index.js';
-import { chargeSaleCommission } from '../../services/commission.service.js';
+import { creditOnDelivered, reverseOnCancel } from '../../services/wallet.service.js';
 
 const router = Router();
 
@@ -39,12 +39,12 @@ const advanceStage = async (order, target, io) => {
   const stages = await OrderStage.findAll({ where: { orderId: order.id }, order: [['at', 'ASC']] });
   broadcastStage(io, order, stages);
 
-  // When the order is paid (cash collected on delivery), record the
-  // platform's sale commission. Idempotent — safe even if this runs twice.
-  // Fire-and-forget: a commission failure must not break the stage transition.
+  // Centralized financial trigger: on delivered_paid, credit commission to
+  // admin, net earnings to seller, delivery fee to courier. All idempotent.
+  // Fire-and-forget — wallet failures must never block a stage transition.
   if (target === 'delivered_paid') {
-    chargeSaleCommission(order).catch((err) =>
-      console.error('[commission] failed to record sale commission for order', order.id, err)
+    creditOnDelivered(order).catch((err) =>
+      console.error('[wallet] failed to credit on delivered for order', order.id, err)
     );
   }
   return order;
@@ -117,15 +117,36 @@ router.post(
           { transaction: t }
         );
 
+        // Capture immutable snapshots of price / commission so we can
+        // reconstruct the seller's net earnings exactly, even if the
+        // product or platform settings change later.
+        const platformPct = Number(settings.commissionPercent) || 0;
         await OrderItem.bulkCreate(
-          group.map(({ p, qty }) => ({
-            orderId: order.id,
-            productId: p.id,
-            name: p.name,
-            price: p.price,
-            qty,
-            image: p.image || '',
-          })),
+          group.map(({ p, qty }) => {
+            const unitPrice = Number(p.price) || 0;
+            const baseUnit = Number(p.basePrice) || 0;
+            const productPct = Number(p.commissionPercent);
+            const pct = Number.isFinite(productPct) && productPct >= 0 ? productPct : platformPct;
+            let commissionAmount;
+            if (baseUnit > 0 && unitPrice > baseUnit) {
+              commissionAmount = Math.round((unitPrice - baseUnit) * qty * 100) / 100;
+            } else if (pct > 0) {
+              commissionAmount = Math.round(((unitPrice * qty * pct) / 100) * 100) / 100;
+            } else {
+              commissionAmount = 0;
+            }
+            return {
+              orderId: order.id,
+              productId: p.id,
+              name: p.name,
+              price: p.price,
+              qty,
+              image: p.image || '',
+              basePriceSnapshot: baseUnit > 0 ? baseUnit : unitPrice,
+              commissionPercentSnapshot: pct,
+              commissionAmountSnapshot: commissionAmount,
+            };
+          }),
           { transaction: t }
         );
         await OrderStage.create({ orderId: order.id, stage: 'placed' }, { transaction: t });
@@ -299,6 +320,13 @@ router.post(
         );
       }
     });
+
+    // Reverse any wallet credits that may already exist for this order
+    // (defensive — cancel is only allowed on early stages where credits
+    // shouldn't exist yet, but the centralized service must own this rule).
+    reverseOnCancel(order, req.body?.reason || 'order_cancelled').catch((err) =>
+      console.error('[wallet] reversal on cancel failed for order', order.id, err)
+    );
 
     const io = req.app.locals.io;
     io.to(`order:${order.id}`).emit('order:cancelled', { orderId: String(order.id) });

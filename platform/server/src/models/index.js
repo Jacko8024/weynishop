@@ -12,6 +12,8 @@ import { Review } from './Review.js';
 import { ProductQuestion } from './ProductQuestion.js';
 import { SellerFollow } from './SellerFollow.js';
 import { CommissionLedger } from './CommissionLedger.js';
+import { DeliveryEarning } from './DeliveryEarning.js';
+import { SellerEarning } from './SellerEarning.js';
 import { Banner } from './Banner.js';
 import { Category } from './Category.js';
 import { ContactInquiry } from './ContactInquiry.js';
@@ -57,7 +59,18 @@ SellerFollow.belongsTo(User, { as: 'seller', foreignKey: 'sellerId' });
 // Commission ledger associations
 CommissionLedger.belongsTo(User, { as: 'seller', foreignKey: 'sellerId' });
 CommissionLedger.belongsTo(Product, { as: 'product', foreignKey: 'productId' });
+CommissionLedger.belongsTo(Order, { as: 'order', foreignKey: 'orderId' });
 User.hasMany(CommissionLedger, { foreignKey: 'sellerId' });
+
+// Delivery earnings (courier wallet)
+DeliveryEarning.belongsTo(User, { as: 'deliveryPerson', foreignKey: 'deliveryPersonId' });
+DeliveryEarning.belongsTo(Order, { as: 'order', foreignKey: 'orderId' });
+User.hasMany(DeliveryEarning, { foreignKey: 'deliveryPersonId' });
+
+// Seller earnings (seller wallet, net of commission)
+SellerEarning.belongsTo(User, { as: 'seller', foreignKey: 'sellerId' });
+SellerEarning.belongsTo(Order, { as: 'order', foreignKey: 'orderId' });
+User.hasMany(SellerEarning, { foreignKey: 'sellerId' });
 
 export {
   sequelize,
@@ -74,6 +87,8 @@ export {
   ProductQuestion,
   SellerFollow,
   CommissionLedger,
+  DeliveryEarning,
+  SellerEarning,
   Banner,
   Category,
   ContactInquiry,

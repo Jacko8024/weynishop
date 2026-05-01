@@ -40,6 +40,7 @@ import DeliveryLayout from './pages/delivery/Layout.jsx';
 import DeliveryAvailable from './pages/delivery/Available.jsx';
 import DeliveryActive from './pages/delivery/Active.jsx';
 import DeliveryHistory from './pages/delivery/History.jsx';
+import DeliveryEarnings from './pages/delivery/Earnings.jsx';
 
 // Admin
 import AdminLayout from './pages/admin/Layout.jsx';
@@ -107,6 +108,7 @@ export default function App() {
         <Route index element={<DeliveryAvailable />} />
         <Route path="active" element={<DeliveryActive />} />
         <Route path="history" element={<DeliveryHistory />} />
+        <Route path="earnings" element={<DeliveryEarnings />} />
       </Route>
 
       {/* ADMIN */}

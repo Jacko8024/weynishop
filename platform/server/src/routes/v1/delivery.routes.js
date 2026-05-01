@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
-import { Op } from 'sequelize';
-import { Order, User, OrderItem, OrderStage, DeliveryAssignment } from '../../models/index.js';
+import { Op, fn, col } from 'sequelize';
+import { Order, User, OrderItem, OrderStage, DeliveryAssignment, DeliveryEarning } from '../../models/index.js';
 import { protect, requireRole } from '../../middleware/auth.js';
 import { broadcastStage } from '../../sockets/index.js';
 
@@ -53,6 +53,7 @@ router.post(
   })
 );
 
+// Legacy endpoint preserved for back-compat: total cash handled.
 router.get(
   '/earnings',
   protect,
@@ -63,6 +64,69 @@ router.get(
     });
     const totalCash = completed.reduce((s, o) => s + Number(o.total), 0);
     res.json({ deliveriesCompleted: completed.length, totalCashHandled: totalCash });
+  })
+);
+
+// Wallet summary — total / month / today plus the most recent ledger entries.
+router.get(
+  '/wallet',
+  protect,
+  requireRole('delivery'),
+  asyncHandler(async (req, res) => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const sum = (where) =>
+      DeliveryEarning.findOne({
+        where: { deliveryPersonId: req.user.id, ...where },
+        attributes: [[fn('COALESCE', fn('SUM', col('amount')), 0), 'sum']],
+        raw: true,
+      });
+
+    const [allRow, monthRow, todayRow, count] = await Promise.all([
+      sum({}),
+      sum({ createdAt: { [Op.gte]: startOfMonth } }),
+      sum({ createdAt: { [Op.gte]: startOfDay } }),
+      DeliveryEarning.count({
+        where: { deliveryPersonId: req.user.id, type: 'delivery_fee' },
+      }),
+    ]);
+
+    res.json({
+      total: Number(allRow?.sum || 0),
+      thisMonth: Number(monthRow?.sum || 0),
+      today: Number(todayRow?.sum || 0),
+      deliveriesCount: count,
+    });
+  })
+);
+
+// Paginated ledger of earnings (most recent first) including the matching
+// order so the UI can show address & date delivered.
+router.get(
+  '/wallet/transactions',
+  protect,
+  requireRole('delivery'),
+  asyncHandler(async (req, res) => {
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
+
+    const { rows, count } = await DeliveryEarning.findAndCountAll({
+      where: { deliveryPersonId: req.user.id },
+      include: [
+        {
+          model: Order,
+          as: 'order',
+          attributes: ['id', 'deliveryAddress', 'total', 'currentStage', 'updatedAt'],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+      offset: (page - 1) * limit,
+      limit,
+    });
+
+    res.json({ items: rows, total: count, page, limit });
   })
 );
 

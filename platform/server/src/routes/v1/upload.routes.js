@@ -62,6 +62,26 @@ router.post(
   })
 );
 
+// POST /api/v1/uploads/avatars — single profile photo, 400x400 cover-crop.
+// Public (no auth) so it can be called from the signup page before account
+// creation. Files are stored in the products bucket under `avatars/` to
+// avoid needing a separate bucket configuration.
+router.post(
+  '/avatars',
+  upload.single('image'),
+  asyncHandler(async (req, res) => {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+    const url = await processAndStore({
+      buffer: req.file.buffer,
+      width: 400,
+      height: 400,
+      bucket: env.SUPABASE_BUCKET_PRODUCTS,
+      prefix: 'avatars/',
+    });
+    res.status(201).json({ url });
+  })
+);
+
 // POST /api/v1/uploads/banners — single banner image, 1600x600 cover-crop
 router.post(
   '/banners',

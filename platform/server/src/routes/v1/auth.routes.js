@@ -22,7 +22,7 @@ const userPayload = (u) => ({
 router.post(
   '/register',
   asyncHandler(async (req, res) => {
-    const { name, email, password, role, phone, shopName } = req.body;
+    const { name, email, password, role, phone, shopName, photoUrl } = req.body;
     if (!name || !email || !password || !role) {
       return res.status(400).json({ message: 'name, email, password, role required' });
     }
@@ -38,6 +38,7 @@ router.post(
       role,
       phone: phone || '',
       shopName: role === 'seller' ? shopName || '' : '',
+      photoUrl: typeof photoUrl === 'string' && /^https?:\/\//.test(photoUrl) ? photoUrl : '',
       status: role === 'seller' || role === 'delivery' ? 'pending' : 'active',
     });
     const token = signToken(user);

@@ -185,12 +185,27 @@ export default function AdminCommission() {
         </button>
       </div>
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Stat label="Total earned (paid)" value={`${fmt(summary.totalEarned)} ETB`} />
-        <Stat label="This month" value={`${fmt(summary.thisMonth)} ETB`} />
-        <Stat label="Pending" value={`${fmt(summary.pending)} ETB`} highlight={summary.pending > 0} />
-        <Stat label="Products listed" value={summary.productsListed} />
+      {/* Wallet summary — admin commission wallet */}
+      <div className="card p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold">Commission wallet</h2>
+          <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+            Auto-credited on every delivery
+          </span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Stat label="Today" value={`${fmt(summary.today || 0)} ETB`} />
+          <Stat label="This month" value={`${fmt(summary.thisMonth)} ETB`} />
+          <Stat label="All time" value={`${fmt(summary.allTime || summary.totalEarned)} ETB`} />
+          <Stat label="Pending payout" value={`${fmt(summary.pending)} ETB`} highlight={summary.pending > 0} />
+        </div>
+        {summary.saleCommission && (
+          <div className="grid grid-cols-3 gap-3 mt-3 text-xs" style={{ color: 'var(--color-muted)' }}>
+            <div>Sale commissions today: <strong style={{ color: 'var(--color-text)' }}>{fmt(summary.saleCommission.today)} ETB</strong></div>
+            <div>Sale commissions this month: <strong style={{ color: 'var(--color-text)' }}>{fmt(summary.saleCommission.thisMonth)} ETB</strong></div>
+            <div>Sale commissions all time: <strong style={{ color: 'var(--color-text)' }}>{fmt(summary.saleCommission.allTime)} ETB</strong></div>
+          </div>
+        )}
       </div>
 
       {/* Settings */}

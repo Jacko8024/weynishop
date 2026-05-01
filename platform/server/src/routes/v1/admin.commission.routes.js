@@ -16,30 +16,48 @@ router.get(
   asyncHandler(async (_req, res) => {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    const [paidRow, monthRow, pendingRow, productCount] = await Promise.all([
+    const sumWhere = (where) =>
       CommissionLedger.findOne({
-        where: { status: 'paid' },
+        where,
         attributes: [[fn('COALESCE', fn('SUM', col('amount')), 0), 'sum']],
         raw: true,
-      }),
-      CommissionLedger.findOne({
-        where: { createdAt: { [Op.gte]: startOfMonth } },
-        attributes: [[fn('COALESCE', fn('SUM', col('amount')), 0), 'sum']],
-        raw: true,
-      }),
-      CommissionLedger.findOne({
-        where: { status: 'pending' },
-        attributes: [[fn('COALESCE', fn('SUM', col('amount')), 0), 'sum']],
-        raw: true,
-      }),
+      });
+
+    const [
+      paidRow,
+      monthRow,
+      todayRow,
+      allTimeRow,
+      pendingRow,
+      saleAllRow,
+      saleMonthRow,
+      saleTodayRow,
+      productCount,
+    ] = await Promise.all([
+      sumWhere({ status: 'paid' }),
+      sumWhere({ createdAt: { [Op.gte]: startOfMonth } }),
+      sumWhere({ createdAt: { [Op.gte]: startOfDay } }),
+      sumWhere({}),
+      sumWhere({ status: 'pending' }),
+      sumWhere({ type: 'sale_commission' }),
+      sumWhere({ type: 'sale_commission', createdAt: { [Op.gte]: startOfMonth } }),
+      sumWhere({ type: 'sale_commission', createdAt: { [Op.gte]: startOfDay } }),
       Product.count(),
     ]);
 
     res.json({
       totalEarned: Number(paidRow?.sum || 0),
       thisMonth: Number(monthRow?.sum || 0),
+      today: Number(todayRow?.sum || 0),
+      allTime: Number(allTimeRow?.sum || 0),
       pending: Number(pendingRow?.sum || 0),
+      saleCommission: {
+        allTime: Number(saleAllRow?.sum || 0),
+        thisMonth: Number(saleMonthRow?.sum || 0),
+        today: Number(saleTodayRow?.sum || 0),
+      },
       productsListed: productCount,
     });
   })
