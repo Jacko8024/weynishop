@@ -1,0 +1,48 @@
+# Render blueprint for the WeyniShop API.
+# Deploy: https://dashboard.render.com/blueprints → New blueprint → point at this repo.
+# (Or use it as a reference for a manual Web Service setup.)
+services:
+  - type: web
+    name: weynishop-api
+    env: node
+    region: frankfurt          # pick the region closest to your Supabase project
+    plan: free                 # upgrade to "starter" before going live (free tier sleeps after 15 min idle)
+    rootDir: platform/server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: PORT
+        value: 10000           # Render injects $PORT, but pinning is fine
+      # ---- Set these in the Render dashboard (NOT here) ----
+      - key: DATABASE_URL
+        sync: false            # mark as secret, fill in dashboard
+      - key: DB_SSL
+        value: "true"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_BUCKET_PRODUCTS
+        value: product-images
+      - key: SUPABASE_BUCKET_BANNERS
+        value: banner-images
+      - key: JWT_SECRET
+        generateValue: true    # Render generates a strong random secret
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLIENT_URL
+        sync: false            # set to your Vercel URL, e.g. https://weynishop.vercel.app
+      - key: STOREFRONT_URL
+        sync: false
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        value: weynishop
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false

@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /seller
+Disallow: /delivery
+Disallow: /buyer/cart
+Disallow: /buyer/checkout
+Disallow: /buyer/orders
+
+Sitemap: https://weynishop.com/sitemap.xml
