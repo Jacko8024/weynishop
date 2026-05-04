@@ -35,7 +35,7 @@ const app = express();
 const server = http.createServer(app);
 
 // CLIENT_URL may be a single origin or a comma-separated list (e.g.
-// "https://weynishop.vercel.app,http://localhost:5173"). Vercel preview
+// "https://www.weynishoping.com,http://localhost:5173"). Vercel preview
 // deploys also need to be allow-listed via PREVIEW pattern.
 const allowedOrigins = (env.CLIENT_URL || '')
   .split(',')

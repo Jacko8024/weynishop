@@ -55,7 +55,7 @@ Copy from your local `platform/server/.env`. Don't paste real secrets into this 
 | `SUPABASE_BUCKET_BANNERS` | `banner-images` |
 | `JWT_SECRET` | long random string (Render's "Generate" button works) |
 | `JWT_EXPIRES_IN` | `7d` |
-| `CLIENT_URL` | **set after Part 2** — your Vercel URL, e.g. `https://weynishop.vercel.app` (you can also CSV multiple, like `https://weynishop.vercel.app,https://weynishop.com`) |
+| `CLIENT_URL` | **set after Part 2** — your Vercel URL, e.g. `https://www.weynishoping.com` (you can also CSV multiple, like `https://www.weynishoping.com,https://weynishop.com`) |
 | `STOREFRONT_URL` | same as `CLIENT_URL` (used in commission emails / receipts) |
 | `GOOGLE_MAPS_API_KEY` | your Google Maps key |
 | `FIREBASE_PROJECT_ID` | `weynishop` |
@@ -118,7 +118,7 @@ Render will redeploy automatically. After that, the frontend can talk to the bac
 
 ### 5. Whitelist the Vercel domain in Firebase
 Firebase Console → **Authentication → Settings → Authorized domains** → **Add domain**:
-- `<your-app>.vercel.app`
+- `www.weynishoping.com`
 - your custom domain if any
 
 Without this, Google sign-in popups will fail with `auth/unauthorized-domain`.

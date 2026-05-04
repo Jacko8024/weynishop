@@ -35,7 +35,7 @@ services:
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: CLIENT_URL
-        sync: false            # set to your Vercel URL, e.g. https://weynishop.vercel.app
+        sync: false            # set to your Vercel URL, e.g. https://www.weynishoping.com
       - key: STOREFRONT_URL
         sync: false
       - key: GOOGLE_MAPS_API_KEY
