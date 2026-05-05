@@ -1,4 +1,4 @@
-{
+﻿{
   "lang": { "en": "English", "am": "አማርኛ", "or": "Afaan Oromoo", "ti": "ትግርኛ", "so": "Af Soomaali" },
   "nav": {
     "home": "Mana",
@@ -12,7 +12,7 @@
     "account": "Herrega",
     "orders": "Ajajawwan Koo",
     "wishlist": "Kuufannaa",
-    "becomeSeller": "WeyniShop irratti gurguri"
+    "becomeSeller": "WeyniShopping irratti gurguri"
   },
   "product": {
     "sold": "gurguramee",

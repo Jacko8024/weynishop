@@ -1,4 +1,4 @@
-import 'dotenv/config';
+﻿import 'dotenv/config';
 
 // Helper that throws a friendly error if a required Supabase env var is missing.
 const required = (name) => {
@@ -36,7 +36,7 @@ export const env = {
   STOREFRONT_URL: process.env.STOREFRONT_URL || 'http://localhost:5173',
 
   // Firebase Admin (Google sign-in verification). All three required to enable.
-  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || 'weynishop',
+  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || 'weynishopping',
   FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL || '',
   // Service-account PEM (begins with "-----BEGIN PRIVATE KEY-----"). Leave empty
   // to disable Firebase Admin token verification on the server.

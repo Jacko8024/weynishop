@@ -1,4 +1,4 @@
-# Deployment guide
+﻿# Deployment guide
 
 Frontend → **Vercel** (Vite/React static)
 Backend  → **Render** (Express + Socket.IO)
@@ -55,10 +55,10 @@ Copy from your local `platform/server/.env`. Don't paste real secrets into this 
 | `SUPABASE_BUCKET_BANNERS` | `banner-images` |
 | `JWT_SECRET` | long random string (Render's "Generate" button works) |
 | `JWT_EXPIRES_IN` | `7d` |
-| `CLIENT_URL` | **set after Part 2** — your Vercel URL, e.g. `https://www.weynishoping.com` (you can also CSV multiple, like `https://www.weynishoping.com,https://weynishop.com`) |
+| `CLIENT_URL` | **set after Part 2** — your Vercel URL, e.g. `https://www.weynishoping.com` (you can also CSV multiple, like `https://www.weynishoping.com,https://weynishopping.com`) |
 | `STOREFRONT_URL` | same as `CLIENT_URL` (used in commission emails / receipts) |
 | `GOOGLE_MAPS_API_KEY` | your Google Maps key |
-| `FIREBASE_PROJECT_ID` | `weynishop` |
+| `FIREBASE_PROJECT_ID` | `weynishopping` |
 | `FIREBASE_CLIENT_EMAIL` | service-account email |
 | `FIREBASE_PRIVATE_KEY` | full PEM with literal `\n`, wrapped in double-quotes |
 
@@ -71,7 +71,7 @@ Logs should end with:
 Then `https://<your-service>.onrender.com/api/v1/health` returns `{"ok":true,...}`.
 
 ### 6. Note the public URL
-You'll need it in Part 2. Looks like `https://weynishop-api.onrender.com`.
+You'll need it in Part 2. Looks like `https://weynishopping-api.onrender.com`.
 
 ---
 
@@ -91,12 +91,12 @@ You'll need it in Part 2. Looks like `https://weynishop-api.onrender.com`.
 
 | Variable | Value |
 |---|---|
-| `VITE_API_URL` | `https://weynishop-api.onrender.com` (your Render URL — no trailing slash) |
+| `VITE_API_URL` | `https://weynishopping-api.onrender.com` (your Render URL — no trailing slash) |
 | `VITE_GOOGLE_MAPS_API_KEY` | same Google Maps key as backend |
 | `VITE_FIREBASE_API_KEY` | from Firebase Console → Project Settings → Web app config |
-| `VITE_FIREBASE_AUTH_DOMAIN` | `weynishop.firebaseapp.com` |
-| `VITE_FIREBASE_PROJECT_ID` | `weynishop` |
-| `VITE_FIREBASE_STORAGE_BUCKET` | `weynishop.firebasestorage.app` |
+| `VITE_FIREBASE_AUTH_DOMAIN` | `weynishopping.firebaseapp.com` |
+| `VITE_FIREBASE_PROJECT_ID` | `weynishopping` |
+| `VITE_FIREBASE_STORAGE_BUCKET` | `weynishopping.firebasestorage.app` |
 | `VITE_FIREBASE_MESSAGING_SENDER_ID` | from Firebase web app config |
 | `VITE_FIREBASE_APP_ID` | from Firebase web app config |
 | `VITE_FIREBASE_MEASUREMENT_ID` | optional |
@@ -112,7 +112,7 @@ Go back to Render → your API service → **Environment** → set:
 ```
 CLIENT_URL=https://<your-app>.vercel.app
 ```
-(Or CSV multiple: `https://app.vercel.app,https://www.weynishop.com,http://localhost:5173` — localhost is useful for testing the prod backend from your dev frontend.)
+(Or CSV multiple: `https://app.vercel.app,https://www.weynishopping.com,http://localhost:5173` — localhost is useful for testing the prod backend from your dev frontend.)
 
 Render will redeploy automatically. After that, the frontend can talk to the backend without CORS errors.
 

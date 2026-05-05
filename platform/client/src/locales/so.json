@@ -1,4 +1,4 @@
-{
+﻿{
   "lang": { "en": "English", "am": "አማርኛ", "or": "Afaan Oromoo", "ti": "ትግርኛ", "so": "Af Soomaali" },
   "nav": {
     "home": "Bogga Hore",
@@ -12,7 +12,7 @@
     "account": "Akoonka",
     "orders": "Dalbashooyinkayga",
     "wishlist": "Liiska Jeclaanshaha",
-    "becomeSeller": "Ka iibi WeyniShop"
+    "becomeSeller": "Ka iibi WeyniShopping"
   },
   "product": {
     "sold": "la iibiyay",

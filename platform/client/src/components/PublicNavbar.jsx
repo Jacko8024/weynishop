@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -51,7 +51,7 @@ export default function PublicNavbar() {
     >
       <div className="max-w-page mx-auto h-[60px] px-4 flex items-center gap-3">
         {/* Logo */}
-        <Link to="/" className="flex items-center shrink-0" aria-label="WeyniShop home">
+        <Link to="/" className="flex items-center shrink-0" aria-label="WeyniShopping home">
           <Logo iconOnly className="sm:hidden" height={36} />
           <Logo className="hidden sm:block" height={32} />
         </Link>

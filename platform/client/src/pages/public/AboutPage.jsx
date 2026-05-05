@@ -1,11 +1,11 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { Heart, Truck, Users, Sparkles } from 'lucide-react';
 import useDocumentTitle from '../../lib/useDocumentTitle.js';
 
 export default function AboutPage() {
   useDocumentTitle(
     'About us',
-    'Learn about WeyniShop — our mission to bring local Ethiopian sellers, riders and buyers together with simple cash-on-delivery shopping.'
+    'Learn about WeyniShopping — our mission to bring local Ethiopian sellers, riders and buyers together with simple cash-on-delivery shopping.'
   );
 
   const values = [
@@ -22,7 +22,7 @@ export default function AboutPage() {
           Local. Fresh. Delivered.
         </h1>
         <p className="text-base md:text-lg" style={{ color: 'var(--color-muted)' }}>
-          WeyniShop is Ethiopia's neighbourhood marketplace. We connect sellers, riders and buyers
+          WeyniShopping is Ethiopia's neighbourhood marketplace. We connect sellers, riders and buyers
           in a single, simple cash-on-delivery experience — no cards, no foreign wallets,
           no friction.
         </p>
@@ -45,7 +45,7 @@ export default function AboutPage() {
         <div>
           <h2 className="text-2xl font-bold mb-3">Our story</h2>
           <p className="text-sm md:text-base" style={{ color: 'var(--color-muted)' }}>
-            We started WeyniShop because online shopping in Ethiopia shouldn't require a credit
+            We started WeyniShopping because online shopping in Ethiopia shouldn't require a credit
             card or a complicated payment app. Our founders are sellers, buyers and riders
             themselves — we know the streets, the customers, and the trust it takes to leave a
             package at someone's door.

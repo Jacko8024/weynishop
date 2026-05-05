@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Zap } from 'lucide-react';
@@ -12,7 +12,7 @@ import useDocumentTitle from '../../lib/useDocumentTitle.js';
 
 const FALLBACK_BANNERS = [
   {
-    title: 'Welcome to WeyniShop',
+    title: 'Welcome to WeyniShopping',
     subtitle: 'Local. Fresh. Delivered. Pay with cash on delivery.',
     ctaLabel: 'Shop now',
     linkUrl: '/search',
@@ -31,7 +31,7 @@ export default function HomePage() {
 
   useDocumentTitle(
     null,
-    'WeyniShop — Ethiopia\'s cash-on-delivery marketplace. Shop local, pay on delivery, fast nationwide shipping.'
+    'WeyniShopping — Ethiopia\'s cash-on-delivery marketplace. Shop local, pay on delivery, fast nationwide shipping.'
   );
 
   // Load banners (admin-managed) — fall back to default on empty/error

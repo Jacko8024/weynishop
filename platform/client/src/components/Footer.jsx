@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 
 const NAV = [
@@ -38,8 +38,8 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-8">
           <div className="col-span-2">
             <img
-              src="/logo/weynishop-full.png"
-              alt="WeyniShop"
+              src="/logo/weynishopping-full.png"
+              alt="WeyniShopping"
               width="140"
               height="36"
               style={{ height: 36, width: 'auto' }}
@@ -51,7 +51,7 @@ export default function Footer() {
             </p>
             <ul className="mt-4 space-y-2 text-sm" style={{ color: 'var(--color-muted)' }}>
               <li className="flex items-center gap-2">
-                <Mail size={14} /> <a className="hover:underline" href="mailto:hello@weynishop.com">hello@weynishop.com</a>
+                <Mail size={14} /> <a className="hover:underline" href="mailto:hello@weynishopping.com">hello@weynishopping.com</a>
               </li>
               <li className="flex items-center gap-2">
                 <Phone size={14} /> <a className="hover:underline" href="tel:+251911000000">+251 911 000 000</a>
@@ -83,7 +83,7 @@ export default function Footer() {
           className="flex flex-col md:flex-row items-center justify-between gap-4 pt-5 text-xs"
           style={{ color: 'var(--color-muted)', borderTop: '1px solid var(--color-border)' }}
         >
-          <div>© {new Date().getFullYear()} WeyniShop. All rights reserved. · Made in Ethiopia 🇪🇹</div>
+          <div>© {new Date().getFullYear()} WeyniShopping. All rights reserved. · Made in Ethiopia 🇪🇹</div>
           <div className="flex items-center gap-3">
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
                aria-label="Facebook" className="hover:text-brand-700">

@@ -1,4 +1,4 @@
-{
+﻿{
   "lang": { "en": "English", "am": "አማርኛ", "or": "Afaan Oromoo", "ti": "ትግርኛ", "so": "Af Soomaali" },
   "nav": {
     "home": "Home",
@@ -12,7 +12,7 @@
     "account": "Account",
     "orders": "My Orders",
     "wishlist": "Wishlist",
-    "becomeSeller": "Sell on WeyniShop"
+    "becomeSeller": "Sell on WeyniShopping"
   },
   "product": {
     "sold": "sold",

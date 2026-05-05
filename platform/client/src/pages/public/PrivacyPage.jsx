@@ -1,9 +1,9 @@
-import useDocumentTitle from '../../lib/useDocumentTitle.js';
+﻿import useDocumentTitle from '../../lib/useDocumentTitle.js';
 
 export default function PrivacyPage() {
   useDocumentTitle(
     'Privacy Policy',
-    'How WeyniShop collects, uses and protects your personal information.'
+    'How WeyniShopping collects, uses and protects your personal information.'
   );
 
   return (
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
       </Section>
 
       <Section title="8. Children">
-        WeyniShop is not directed to children under 18. We do not knowingly collect data from
+        WeyniShopping is not directed to children under 18. We do not knowingly collect data from
         children. If you believe a child has provided us information, please contact us so we
         can remove it.
       </Section>
@@ -74,7 +74,7 @@ export default function PrivacyPage() {
 
       <Section title="11. Contact">
         Questions about this Privacy Policy:{' '}
-        <a className="text-brand-700 underline" href="mailto:privacy@weynishop.com">privacy@weynishop.com</a>.
+        <a className="text-brand-700 underline" href="mailto:privacy@weynishopping.com">privacy@weynishopping.com</a>.
       </Section>
     </article>
   );

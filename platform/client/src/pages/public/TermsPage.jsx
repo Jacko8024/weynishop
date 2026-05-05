@@ -1,9 +1,9 @@
-import useDocumentTitle from '../../lib/useDocumentTitle.js';
+﻿import useDocumentTitle from '../../lib/useDocumentTitle.js';
 
 export default function TermsPage() {
   useDocumentTitle(
     'Terms & Conditions',
-    'WeyniShop Terms and Conditions — rules and guidelines for using our cash-on-delivery marketplace.'
+    'WeyniShopping Terms and Conditions — rules and guidelines for using our cash-on-delivery marketplace.'
   );
 
   return (
@@ -16,7 +16,7 @@ export default function TermsPage() {
       </header>
 
       <Section title="1. Acceptance of Terms">
-        By accessing or using WeyniShop ("the Platform"), you agree to be bound by these Terms.
+        By accessing or using WeyniShopping ("the Platform"), you agree to be bound by these Terms.
         If you do not agree, please do not use the Platform.
       </Section>
 
@@ -32,7 +32,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="4. Marketplace Role">
-        WeyniShop is a marketplace connecting independent sellers, buyers and delivery riders.
+        WeyniShopping is a marketplace connecting independent sellers, buyers and delivery riders.
         We are not the seller of items listed by third-party sellers; sellers are solely responsible
         for the products they list, including descriptions, pricing, and legal compliance.
       </Section>
@@ -60,7 +60,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="9. Limitation of Liability">
-        WeyniShop is not liable for indirect or consequential damages arising from use of the
+        WeyniShopping is not liable for indirect or consequential damages arising from use of the
         Platform. Our total liability for any claim is limited to the value of the relevant order.
       </Section>
 
@@ -71,7 +71,7 @@ export default function TermsPage() {
 
       <Section title="11. Contact">
         Questions about these Terms can be sent to{' '}
-        <a className="text-brand-700 underline" href="mailto:hello@weynishop.com">hello@weynishop.com</a>.
+        <a className="text-brand-700 underline" href="mailto:hello@weynishopping.com">hello@weynishopping.com</a>.
       </Section>
     </article>
   );

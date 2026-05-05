@@ -1,4 +1,4 @@
-# WeynShop — Multi-Portal Cash-On-Delivery Ecommerce Platform
+﻿# WeynShop — Multi-Portal Cash-On-Delivery Ecommerce Platform
 
 A full-stack platform (Node + React + MySQL) with 4 portals (Buyer, Seller, Delivery, Admin), real-time order tracking via Socket.io, and live GPS via Google Maps. **Cash on delivery only** — no online payments.
 
@@ -22,7 +22,7 @@ platform/
 │   │   ├── utils/
 │   │   ├── seed.js
 │   │   └── server.js
-│   ├── package.json
+│   ├── package.j
 │   └── .env.example
 └── client/                 # React SPA (all 4 portals, role-routed)
     ├── src/
@@ -91,10 +91,10 @@ VITE_GOOGLE_MAPS_API_KEY=your_key_here
 
 | Role     | Email                  | Password           |
 |----------|------------------------|--------------------|
-| Admin    | admin@weynishop.com    | SuperAdmin@2026!   |
-| Seller   | seller@weynishop.com   | WeynSeller#2026    |
-| Buyer    | buyer@weynishop.com    | WeynBuyer$2026     |
-| Delivery | delivery@weynishop.com | WeynDelivery*2026  |
+| Admin    | admin@weynishopping.com    | SuperAdmin@2026!   |
+| Seller   | seller@weynishopping.com   | WeynSeller#2026    |
+| Buyer    | buyer@weynishopping.com    | WeynBuyer$2026     |
+| Delivery | delivery@weynishopping.com | WeynDelivery*2026  |
 
 The login page detects the user's role and routes them to the correct portal.
 

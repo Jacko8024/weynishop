@@ -1,5 +1,5 @@
-/**
- * WeyniShop logo. Two variants:
+﻿/**
+ * WeyniShopping logo. Two variants:
  *  - <Logo />          — full horizontal lockup (icon + wordmark)
  *  - <Logo iconOnly />  — circular icon only (great for tight nav)
  *
@@ -9,8 +9,8 @@ export default function Logo({ iconOnly = false, className = '', height = 32 }) 
   if (iconOnly) {
     return (
       <img
-        src="/logo/weynishop-icon.png"
-        alt="WeyniShop"
+        src="/logo/weynishopping-icon.png"
+        alt="WeyniShopping"
         className={className}
         style={{ height, width: height }}
       />
@@ -18,8 +18,8 @@ export default function Logo({ iconOnly = false, className = '', height = 32 }) 
   }
   return (
     <img
-      src="/logo/weynishop-full.png"
-      alt="WeyniShop"
+      src="/logo/weynishopping-full.png"
+      alt="WeyniShopping"
       className={className}
       style={{ height }}
     />

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { LogOut, ExternalLink, Menu, X } from 'lucide-react';
 import { useAuth } from '../store/auth.js';
@@ -59,9 +59,9 @@ export default function PortalShell({
               <Menu size={22} />
             </button>
             <Link to="." className="flex items-center gap-2 font-bold min-w-0">
-              <img src="/logo/weynishop-icon.png" alt="WeyniShop" className="w-7 h-7 sm:w-8 sm:h-8 shrink-0" />
+              <img src="/logo/weynishopping-icon.png" alt="WeyniShopping" className="w-7 h-7 sm:w-8 sm:h-8 shrink-0" />
               <span className="truncate">
-                <span className="hidden sm:inline">WeyniShop </span>
+                <span className="hidden sm:inline">WeyniShopping </span>
                 <span className="text-xs font-normal text-slate-500">{title}</span>
               </span>
             </Link>
@@ -116,9 +116,9 @@ export default function PortalShell({
           >
             <div className="flex items-center justify-between px-4 h-14 border-b border-slate-200">
               <div className="flex items-center gap-2 font-bold min-w-0">
-                <img src="/logo/weynishop-icon.png" alt="" className="w-7 h-7 shrink-0" />
+                <img src="/logo/weynishopping-icon.png" alt="" className="w-7 h-7 shrink-0" />
                 <span className="truncate">
-                  WeyniShop <span className="text-xs font-normal text-slate-500">{title}</span>
+                  WeyniShopping <span className="text-xs font-normal text-slate-500">{title}</span>
                 </span>
               </div>
               <button

@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { Home, Search } from 'lucide-react';
 import useDocumentTitle from '../../lib/useDocumentTitle.js';
 
 export default function NotFoundPage() {
-  useDocumentTitle('Page not found', 'The page you were looking for does not exist on WeyniShop.');
+  useDocumentTitle('Page not found', 'The page you were looking for does not exist on WeyniShopping.');
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">

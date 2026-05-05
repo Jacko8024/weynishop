@@ -1,9 +1,9 @@
-# Supabase migration guide
+﻿# Supabase migration guide
 
 ## 1. Create the Supabase project
 
 1. https://supabase.com/dashboard → **New project**.
-2. Name: `weynishop` (or whatever); pick a region close to you; set a strong DB password.
+2. Name: `weynishopping` (or whatever); pick a region close to you; set a strong DB password.
 3. Wait for provisioning (~2 min).
 
 ## 2. Get connection credentials

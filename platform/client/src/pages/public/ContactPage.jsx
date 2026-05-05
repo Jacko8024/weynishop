@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../../api/client.js';
@@ -7,7 +7,7 @@ import useDocumentTitle from '../../lib/useDocumentTitle.js';
 export default function ContactPage() {
   useDocumentTitle(
     'Contact us',
-    'Get in touch with WeyniShop support. We answer questions about orders, deliveries, returns and selling on our marketplace.'
+    'Get in touch with WeyniShopping support. We answer questions about orders, deliveries, returns and selling on our marketplace.'
   );
 
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -41,7 +41,7 @@ export default function ContactPage() {
 
       <div className="grid md:grid-cols-3 gap-6">
         <aside className="md:col-span-1 space-y-4">
-          <ContactCard icon={<Mail size={18} />} label="Email" value="hello@weynishop.com" href="mailto:hello@weynishop.com" />
+          <ContactCard icon={<Mail size={18} />} label="Email" value="hello@weynishopping.com" href="mailto:hello@weynishopping.com" />
           <ContactCard icon={<Phone size={18} />} label="Phone" value="+251 911 000 000" href="tel:+251911000000" />
           <ContactCard icon={<MapPin size={18} />} label="Address" value="Addis Ababa, Ethiopia" />
         </aside>

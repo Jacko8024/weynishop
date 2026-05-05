@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+﻿import { useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, ShoppingBag, Store, Truck, Camera, X, CheckCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -148,8 +148,8 @@ export default function Register() {
         className="relative hidden lg:flex flex-col justify-between p-10 overflow-hidden text-white"
         style={{ background: 'linear-gradient(135deg, #FF8A4C 0%, #EC5C2C 50%, #B83E1A 100%)' }}
       >
-        <Link to="/" className="relative z-20 inline-flex items-center gap-2" aria-label="WeyniShop home">
-          <img src="/logo/weynishop-full.png" alt="WeyniShop" style={{ height: 40, filter: 'brightness(0) invert(1)' }} />
+        <Link to="/" className="relative z-20 inline-flex items-center gap-2" aria-label="WeyniShopping home">
+          <img src="/logo/weynishopping-full.png" alt="WeyniShopping" style={{ height: 40, filter: 'brightness(0) invert(1)' }} />
         </Link>
 
         <div className="relative z-20 flex items-end justify-center">
@@ -161,7 +161,7 @@ export default function Register() {
         </div>
 
         <div className="relative z-20 space-y-1 text-sm">
-          <p className="text-white/85 text-base font-medium">Join WeyniShop in under a minute.</p>
+          <p className="text-white/85 text-base font-medium">Join WeyniShopping in under a minute.</p>
           <p className="text-white/65 max-w-md">Buy, sell or deliver in your neighbourhood — your role unlocks the right tools automatically.</p>
         </div>
 
@@ -173,8 +173,8 @@ export default function Register() {
       <div className="flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-xl">
           {/* Mobile logo */}
-          <Link to="/" className="lg:hidden flex items-center justify-center mb-8" aria-label="WeyniShop home">
-            <img src="/logo/weynishop-full.png" alt="WeyniShop" style={{ height: 40 }} />
+          <Link to="/" className="lg:hidden flex items-center justify-center mb-8" aria-label="WeyniShopping home">
+            <img src="/logo/weynishopping-full.png" alt="WeyniShopping" style={{ height: 40 }} />
           </Link>
 
           <div className="text-center mb-6">

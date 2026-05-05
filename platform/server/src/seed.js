@@ -1,13 +1,13 @@
-import 'dotenv/config';
+﻿import 'dotenv/config';
 import { sequelize, User, Product, Settings, Review, Banner, Category } from './models/index.js';
 import { connectDB } from './config/db.js';
 
 const ACCOUNTS = [
-  { role: 'admin', name: 'Platform Admin', email: 'admin@weynishop.com', password: 'SuperAdmin@2026!', status: 'active' },
+  { role: 'admin', name: 'Platform Admin', email: 'admin@weynishopping.com', password: 'SuperAdmin@2026!', status: 'active' },
   {
     role: 'seller',
     name: 'Sample Seller',
-    email: 'seller@weynishop.com',
+    email: 'seller@weynishopping.com',
     password: 'WeynSeller#2026',
     status: 'active',
     verified: true,
@@ -22,7 +22,7 @@ const ACCOUNTS = [
   {
     role: 'buyer',
     name: 'Sample Buyer',
-    email: 'buyer@weynishop.com',
+    email: 'buyer@weynishopping.com',
     password: 'WeynBuyer$2026',
     status: 'active',
     defaultLng: 38.77,
@@ -32,7 +32,7 @@ const ACCOUNTS = [
   {
     role: 'delivery',
     name: 'Sample Delivery',
-    email: 'delivery@weynishop.com',
+    email: 'delivery@weynishopping.com',
     password: 'WeynDelivery*2026',
     status: 'active',
     currentLng: 38.765,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import useDocumentTitle from '../../lib/useDocumentTitle.js';
 
@@ -14,7 +14,7 @@ const FAQ_GROUPS = [
   {
     title: 'Payments',
     items: [
-      { q: 'How do I pay?', a: 'WeyniShop is cash-on-delivery. Pay the rider in cash when your order arrives. We do not accept cards or online wallets.' },
+      { q: 'How do I pay?', a: 'WeyniShopping is cash-on-delivery. Pay the rider in cash when your order arrives. We do not accept cards or online wallets.' },
       { q: 'Do I need to pay anything upfront?', a: 'No. You pay nothing until the package is in your hands.' },
       { q: 'What currency are prices in?', a: 'All prices are in Ethiopian Birr (ETB).' },
     ],
@@ -40,7 +40,7 @@ const FAQ_GROUPS = [
 export default function FAQPage() {
   useDocumentTitle(
     'FAQ',
-    'Frequently asked questions about ordering, payments, delivery and returns on WeyniShop.'
+    'Frequently asked questions about ordering, payments, delivery and returns on WeyniShopping.'
   );
 
   return (
@@ -48,7 +48,7 @@ export default function FAQPage() {
       <header className="text-center mb-10">
         <h1 className="text-3xl md:text-4xl font-extrabold mb-3 font-localized">Help &amp; FAQ</h1>
         <p className="text-base" style={{ color: 'var(--color-muted)' }}>
-          Everything you need to know about shopping on WeyniShop.
+          Everything you need to know about shopping on WeyniShopping.
         </p>
       </header>
 

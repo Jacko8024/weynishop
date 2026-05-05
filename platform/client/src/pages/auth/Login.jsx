@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -43,8 +43,8 @@ export default function Login() {
       {/* Left — animated characters (desktop only) */}
       <div className="relative hidden lg:flex flex-col justify-between p-10 overflow-hidden text-white"
            style={{ background: 'linear-gradient(135deg, #FF8A4C 0%, #EC5C2C 50%, #B83E1A 100%)' }}>
-        <Link to="/" className="relative z-20 inline-flex items-center gap-2" aria-label="WeyniShop home">
-          <img src="/logo/weynishop-full.png" alt="WeyniShop"
+        <Link to="/" className="relative z-20 inline-flex items-center gap-2" aria-label="WeyniShopping home">
+          <img src="/logo/weynishopping-full.png" alt="WeyniShopping"
                style={{ height: 40, filter: 'brightness(0) invert(1)' }} />
         </Link>
 
@@ -71,8 +71,8 @@ export default function Login() {
       <div className="flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <Link to="/" className="lg:hidden flex items-center justify-center mb-10" aria-label="WeyniShop home">
-            <img src="/logo/weynishop-full.png" alt="WeyniShop" style={{ height: 40 }} />
+          <Link to="/" className="lg:hidden flex items-center justify-center mb-10" aria-label="WeyniShopping home">
+            <img src="/logo/weynishopping-full.png" alt="WeyniShopping" style={{ height: 40 }} />
           </Link>
 
           <div className="text-center mb-8">
