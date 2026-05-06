@@ -311,40 +311,53 @@
   <script type="module" src="/src/main.jsx"></script>
 
   <script>
-    // Hide splash once React has mounted (listens for #root to have children)
+    // ── Splash logic ──────────────────────────────────────────────────
+    // Rules:
+    //   1. Always show for at least MIN_MS (4 s) – fast network included.
+    //   2. If the app takes longer, keep showing until React has rendered
+    //      real page content (not just the empty #root shell).
+    //   3. No hard upper-limit timeout – slow networks see the splash
+    //      until the page is genuinely ready.
+    // ──────────────────────────────────────────────────────────────────
     (function () {
-      const splash = document.getElementById('weyn-splash');
+      var splash  = document.getElementById('weyn-splash');
       if (!splash) return;
 
-      // Minimum display time so the animation is seen even on fast connections
-      const MIN_MS = 2200;
-      const start  = Date.now();
+      var MIN_MS   = 4000;          // minimum visible time (ms)
+      var start    = Date.now();
+      var appReady = false;         // true once React has painted real content
+      var timerDone = false;        // true once 4 s have elapsed
 
-      function hideSplash() {
-        const elapsed = Date.now() - start;
-        const wait    = Math.max(0, MIN_MS - elapsed);
+      function tryHide() {
+        // Only hide when BOTH conditions are satisfied
+        if (!appReady || !timerDone) return;
+        splash.classList.add('hide');
         setTimeout(function () {
-          splash.classList.add('hide');
-          // Remove from DOM after transition ends
-          setTimeout(function () { splash.remove(); }, 700);
-        }, wait);
+          if (splash.parentNode) splash.parentNode.removeChild(splash);
+        }, 700);
       }
 
-      // Watch for React rendering into #root
-      const root = document.getElementById('root');
-      const observer = new MutationObserver(function (mutations) {
-        for (var m of mutations) {
-          if (m.addedNodes.length) {
-            observer.disconnect();
-            hideSplash();
-            return;
-          }
+      // ① 4-second minimum timer
+      setTimeout(function () {
+        timerDone = true;
+        tryHide();
+      }, MIN_MS);
+
+      // ② Wait for React to render meaningful content inside #root.
+      //    We watch for a descendant that is NOT just an empty wrapper —
+      //    i.e. an element with visible text or a real child element.
+      var root     = document.getElementById('root');
+      var observer = new MutationObserver(function () {
+        // Consider the app "ready" once #root has at least one child
+        // element that itself has children (a real rendered page).
+        var firstChild = root && root.firstElementChild;
+        if (firstChild && firstChild.children.length > 0) {
+          appReady = true;
+          observer.disconnect();
+          tryHide();
         }
       });
       observer.observe(root, { childList: true, subtree: true });
-
-      // Fallback: hide after 5 s no matter what
-      setTimeout(hideSplash, 5000);
     })();
   </script>
 </body>
