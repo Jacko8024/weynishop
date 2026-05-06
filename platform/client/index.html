@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 
 <head>
@@ -34,11 +34,319 @@
   <!-- Performance: preconnect to common asset hosts -->
   <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
   <link rel="dns-prefetch" href="https://images.unsplash.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Splash Screen ── */
+    #weyn-splash {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(145deg, #1a0a00 0%, #2d1200 40%, #1a0a00 100%);
+      font-family: 'Outfit', sans-serif;
+      overflow: hidden;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    #weyn-splash.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Animated background blobs */
+    .splash-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.25;
+      animation: blobFloat 6s ease-in-out infinite alternate;
+    }
+    .splash-blob-1 {
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, #EC5C2C, #ff8c42);
+      top: -100px; left: -100px;
+      animation-delay: 0s;
+    }
+    .splash-blob-2 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #ff4500, #EC5C2C);
+      bottom: -80px; right: -80px;
+      animation-delay: 2s;
+    }
+    .splash-blob-3 {
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, #ffb347, #EC5C2C);
+      top: 50%; left: 60%;
+      animation-delay: 4s;
+    }
+
+    @keyframes blobFloat {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(30px, 20px) scale(1.1); }
+    }
+
+    /* Floating particles */
+    .splash-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .particle {
+      position: absolute;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: #EC5C2C;
+      opacity: 0;
+      animation: particleRise var(--dur) ease-in infinite;
+      animation-delay: var(--delay);
+      left: var(--x);
+      bottom: -10px;
+    }
+    @keyframes particleRise {
+      0%   { opacity: 0;   transform: translateY(0) scale(0.5); }
+      20%  { opacity: 0.8; }
+      100% { opacity: 0;   transform: translateY(-100vh) scale(1.5); }
+    }
+
+    /* Logo container */
+    .splash-logo-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      animation: splashPop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    /* Outer ring pulse */
+    .logo-ring {
+      position: absolute;
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      border: 2px solid rgba(236, 92, 44, 0.4);
+      animation: ringPulse 2s ease-out infinite;
+    }
+    .logo-ring-2 {
+      width: 170px; height: 170px;
+      border-color: rgba(236, 92, 44, 0.2);
+      animation-delay: 0.5s;
+    }
+    @keyframes ringPulse {
+      0%   { transform: scale(1);   opacity: 1; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+
+    /* Logo image */
+    .splash-logo-img {
+      width: 100px; height: 100px;
+      border-radius: 28px;
+      object-fit: contain;
+      background: rgba(255,255,255,0.05);
+      padding: 12px;
+      box-shadow:
+        0 0 0 1px rgba(236,92,44,0.3),
+        0 20px 60px rgba(236,92,44,0.4),
+        0 4px 20px rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Brand name */
+    .splash-brand {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 0%, #ffcba4 50%, #EC5C2C 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: splashPop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+      margin-bottom: 8px;
+    }
+
+    /* Tagline */
+    .splash-tagline {
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: rgba(255, 200, 160, 0.8);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      animation: splashFadeUp 0.8s ease 0.3s both;
+      margin-bottom: 48px;
+    }
+
+    /* Progress bar */
+    .splash-progress-wrap {
+      width: 220px;
+      height: 3px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 99px;
+      overflow: hidden;
+      animation: splashFadeUp 0.8s ease 0.5s both;
+    }
+    .splash-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #EC5C2C, #ff8c42, #ffb347);
+      border-radius: 99px;
+      animation: progressFill 2.2s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+      box-shadow: 0 0 12px rgba(236,92,44,0.8);
+    }
+    @keyframes progressFill {
+      0%   { width: 0%; }
+      60%  { width: 75%; }
+      100% { width: 100%; }
+    }
+
+    /* Dots loader */
+    .splash-dots {
+      display: flex;
+      gap: 8px;
+      margin-top: 24px;
+      animation: splashFadeUp 0.8s ease 0.6s both;
+    }
+    .splash-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #EC5C2C;
+      animation: dotBounce 1.2s ease-in-out infinite;
+    }
+    .splash-dot:nth-child(1) { animation-delay: 0s; }
+    .splash-dot:nth-child(2) { animation-delay: 0.2s; }
+    .splash-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotBounce {
+      0%, 60%, 100% { transform: translateY(0);    opacity: 0.4; }
+      30%            { transform: translateY(-10px); opacity: 1;   }
+    }
+
+    /* Entry animations */
+    @keyframes splashPop {
+      0%   { opacity: 0; transform: scale(0.7); }
+      100% { opacity: 1; transform: scale(1);   }
+    }
+    @keyframes splashFadeUp {
+      0%   { opacity: 0; transform: translateY(16px); }
+      100% { opacity: 1; transform: translateY(0);    }
+    }
+
+    /* Footer text */
+    .splash-footer {
+      position: absolute;
+      bottom: 28px;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.5px;
+      animation: splashFadeUp 1s ease 0.8s both;
+    }
+  </style>
 </head>
 
 <body class="bg-white">
+
+  <!-- ══════════════════════════════════════
+       SPLASH / LOADING SCREEN
+       Hides automatically once React mounts
+  ══════════════════════════════════════ -->
+  <div id="weyn-splash" role="status" aria-label="Loading WeyniShopping">
+
+    <!-- Animated background blobs -->
+    <div class="splash-blob splash-blob-1"></div>
+    <div class="splash-blob splash-blob-2"></div>
+    <div class="splash-blob splash-blob-3"></div>
+
+    <!-- Floating particles -->
+    <div class="splash-particles">
+      <div class="particle" style="--x:8%;  --dur:4s; --delay:0s;"></div>
+      <div class="particle" style="--x:18%; --dur:5s; --delay:0.5s;"></div>
+      <div class="particle" style="--x:30%; --dur:3.5s; --delay:1s;"></div>
+      <div class="particle" style="--x:45%; --dur:4.5s; --delay:0.2s;"></div>
+      <div class="particle" style="--x:58%; --dur:3.8s; --delay:1.5s;"></div>
+      <div class="particle" style="--x:70%; --dur:5.2s; --delay:0.8s;"></div>
+      <div class="particle" style="--x:82%; --dur:4.2s; --delay:0.3s;"></div>
+      <div class="particle" style="--x:92%; --dur:3.6s; --delay:1.2s;"></div>
+    </div>
+
+    <!-- Logo with rings -->
+    <div class="splash-logo-wrap">
+      <div class="logo-ring"></div>
+      <div class="logo-ring logo-ring-2"></div>
+      <img
+        class="splash-logo-img"
+        src="/logo/weynishopping-icon.png"
+        alt="WeyniShopping Logo"
+        onerror="this.style.display='none'"
+      />
+    </div>
+
+    <!-- Brand name -->
+    <div class="splash-brand">WeyniShopping</div>
+
+    <!-- Tagline -->
+    <div class="splash-tagline">Ethiopia's Marketplace</div>
+
+    <!-- Progress bar -->
+    <div class="splash-progress-wrap">
+      <div class="splash-progress-bar"></div>
+    </div>
+
+    <!-- Bouncing dots -->
+    <div class="splash-dots">
+      <div class="splash-dot"></div>
+      <div class="splash-dot"></div>
+      <div class="splash-dot"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="splash-footer">Shop local · Pay on delivery · Addis Ababa & beyond</div>
+  </div>
+  <!-- ══════════════════════════════════════ -->
+
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+
+  <script>
+    // Hide splash once React has mounted (listens for #root to have children)
+    (function () {
+      const splash = document.getElementById('weyn-splash');
+      if (!splash) return;
+
+      // Minimum display time so the animation is seen even on fast connections
+      const MIN_MS = 2200;
+      const start  = Date.now();
+
+      function hideSplash() {
+        const elapsed = Date.now() - start;
+        const wait    = Math.max(0, MIN_MS - elapsed);
+        setTimeout(function () {
+          splash.classList.add('hide');
+          // Remove from DOM after transition ends
+          setTimeout(function () { splash.remove(); }, 700);
+        }, wait);
+      }
+
+      // Watch for React rendering into #root
+      const root = document.getElementById('root');
+      const observer = new MutationObserver(function (mutations) {
+        for (var m of mutations) {
+          if (m.addedNodes.length) {
+            observer.disconnect();
+            hideSplash();
+            return;
+          }
+        }
+      });
+      observer.observe(root, { childList: true, subtree: true });
+
+      // Fallback: hide after 5 s no matter what
+      setTimeout(hideSplash, 5000);
+    })();
+  </script>
 </body>
 
 </html>
