@@ -34,7 +34,7 @@ export const chargeListingFee = async ({ sellerId, product }) => {
     productId: product.id,
     productName: product.name,
     amount,
-    currency: settings.commissionCurrency || 'ETB',
+    currency: settings.commissionCurrency || 'USD',
     type: 'listing_fee',
     status: 'pending',
   });
@@ -54,7 +54,7 @@ export const chargeSaleCommission = async (order) => {
   if (!order?.id) return [];
   const settings = await Settings.getSingleton();
   const fallbackPct = Number(settings.commissionPercent) || 0;
-  const currency = settings.commissionCurrency || 'ETB';
+  const currency = settings.commissionCurrency || 'USD';
 
   const items = await OrderItem.findAll({ where: { orderId: order.id } });
   if (!items.length) return [];

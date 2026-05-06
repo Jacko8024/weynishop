@@ -16,7 +16,7 @@ export const DeliveryEarning = sequelize.define(
     deliveryPersonId: { type: DataTypes.INTEGER, allowNull: false },
     orderId: { type: DataTypes.INTEGER, allowNull: false },
     amount: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
-    currency: { type: DataTypes.STRING(8), defaultValue: 'ETB' },
+    currency: { type: DataTypes.STRING(8), defaultValue: 'USD' },
     type: {
       type: DataTypes.ENUM('delivery_fee', 'reversal', 'adjustment'),
       defaultValue: 'delivery_fee',

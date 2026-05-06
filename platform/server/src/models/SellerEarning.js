@@ -16,7 +16,7 @@ export const SellerEarning = sequelize.define(
     gross: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
     commission: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
     net: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
-    currency: { type: DataTypes.STRING(8), defaultValue: 'ETB' },
+    currency: { type: DataTypes.STRING(8), defaultValue: 'USD' },
     type: {
       type: DataTypes.ENUM('sale', 'reversal', 'adjustment'),
       defaultValue: 'sale',

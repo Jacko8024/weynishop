@@ -55,7 +55,7 @@ export default function SearchPage() {
   const chips = [];
   if (filters.q) chips.push({ key: 'q', label: `"${filters.q}"` });
   if (filters.category) chips.push({ key: 'category', label: CATEGORIES.find((c) => c.key === filters.category)?.label || filters.category });
-  if (filters.minPrice || filters.maxPrice) chips.push({ key: 'price', label: `${filters.minPrice || 0}–${filters.maxPrice || '∞'} ETB` });
+  if (filters.minPrice || filters.maxPrice) chips.push({ key: 'price', label: `${filters.minPrice || 0}–${filters.maxPrice || '∞'} USD` });
   if (filters.minRating) chips.push({ key: 'minRating', label: `${filters.minRating}★ ${t('filters.andUp')}` });
   if (filters.freeShipping) chips.push({ key: 'freeShipping', label: t('filters.freeShipping') });
   if (filters.verifiedSeller) chips.push({ key: 'verifiedSeller', label: t('filters.verifiedSeller') });

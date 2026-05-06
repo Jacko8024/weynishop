@@ -18,7 +18,7 @@ export const STAGE_LABELS = {
 
 export const stageIndex = (s) => STAGES.indexOf(s);
 
-export const formatMoney = (n) => `ETB ${Number(n || 0).toLocaleString()}`;
+export const formatMoney = (n) => `USD ${Number(n || 0).toLocaleString()}`;
 
 export const haversineKm = (a, b) => {
   if (!a || !b) return null;

@@ -173,7 +173,7 @@ export default function ProductPage() {
           <div className="card p-4">
             <div className="flex items-baseline gap-2 flex-wrap">
               <span className="price-num text-3xl font-extrabold" style={{ color: isFlash ? 'var(--color-flash)' : 'var(--color-brand)' }}>
-                {fmtPrice(price)} ETB
+                {fmtPrice(price)} USD
               </span>
               {(isFlash || qty > 1) && Number(price) !== Number(product.price) && (
                 <span className="price-num text-base line-through" style={{ color: 'var(--color-muted)' }}>
@@ -208,7 +208,7 @@ export default function ProductPage() {
                         <div className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
                           {tier.minQty}+ pcs
                         </div>
-                        <div className="price-num font-semibold text-sm">{fmtPrice(tier.price)} ETB</div>
+                        <div className="price-num font-semibold text-sm">{fmtPrice(tier.price)} USD</div>
                       </div>
                     ))}
                   </div>

@@ -29,7 +29,7 @@ function MiniBarChart({ data }) {
                 background: d.totalAmount > 0 ? 'var(--color-brand)' : 'var(--color-border)',
                 transition: 'height 0.3s',
               }}
-              title={`${monthLabel(d.month)}: ${fmt(d.totalAmount)} ETB`}
+              title={`${monthLabel(d.month)}: ${fmt(d.totalAmount)} USD`}
             />
             <div className="text-[10px]" style={{ color: 'var(--color-muted)' }}>{monthLabel(d.month)}</div>
           </div>
@@ -194,16 +194,16 @@ export default function AdminCommission() {
           </span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Stat label="Today" value={`${fmt(summary.today || 0)} ETB`} />
-          <Stat label="This month" value={`${fmt(summary.thisMonth)} ETB`} />
-          <Stat label="All time" value={`${fmt(summary.allTime || summary.totalEarned)} ETB`} />
-          <Stat label="Pending payout" value={`${fmt(summary.pending)} ETB`} highlight={summary.pending > 0} />
+          <Stat label="Today" value={`${fmt(summary.today || 0)} USD`} />
+          <Stat label="This month" value={`${fmt(summary.thisMonth)} USD`} />
+          <Stat label="All time" value={`${fmt(summary.allTime || summary.totalEarned)} USD`} />
+          <Stat label="Pending payout" value={`${fmt(summary.pending)} USD`} highlight={summary.pending > 0} />
         </div>
         {summary.saleCommission && (
           <div className="grid grid-cols-3 gap-3 mt-3 text-xs" style={{ color: 'var(--color-muted)' }}>
-            <div>Sale commissions today: <strong style={{ color: 'var(--color-text)' }}>{fmt(summary.saleCommission.today)} ETB</strong></div>
-            <div>Sale commissions this month: <strong style={{ color: 'var(--color-text)' }}>{fmt(summary.saleCommission.thisMonth)} ETB</strong></div>
-            <div>Sale commissions all time: <strong style={{ color: 'var(--color-text)' }}>{fmt(summary.saleCommission.allTime)} ETB</strong></div>
+            <div>Sale commissions today: <strong style={{ color: 'var(--color-text)' }}>{fmt(summary.saleCommission.today)} USD</strong></div>
+            <div>Sale commissions this month: <strong style={{ color: 'var(--color-text)' }}>{fmt(summary.saleCommission.thisMonth)} USD</strong></div>
+            <div>Sale commissions all time: <strong style={{ color: 'var(--color-text)' }}>{fmt(summary.saleCommission.allTime)} USD</strong></div>
           </div>
         )}
       </div>
@@ -215,7 +215,7 @@ export default function AdminCommission() {
           <div>
             Listing fee: <strong>{settings?.listingCommissionType === 'percentage'
               ? `${settings?.listingCommissionValue}% of product price`
-              : `${fmt(settings?.listingCommissionValue || 0)} ${settings?.commissionCurrency || 'ETB'} per listing`}</strong>
+              : `${fmt(settings?.listingCommissionValue || 0)} ${settings?.commissionCurrency || 'USD'} per listing`}</strong>
           </div>
           <div>
             Sale commission: <strong>{Number(settings?.commissionPercent || 0)}% of every delivered sale</strong>
@@ -244,7 +244,7 @@ export default function AdminCommission() {
           </div>
           <div>
             <label className="label">Currency</label>
-            <input className="input" value={settings?.commissionCurrency || 'ETB'}
+            <input className="input" value={settings?.commissionCurrency || 'USD'}
                    onChange={(e) => setSettings({ ...settings, commissionCurrency: e.target.value })} />
           </div>
         </div>
@@ -373,9 +373,9 @@ export default function AdminCommission() {
                     <div className="text-xs text-slate-500">{row.seller?.email}</div>
                   </td>
                   <td className="p-3 font-semibold" style={{ color: row.pending > 0 ? 'var(--color-brand)' : 'inherit' }}>
-                    {fmt(row.pending)} ETB
+                    {fmt(row.pending)} USD
                   </td>
-                  <td className="p-3">{fmt(row.paid)} ETB</td>
+                  <td className="p-3">{fmt(row.paid)} USD</td>
                   <td className="p-3">{row.entries}</td>
                   <td className="p-3">{row.lastPaidAt ? new Date(row.lastPaidAt).toLocaleDateString() : '—'}</td>
                   <td className="p-3">

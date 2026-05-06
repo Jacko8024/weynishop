@@ -119,7 +119,7 @@ export default function ProductCard({ product, compact = false }) {
         {/* Price */}
         <div className="flex items-baseline gap-1.5 flex-wrap">
           <span className="price-num text-base font-bold" style={{ color: isFlash ? 'var(--color-flash)' : 'var(--color-brand)' }}>
-            {fmtPrice(isFlash ? flashPrice : product.price)} ETB
+            {fmtPrice(isFlash ? flashPrice : product.price)} USD
           </span>
           {isFlash && (
             <span className="price-num text-xs line-through" style={{ color: 'var(--color-muted)' }}>
@@ -133,7 +133,7 @@ export default function ProductCard({ product, compact = false }) {
           <div className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
             {product.bulkPriceTiers[0].minQty}+ pcs:{' '}
             <span className="price-num font-medium" style={{ color: 'var(--color-text)' }}>
-              {fmtPrice(product.bulkPriceTiers[0].price)} ETB
+              {fmtPrice(product.bulkPriceTiers[0].price)} USD
             </span>
           </div>
         )}

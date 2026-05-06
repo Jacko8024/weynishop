@@ -30,7 +30,7 @@ router.get(
       pendingBalance: Number(pendingRow?.sum || 0),
       paidTotal: Number(paidRow?.sum || 0),
       entries: totalCount,
-      currency: settings.commissionCurrency || 'ETB',
+      currency: settings.commissionCurrency || 'USD',
     });
   })
 );
@@ -79,7 +79,7 @@ router.get(
 
     const settings = await Settings.getSingleton();
     res.json({
-      currency: settings.commissionCurrency || 'ETB',
+      currency: settings.commissionCurrency || 'USD',
       total: {
         gross: Number(allRow?.sum_gross || 0),
         commission: Number(allRow?.sum_commission || 0),

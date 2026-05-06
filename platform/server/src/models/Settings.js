@@ -1,4 +1,4 @@
-﻿import { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/db.js';
 
 export const Settings = sequelize.define(
@@ -13,7 +13,7 @@ export const Settings = sequelize.define(
     // Type 'fixed' = flat ETB per listing, 'percentage' = % of product price.
     listingCommissionType: { type: DataTypes.ENUM('fixed', 'percentage'), defaultValue: 'fixed' },
     listingCommissionValue: { type: DataTypes.DECIMAL(12, 2), defaultValue: 0 },
-    commissionCurrency: { type: DataTypes.STRING(8), defaultValue: 'ETB' },
+    commissionCurrency: { type: DataTypes.STRING(8), defaultValue: 'USD' },
     notificationTemplates: {
       type: DataTypes.JSON,
       defaultValue: {

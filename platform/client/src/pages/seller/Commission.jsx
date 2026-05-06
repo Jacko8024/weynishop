@@ -31,7 +31,7 @@ export default function SellerCommission() {
     load(1).catch(() => {});
   }, []);
 
-  const currency = summary?.currency || earnings?.currency || 'ETB';
+  const currency = summary?.currency || earnings?.currency || 'USD';
   const pageCount = Math.max(1, Math.ceil(total / limit));
 
   return (

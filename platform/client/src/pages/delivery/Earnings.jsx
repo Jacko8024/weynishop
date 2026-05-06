@@ -46,9 +46,9 @@ export default function DeliveryEarnings() {
 
       {/* Wallet stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Stat label="Today" value={`${fmt(summary.today)} ETB`} />
-        <Stat label="This month" value={`${fmt(summary.thisMonth)} ETB`} />
-        <Stat label="All time" value={`${fmt(summary.total)} ETB`} highlight />
+        <Stat label="Today" value={`${fmt(summary.today)} USD`} />
+        <Stat label="This month" value={`${fmt(summary.thisMonth)} USD`} />
+        <Stat label="All time" value={`${fmt(summary.total)} USD`} highlight />
         <Stat label="Deliveries" value={summary.deliveriesCount} />
       </div>
 

@@ -78,7 +78,7 @@ export const creditOnDelivered = async (order) => {
   if (!order?.id) return { commission: [], seller: null, delivery: null };
 
   const settings = await Settings.getSingleton();
-  const currency = settings.commissionCurrency || 'ETB';
+  const currency = settings.commissionCurrency || 'USD';
 
   const items = await OrderItem.findAll({ where: { orderId: order.id } });
   if (!items.length) {

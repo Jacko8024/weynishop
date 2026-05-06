@@ -1,4 +1,4 @@
-﻿import { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/db.js';
 
 /**
@@ -16,7 +16,7 @@ export const CommissionLedger = sequelize.define(
     orderId: { type: DataTypes.INTEGER, allowNull: true },
     productName: { type: DataTypes.STRING(200), allowNull: false, defaultValue: '' },
     amount: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
-    currency: { type: DataTypes.STRING(8), defaultValue: 'ETB' },
+    currency: { type: DataTypes.STRING(8), defaultValue: 'USD' },
     type: {
       type: DataTypes.ENUM('listing_fee', 'sale_commission', 'adjustment'),
       defaultValue: 'listing_fee',

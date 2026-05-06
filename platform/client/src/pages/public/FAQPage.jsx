@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import useDocumentTitle from '../../lib/useDocumentTitle.js';
 
@@ -16,7 +16,7 @@ const FAQ_GROUPS = [
     items: [
       { q: 'How do I pay?', a: 'WeyniShopping is cash-on-delivery. Pay the rider in cash when your order arrives. We do not accept cards or online wallets.' },
       { q: 'Do I need to pay anything upfront?', a: 'No. You pay nothing until the package is in your hands.' },
-      { q: 'What currency are prices in?', a: 'All prices are in Ethiopian Birr (ETB).' },
+      { q: 'What currency are prices in?', a: 'All prices are in US Dollars (USD).' },
     ],
   },
   {

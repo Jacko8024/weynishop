@@ -183,7 +183,7 @@ export default function SellerProducts() {
             <div className="rounded-xl p-3 space-y-2" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="label">Product price (ETB)</label>
+                  <label className="label">Product price (USD)</label>
                   <input className="input" type="number" min="0" step="0.01" required
                          value={editing.price}
                          onChange={(e) => setEditing({ ...editing, price: e.target.value })} />
@@ -200,13 +200,13 @@ export default function SellerProducts() {
                 <span style={{ color: 'var(--color-muted)' }}>
                   Commission:{' '}
                   <span className="price-num font-semibold" style={{ color: 'var(--color-text)' }}>
-                    {commissionAmount.toFixed(2)} ETB
+                    {commissionAmount.toFixed(2)} USD
                   </span>
                 </span>
                 <span style={{ color: 'var(--color-muted)' }}>
                   Final price (shown to buyers):{' '}
                   <span className="price-num font-bold" style={{ color: 'var(--color-brand)' }}>
-                    {finalPrice.toFixed(2)} ETB
+                    {finalPrice.toFixed(2)} USD
                   </span>
                 </span>
               </div>
@@ -306,7 +306,7 @@ export default function SellerProducts() {
                 {editing.bulkPriceTiers.map((tier, i) => (
                   <div key={i} className="flex gap-2 items-end">
                     <div className="flex-1"><label className="text-xs">Min qty</label><input className="input" type="number" min="2" value={tier.minQty || ''} onChange={(e) => setTier(i, 'minQty', e.target.value)} /></div>
-                    <div className="flex-1"><label className="text-xs">Price (ETB)</label><input className="input" type="number" min="0" value={tier.price || ''} onChange={(e) => setTier(i, 'price', e.target.value)} /></div>
+                    <div className="flex-1"><label className="text-xs">Price (USD)</label><input className="input" type="number" min="0" value={tier.price || ''} onChange={(e) => setTier(i, 'price', e.target.value)} /></div>
                     <button type="button" onClick={() => removeTier(i)} className="btn-ghost p-2 mb-0.5"><X size={14} /></button>
                   </div>
                 ))}

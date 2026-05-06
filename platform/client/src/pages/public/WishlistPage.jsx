@@ -75,7 +75,7 @@ export default function WishlistPage() {
               <div className="flex-1 min-w-0">
                 <Link to={`/product/${p._id}`} className="font-medium line-clamp-2 hover:underline">{p.name}</Link>
                 <div className="price-num font-bold mt-1" style={{ color: 'var(--color-brand)' }}>
-                  {fmtPrice(p.flashSaleActive ? p.flashSalePrice : p.price)} ETB
+                  {fmtPrice(p.flashSaleActive ? p.flashSalePrice : p.price)} USD
                 </div>
               </div>
               <div className="flex flex-col gap-2">

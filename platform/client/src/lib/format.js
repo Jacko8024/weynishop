@@ -1,4 +1,4 @@
-/** Format a number as ETB price, comma-grouped. */
+/** Format a number as USD price, comma-grouped. */
 export const fmtPrice = (n) => {
   const v = Number(n) || 0;
   return v.toLocaleString(undefined, { maximumFractionDigits: 2 });
