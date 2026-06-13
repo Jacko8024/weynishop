@@ -2,10 +2,10 @@ import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import { fn, col, literal, Op } from 'sequelize';
 import { CommissionLedger, SellerEarning, Order, Settings } from '../../models/index.js';
-import { protect, requireRole } from '../../middleware/auth.js';
+import { protect, requireRole, requireActive } from '../../middleware/auth.js';
 
 const router = Router();
-router.use(protect, requireRole('seller'));
+router.use(protect, requireRole('seller'), requireActive);
 
 // Outstanding balance + summary for the logged-in seller.
 router.get(

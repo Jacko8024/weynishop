@@ -20,7 +20,11 @@ export default function Login() {
     try {
       const user = await login(form.email, form.password);
       toast.success(`Welcome, ${user.name}`);
-      nav(`/${user.role}`, { replace: true });
+      if (user.status === 'pending') {
+        nav('/pending-approval', { replace: true });
+      } else {
+        nav(`/${user.role}`, { replace: true });
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed');
     } finally {
@@ -138,7 +142,11 @@ export default function Login() {
           <GoogleSignInButton
             onSuccess={(user) => {
               toast.success(`Welcome, ${user.name}`);
-              nav(`/${user.role}`, { replace: true });
+              if (user.status === 'pending') {
+                nav('/pending-approval', { replace: true });
+              } else {
+                nav(`/${user.role}`, { replace: true });
+              }
             }}
           />
 

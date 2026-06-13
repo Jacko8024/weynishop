@@ -30,5 +30,9 @@ export const CATEGORIES = [
   { key: 'beauty', label: 'Beauty', icon: '💄' },
   { key: 'sports', label: 'Sports', icon: '⚽' },
   { key: 'kids', label: 'Kids', icon: '🧸' },
+  { key: 'children', label: 'Children', icon: '👶' },
+  { key: 'gifts', label: 'Gifts', icon: '🎀' },
+  { key: 'furniture', label: 'Furniture', icon: '🛋️' },
+  { key: 'crafts', label: 'Crafts', icon: '🎨' },
   { key: 'general', label: 'Other', icon: '🎁' },
 ];

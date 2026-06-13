@@ -9,6 +9,7 @@ import ProductCard from '../../components/ProductCard.jsx';
 import FlashCountdown from '../../components/FlashCountdown.jsx';
 import HeroSlider from '../../components/HeroSlider.jsx';
 import useDocumentTitle from '../../lib/useDocumentTitle.js';
+import JsonLd, { OrganizationSchema, WebSiteSchema } from '../../components/JsonLd.jsx';
 
 const FALLBACK_BANNERS = [
   {
@@ -64,6 +65,8 @@ export default function HomePage() {
 
   return (
     <div className="max-w-page mx-auto px-3 md:px-4 py-4 md:py-6 space-y-8">
+      <JsonLd data={OrganizationSchema} />
+      <JsonLd data={WebSiteSchema} />
       {/* Hero carousel — admin-managed via /admin/banners */}
       <HeroSlider slides={banners} />
 

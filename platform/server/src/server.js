@@ -10,6 +10,8 @@ import { sequelize, Settings, CommissionLedger, DeliveryEarning, SellerEarning, 
 import { errorHandler, notFound } from './middleware/error.js';
 import { backfillDeliveredCommissions } from './services/commission.service.js';
 import { backfillWalletsForDelivered } from './services/wallet.service.js';
+import { VendorProfile } from './models/VendorProfile.js';
+import { DeliveryProfile } from './models/DeliveryProfile.js';
 
 import authRoutes from './routes/v1/auth.routes.js';
 import userRoutes from './routes/v1/user.routes.js';
@@ -28,6 +30,7 @@ import bannerRoutes from './routes/v1/banner.routes.js';
 import categoryRoutes from './routes/v1/category.routes.js';
 import uploadRoutes from './routes/v1/upload.routes.js';
 import contactRoutes from './routes/v1/contact.routes.js';
+import sitemapRoutes from './routes/v1/sitemap.routes.js';
 
 import { registerSocketHandlers } from './sockets/index.js';
 
@@ -88,6 +91,7 @@ app.use('/api/v1/banners', bannerRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/uploads', uploadRoutes);
 app.use('/api/v1/contact', contactRoutes);
+app.use(sitemapRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
@@ -119,6 +123,8 @@ const start = async () => {
   await safeAlter('Banner',           Banner);
   await safeAlter('Category',         Category);
   await safeAlter('ContactInquiry',   ContactInquiry);
+  await safeAlter('VendorProfile',    VendorProfile);
+  await safeAlter('DeliveryProfile',  DeliveryProfile);
 
   // One-time backfill: any pre-existing product rows have basePrice = 0 from
   // the column default. Initialise them to the current price so seller

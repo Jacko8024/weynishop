@@ -22,6 +22,22 @@ const upload = multer({
   },
 });
 
+// Document uploads (onboarding): accepts images + PDF, max 2 MB per file.
+const docUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (/^image\/(jpe?g|png|webp|gif|avif)$/i.test(file.mimetype)) return cb(null, true);
+    if (/^application\/pdf$/.test(file.mimetype)) return cb(null, true);
+    cb(new Error('Only image files (JPG/PNG/WebP) and PDFs are allowed'));
+  },
+});
+
+const storeDoc = async ({ buffer, bucket, prefix }) => {
+  const key = `${prefix}${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return uploadToBucket({ bucket, key, buffer, contentType: 'application/octet-stream' });
+};
+
 const router = Router();
 
 // Cover-crop in memory using sharp, then push the WEBP buffer to Supabase
@@ -96,6 +112,22 @@ router.post(
       height: BANNER_H,
       bucket: env.SUPABASE_BUCKET_BANNERS,
       prefix: '',
+    });
+    res.status(201).json({ url });
+  })
+);
+
+// POST /api/v1/uploads/documents — single doc/image for onboarding, max 2 MB.
+// Public (no auth) so it can be called from signup before the user exists.
+router.post(
+  '/documents',
+  docUpload.single('document'),
+  asyncHandler(async (req, res) => {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+    const url = await storeDoc({
+      buffer: req.file.buffer,
+      bucket: env.SUPABASE_BUCKET_DOCS,
+      prefix: `onboarding/`,
     });
     res.status(201).json({ url });
   })

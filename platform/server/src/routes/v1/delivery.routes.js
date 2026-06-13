@@ -2,7 +2,7 @@ import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import { Op, fn, col } from 'sequelize';
 import { Order, User, OrderItem, OrderStage, DeliveryAssignment, DeliveryEarning } from '../../models/index.js';
-import { protect, requireRole } from '../../middleware/auth.js';
+import { protect, requireRole, requireActive } from '../../middleware/auth.js';
 import { broadcastStage } from '../../sockets/index.js';
 
 const router = Router();
@@ -11,6 +11,7 @@ router.get(
   '/available',
   protect,
   requireRole('delivery'),
+  requireActive,
   asyncHandler(async (_req, res) => {
     const orders = await Order.findAll({
       where: { currentStage: 'ready_for_pickup', deliveryPersonId: null, cancelledAt: null },
@@ -33,6 +34,7 @@ router.post(
   '/:orderId/accept',
   protect,
   requireRole('delivery'),
+  requireActive,
   asyncHandler(async (req, res) => {
     const order = await Order.findByPk(req.params.orderId);
     if (!order) return res.status(404).json({ message: 'Order not found' });
@@ -134,6 +136,7 @@ router.post(
   '/online',
   protect,
   requireRole('delivery'),
+  requireActive,
   asyncHandler(async (req, res) => {
     await User.update({ isOnline: !!req.body.online }, { where: { id: req.user.id } });
     res.json({ ok: true });

@@ -1,5 +1,5 @@
 ﻿import 'dotenv/config';
-import { sequelize, User, Product, Settings, Review, Banner, Category } from './models/index.js';
+import { sequelize, User, Product, Settings, Review, Banner, Category, VendorProfile, DeliveryProfile } from './models/index.js';
 import { connectDB } from './config/db.js';
 
 const ACCOUNTS = [
@@ -139,6 +139,10 @@ const run = async () => {
     { key: 'beauty',      label: 'Beauty',      emoji: '💄', displayOrder: 5 },
     { key: 'sports',      label: 'Sports',      emoji: '⚽', displayOrder: 6 },
     { key: 'kids',        label: 'Kids',        emoji: '🧸', displayOrder: 7 },
+    { key: 'children',    label: 'Children',    emoji: '👶', displayOrder: 8 },
+    { key: 'gifts',       label: 'Gifts',       emoji: '🎀', displayOrder: 9 },
+    { key: 'furniture',   label: 'Furniture',   emoji: '🛋️', displayOrder: 10 },
+    { key: 'crafts',      label: 'Crafts',      emoji: '🎨', displayOrder: 11 },
     { key: 'general',     label: 'Other',       emoji: '🎁', displayOrder: 99 },
   ];
   for (const c of DEFAULT_CATEGORIES) await Category.create(c);

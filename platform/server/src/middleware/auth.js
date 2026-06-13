@@ -17,6 +17,8 @@ export const protect = async (req, res, next) => {
     if (!user) return res.status(401).json({ message: 'User no longer exists' });
     if (user.status === 'suspended')
       return res.status(403).json({ message: 'Account suspended' });
+    if (user.status === 'rejected')
+      return res.status(403).json({ message: 'Account rejected. Contact support.' });
     req.user = user;
     next();
   } catch (err) {
@@ -28,5 +30,13 @@ export const requireRole = (...roles) => (req, res, next) => {
   if (!req.user) return res.status(401).json({ message: 'Not authenticated' });
   if (!roles.includes(req.user.role))
     return res.status(403).json({ message: 'Forbidden: role not allowed' });
+  next();
+};
+
+/** Require the user's account to be 'active' (not pending). */
+export const requireActive = (req, res, next) => {
+  if (!req.user) return res.status(401).json({ message: 'Not authenticated' });
+  if (req.user.status !== 'active')
+    return res.status(403).json({ message: 'Account is not yet active' });
   next();
 };

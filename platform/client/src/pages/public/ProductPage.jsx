@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import JsonLd, { productSchema } from '../../components/JsonLd.jsx';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import {
@@ -12,6 +13,7 @@ import { useWishlist } from '../../store/wishlist.js';
 import { useLoginGate } from '../../store/loginGate.js';
 import { fmtPrice, fmtCompact, effectivePrice } from '../../lib/format.js';
 import { useCategories, findCategory } from '../../lib/categories.js';
+import useDocumentTitle from '../../lib/useDocumentTitle.js';
 import Stars from '../../components/Stars.jsx';
 import FlashCountdown from '../../components/FlashCountdown.jsx';
 import ProductCard from '../../components/ProductCard.jsx';
@@ -29,6 +31,14 @@ export default function ProductPage() {
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  useDocumentTitle(
+    product ? `${product.name} · Weynishop` : null,
+    product
+      ? (product.description || `Shop ${product.name} on Weynishop. Cash on delivery available.`)
+      : undefined,
+    product?.images?.[0] || product?.image || undefined
+  );
 
   const [imgIdx, setImgIdx] = useState(0);
   const [qty, setQty] = useState(1);
@@ -127,6 +137,7 @@ export default function ProductPage() {
 
   return (
     <div className="max-w-page mx-auto px-3 md:px-4 py-4 md:py-6">
+      {product && <JsonLd data={productSchema(product)} />}
       <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
         {/* Gallery */}
         <div>

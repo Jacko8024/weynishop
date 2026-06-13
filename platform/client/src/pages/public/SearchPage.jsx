@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { SlidersHorizontal, X } from 'lucide-react';
 import { api } from '../../api/client.js';
 import { useCategories } from '../../lib/categories.js';
+import useDocumentTitle from '../../lib/useDocumentTitle.js';
 import ProductGrid from '../../components/ProductGrid.jsx';
 
 const SORT_KEYS = ['best', 'priceLow', 'priceHigh', 'mostSold', 'newest', 'topRated'];
@@ -16,9 +17,18 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const searchQuery = params.get('q') || '';
+
+  useDocumentTitle(
+    searchQuery ? `Search results for "${searchQuery}" · Weynishop` : 'Search products · Weynishop',
+    searchQuery
+      ? `Browse search results for "${searchQuery}" on Weynishop. Shop Ethiopian products online with cash on delivery.`
+      : 'Browse all products on Weynishop. Shop clothes, shoes, cosmetics, Ethiopian food and more with cash on delivery.'
+  );
+
   // Local form state synced with URL
   const filters = useMemo(() => ({
-    q: params.get('q') || '',
+    q: searchQuery,
     category: params.get('category') || '',
     minPrice: params.get('minPrice') || '',
     maxPrice: params.get('maxPrice') || '',

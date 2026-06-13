@@ -5,6 +5,7 @@ import PublicShell from './components/PublicShell.jsx';
 
 import Login from './pages/auth/Login.jsx';
 import Register from './pages/auth/Register.jsx';
+import PendingApproval from './pages/auth/PendingApproval.jsx';
 
 // Public storefront (accessible to guests + logged-in users)
 import HomePage from './pages/public/HomePage.jsx';
@@ -52,10 +53,13 @@ import AdminCommission from './pages/admin/Commission.jsx';
 import AdminSettings from './pages/admin/Settings.jsx';
 import AdminBanners from './pages/admin/Banners.jsx';
 import AdminCategories from './pages/admin/Categories.jsx';
+import AdminPendingRequests from './pages/admin/PendingRequests.jsx';
+import AdminProducts from './pages/admin/Products.jsx';
 
 const Protected = ({ role, children }) => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
+  if (user.status === 'pending') return <Navigate to="/pending-approval" replace />;
   if (role && user.role !== role) return <Navigate to={`/${user.role}`} replace />;
   return children;
 };
@@ -84,6 +88,7 @@ export default function App() {
 
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/pending-approval" element={<PendingApproval />} />
 
       {/* BUYER — cart/checkout/orders only */}
       <Route path="/buyer" element={<Protected role="buyer"><BuyerLayout /></Protected>}>
@@ -121,6 +126,8 @@ export default function App() {
         <Route path="commission" element={<AdminCommission />} />
         <Route path="banners" element={<AdminBanners />} />
         <Route path="categories" element={<AdminCategories />} />
+        <Route path="pending" element={<AdminPendingRequests />} />
+        <Route path="products" element={<AdminProducts />} />
       </Route>
 
     </Routes>

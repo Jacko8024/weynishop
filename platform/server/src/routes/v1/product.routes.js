@@ -5,7 +5,7 @@ import { Product } from '../../models/Product.js';
 import { User } from '../../models/User.js';
 import { Settings } from '../../models/Settings.js';
 import { chargeListingFee } from '../../services/commission.service.js';
-import { protect, requireRole } from '../../middleware/auth.js';
+import { protect, requireRole, requireActive } from '../../middleware/auth.js';
 
 // Compute the buyer-facing final price from a seller-entered base price
 // using the platform's current buyer-facing commission % (Settings.commissionPercent).
@@ -140,6 +140,7 @@ router.post(
   '/',
   protect,
   requireRole('seller'),
+  requireActive,
   asyncHandler(async (req, res) => {
     const { name, description, price, stock, category, images,
             flashSaleStart, flashSaleEnd, flashSalePercent,
@@ -188,6 +189,7 @@ router.put(
   '/:id',
   protect,
   requireRole('seller'),
+  requireActive,
   asyncHandler(async (req, res) => {
     const product = await Product.findOne({ where: { id: req.params.id, sellerId: req.user.id } });
     if (!product) return res.status(404).json({ message: 'Product not found' });
@@ -221,6 +223,7 @@ router.delete(
   '/:id',
   protect,
   requireRole('seller'),
+  requireActive,
   asyncHandler(async (req, res) => {
     const n = await Product.destroy({ where: { id: req.params.id, sellerId: req.user.id } });
     if (!n) return res.status(404).json({ message: 'Product not found' });

@@ -14,7 +14,7 @@ export const User = sequelize.define(
     firebaseUid: { type: DataTypes.STRING(128), allowNull: true, unique: true },
     photoUrl: { type: DataTypes.STRING(500), defaultValue: '' },
     role: { type: DataTypes.ENUM('buyer', 'seller', 'delivery', 'admin'), allowNull: false },
-    status: { type: DataTypes.ENUM('pending', 'active', 'suspended'), defaultValue: 'active' },
+    status: { type: DataTypes.ENUM('pending', 'active', 'suspended', 'rejected'), defaultValue: 'active' },
     flagged: { type: DataTypes.BOOLEAN, defaultValue: false },
 
     shopName: { type: DataTypes.STRING(160), defaultValue: '' },

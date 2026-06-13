@@ -17,6 +17,8 @@ import { SellerEarning } from './SellerEarning.js';
 import { Banner } from './Banner.js';
 import { Category } from './Category.js';
 import { ContactInquiry } from './ContactInquiry.js';
+import { VendorProfile } from './VendorProfile.js';
+import { DeliveryProfile } from './DeliveryProfile.js';
 
 // Core associations
 Product.belongsTo(User, { as: 'seller', foreignKey: 'sellerId' });
@@ -72,6 +74,13 @@ SellerEarning.belongsTo(User, { as: 'seller', foreignKey: 'sellerId' });
 SellerEarning.belongsTo(Order, { as: 'order', foreignKey: 'orderId' });
 User.hasMany(SellerEarning, { foreignKey: 'sellerId' });
 
+// Onboarding profile associations
+VendorProfile.belongsTo(User, { as: 'user', foreignKey: 'userId' });
+User.hasOne(VendorProfile, { as: 'vendorProfile', foreignKey: 'userId', onDelete: 'CASCADE' });
+
+DeliveryProfile.belongsTo(User, { as: 'user', foreignKey: 'userId' });
+User.hasOne(DeliveryProfile, { as: 'deliveryProfile', foreignKey: 'userId', onDelete: 'CASCADE' });
+
 export {
   sequelize,
   User,
@@ -92,6 +101,8 @@ export {
   Banner,
   Category,
   ContactInquiry,
+  VendorProfile,
+  DeliveryProfile,
   STAGES,
   STAGE_LABELS,
 };

@@ -28,6 +28,7 @@ export const env = {
   SUPABASE_SERVICE_ROLE_KEY: required('SUPABASE_SERVICE_ROLE_KEY'),
   SUPABASE_BUCKET_PRODUCTS: process.env.SUPABASE_BUCKET_PRODUCTS || 'product-images',
   SUPABASE_BUCKET_BANNERS:  process.env.SUPABASE_BUCKET_BANNERS  || 'banner-images',
+  SUPABASE_BUCKET_DOCS:     process.env.SUPABASE_BUCKET_DOCS     || 'onboarding-docs',
 
   JWT_SECRET: process.env.JWT_SECRET || 'dev-secret-change-me',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',

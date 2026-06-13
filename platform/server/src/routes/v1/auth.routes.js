@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import crypto from 'crypto';
 import asyncHandler from 'express-async-handler';
-import { User } from '../../models/User.js';
+import { User, VendorProfile, DeliveryProfile } from '../../models/index.js';
 import { signToken } from '../../middleware/auth.js';
 import { verifyFirebaseIdToken } from '../../config/firebase.js';
 
@@ -120,6 +120,109 @@ router.post(
 
     const token = signToken(user);
     res.json({ token, user: userPayload(user) });
+  })
+);
+
+/**
+ * Vendor onboarding — creates user + vendor profile in one transaction.
+ * Body includes all vendor fields plus user credentials.
+ */
+router.post(
+  '/vendor-register',
+  asyncHandler(async (req, res) => {
+    const {
+      name, email, password, phone,
+      ownerName, shopName, shopCategory, phoneNumber,
+      tinOrLicenseUrl, shopPhotoUrl,
+      latitude, longitude,
+      bankName, accountNumber, agreedToTerms,
+    } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'name, email, password required' });
+    }
+    if (!agreedToTerms) {
+      return res.status(400).json({ message: 'You must accept the terms and conditions' });
+    }
+
+    const exists = await User.findOne({ where: { email: email.toLowerCase() } });
+    if (exists) return res.status(409).json({ message: 'Email already registered' });
+
+    const user = await User.create({
+      name, email: email.toLowerCase(), password, phone: phone || '',
+      role: 'seller', status: 'pending', shopName: shopName || '',
+    });
+
+    await VendorProfile.create({
+      userId: user.id,
+      ownerName: ownerName || name,
+      shopCategory: shopCategory || 'general',
+      phoneNumber: phoneNumber || phone || '',
+      tinOrLicenseUrl: tinOrLicenseUrl || '',
+      shopPhotoUrl: shopPhotoUrl || '',
+      latitude: latitude != null ? latitude : null,
+      longitude: longitude != null ? longitude : null,
+      bankName: bankName || '',
+      accountNumber: accountNumber || '',
+      agreedToTerms: true,
+    });
+
+    const token = signToken(user);
+    res.status(201).json({
+      token,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, status: user.status },
+    });
+  })
+);
+
+/**
+ * Delivery onboarding — creates user + delivery profile in one transaction.
+ */
+router.post(
+  '/delivery-register',
+  asyncHandler(async (req, res) => {
+    const {
+      name, email, password, phone,
+      fullName, profilePhotoUrl, vehicleType,
+      plateNumber, licenseOrIdUrl,
+      guarantorName, guarantorPhone, guarantorAddress,
+      phoneNumber, agreedToTerms,
+    } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'name, email, password required' });
+    }
+    if (!agreedToTerms) {
+      return res.status(400).json({ message: 'You must accept the terms and conditions' });
+    }
+
+    const exists = await User.findOne({ where: { email: email.toLowerCase() } });
+    if (exists) return res.status(409).json({ message: 'Email already registered' });
+
+    const user = await User.create({
+      name, email: email.toLowerCase(), password, phone: phone || '',
+      role: 'delivery', status: 'pending',
+    });
+
+    await DeliveryProfile.create({
+      userId: user.id,
+      fullName: fullName || name,
+      profilePhotoUrl: profilePhotoUrl || '',
+      vehicleType: vehicleType || 'cycle',
+      plateNumber: plateNumber || '',
+      licenseOrIdUrl: licenseOrIdUrl || '',
+      guarantorName: guarantorName || '',
+      guarantorPhone: guarantorPhone || '',
+      guarantorAddress: guarantorAddress || '',
+      phoneNumber: phoneNumber || phone || '',
+      agreedToTerms: true,
+    });
+
+    const token = signToken(user);
+    res.status(201).json({
+      token,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, status: user.status },
+    });
   })
 );
 

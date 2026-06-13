@@ -6,5 +6,6 @@ Disallow: /delivery
 Disallow: /buyer/cart
 Disallow: /buyer/checkout
 Disallow: /buyer/orders
+Disallow: /pending-approval
 
-Sitemap: https://weynishop.com/sitemap.xml
+Sitemap: https://www.weynishop.com/sitemap.xml

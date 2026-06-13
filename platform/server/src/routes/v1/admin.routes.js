@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import { Op, fn, col } from 'sequelize';
-import { User, Order, Product, Dispute, Settings } from '../../models/index.js';
+import { User, Order, Product, Dispute, Settings, VendorProfile, DeliveryProfile } from '../../models/index.js';
 import { protect, requireRole } from '../../middleware/auth.js';
 
 const router = Router();
@@ -142,6 +142,159 @@ router.get(
       limit: 200,
     });
     res.json({ orders });
+  })
+);
+
+// ── Onboarding / Approval System ──────────────────────────────────────────
+
+/** List pending vendors with their full profile */
+router.get(
+  '/pending/vendors',
+  asyncHandler(async (_req, res) => {
+    const users = await User.findAll({
+      where: { role: 'seller', status: 'pending' },
+      include: [{ model: VendorProfile, as: 'vendorProfile' }],
+      order: [['createdAt', 'DESC']],
+    });
+    res.json({ items: users });
+  })
+);
+
+/** List pending delivery drivers with their full profile */
+router.get(
+  '/pending/delivery',
+  asyncHandler(async (_req, res) => {
+    const users = await User.findAll({
+      where: { role: 'delivery', status: 'pending' },
+      include: [{ model: DeliveryProfile, as: 'deliveryProfile' }],
+      order: [['createdAt', 'DESC']],
+    });
+    res.json({ items: users });
+  })
+);
+
+/** Approve a pending user — sets status to 'active' */
+router.put(
+  '/users/:id/approve',
+  asyncHandler(async (req, res) => {
+    const u = await User.findByPk(req.params.id);
+    if (!u) return res.status(404).json({ message: 'User not found' });
+    if (u.status !== 'pending') return res.status(400).json({ message: 'User is not in pending status' });
+    u.status = 'active';
+    await u.save();
+    res.json({ user: u });
+  })
+);
+
+/** Reject a pending user — sets status to 'rejected' */
+router.put(
+  '/users/:id/reject',
+  asyncHandler(async (req, res) => {
+    const u = await User.findByPk(req.params.id);
+    if (!u) return res.status(404).json({ message: 'User not found' });
+    if (u.status !== 'pending') return res.status(400).json({ message: 'User is not in pending status' });
+    u.status = 'rejected';
+    await u.save();
+    res.json({ user: u });
+  })
+);
+
+// ── Product Management ─────────────────────────────────────────────────────
+
+/** List all products (with filters, including inactive) */
+router.get(
+  '/products',
+  asyncHandler(async (req, res) => {
+    const { q, category, seller, isActive, page = 1, limit = 50 } = req.query;
+    const where = {};
+    if (category) where.category = category;
+    if (seller) where.sellerId = seller;
+    if (isActive === 'true') where.isActive = true;
+    else if (isActive === 'false') where.isActive = false;
+    if (q) where[Op.or] = [{ name: { [Op.iLike]: `%${q}%` } }];
+
+    const offset = (Number(page) - 1) * Number(limit);
+    const { rows, count } = await Product.findAndCountAll({
+      where,
+      include: [{ model: User, as: 'seller', attributes: ['id', 'name', 'shopName'] }],
+      offset,
+      limit: Number(limit),
+      order: [['createdAt', 'DESC']],
+    });
+    res.json({ items: rows, total: count, page: Number(page), limit: Number(limit) });
+  })
+);
+
+/** Create a product on behalf of a seller */
+router.post(
+  '/products',
+  asyncHandler(async (req, res) => {
+    const { sellerId } = req.body;
+    if (!sellerId) return res.status(400).json({ message: 'sellerId is required' });
+    const seller = await User.findByPk(sellerId);
+    if (!seller || seller.role !== 'seller') return res.status(400).json({ message: 'Invalid seller' });
+
+    const settings = await Settings.getSingleton();
+    const pct = Number(settings.commissionPercent) || 0;
+    const basePrice = Number(req.body.price) || 0;
+
+    const product = await Product.create({
+      sellerId: Number(sellerId),
+      name: req.body.name,
+      description: req.body.description || '',
+      basePrice,
+      price: Math.round(basePrice * (1 + pct / 100) * 100) / 100,
+      commissionPercent: pct,
+      stock: Number(req.body.stock) || 0,
+      category: req.body.category || 'general',
+      image: req.body.images?.[0] || '',
+      images: req.body.images || [],
+      isActive: req.body.isActive !== false,
+      freeShipping: !!req.body.freeShipping,
+      flashSaleStart: req.body.flashSaleStart || null,
+      flashSaleEnd: req.body.flashSaleEnd || null,
+      flashSalePercent: req.body.flashSalePercent || null,
+      bulkPriceTiers: req.body.bulkPriceTiers || [],
+    });
+    res.status(201).json({ product });
+  })
+);
+
+/** Update any product */
+router.put(
+  '/products/:id',
+  asyncHandler(async (req, res) => {
+    const product = await Product.findByPk(req.params.id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+
+    const allowed = ['name', 'description', 'stock', 'category', 'images', 'isActive', 'freeShipping',
+                     'flashSaleStart', 'flashSaleEnd', 'flashSalePercent', 'bulkPriceTiers'];
+    for (const field of allowed) {
+      if (req.body[field] !== undefined) product[field] = req.body[field];
+    }
+
+    if (req.body.price !== undefined) {
+      const settings = await Settings.getSingleton();
+      const pct = Number(settings.commissionPercent) || 0;
+      const basePrice = Number(req.body.price) || 0;
+      product.basePrice = basePrice;
+      product.price = Math.round(basePrice * (1 + pct / 100) * 100) / 100;
+      product.commissionPercent = pct;
+    }
+
+    await product.save();
+    res.json({ product });
+  })
+);
+
+/** Delete any product */
+router.delete(
+  '/products/:id',
+  asyncHandler(async (req, res) => {
+    const product = await Product.findByPk(req.params.id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+    await product.destroy();
+    res.json({ message: 'Deleted' });
   })
 );
 
