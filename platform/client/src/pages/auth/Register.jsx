@@ -36,6 +36,48 @@ const SHOP_CATEGORIES = [
   'Sports', 'Kids', 'Children', 'Gifts', 'Furniture', 'Crafts', 'Other',
 ];
 
+const Field = ({ label, type = 'text', value, onChange, onBlur, error, required, placeholder, autoComplete, className = '', onFocus, onMouseLeave }) => (
+  <div className={className}>
+    <label className="label">{label}{required && <span className="text-red-500"> *</span>}</label>
+    <input
+      className={`input h-12 ${error ? 'border-red-300' : ''}`}
+      type={type}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur}
+      onFocus={onFocus}
+      onMouseLeave={onMouseLeave}
+      autoComplete={autoComplete}
+      placeholder={placeholder}
+      required={required}
+    />
+    {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+  </div>
+);
+
+const FileUploadBtn = ({ field, label, url, accept = 'image/*', uploading, docRef, doc2Ref, onUpload, onClear }) => (
+  <div>
+    <label className="label">{label}</label>
+    <input ref={field === 'tinOrLicenseUrl' || field === 'licenseOrIdUrl' ? docRef : field === 'shopPhotoUrl' ? doc2Ref : null} type="file" accept={accept} className="hidden"
+      onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) onUpload(f, field); }}
+    />
+    <button type="button" onClick={() => {
+      const ref = field === 'tinOrLicenseUrl' || field === 'licenseOrIdUrl' ? docRef : doc2Ref;
+      ref.current?.click();
+    }} disabled={uploading[field]} className="input h-12 flex items-center justify-between text-sm cursor-pointer hover:border-brand-400">
+      {uploading[field] ? (
+        <span className="text-slate-400">Uploading…</span>
+      ) : url ? (
+        <span className="text-green-600 truncate">✓ Uploaded</span>
+      ) : (
+        <span className="text-slate-400"><Upload size={14} className="inline mr-1" />Upload</span>
+      )}
+      {url && <button type="button" onClick={(e) => { e.stopPropagation(); onClear(field); }} className="text-red-500 hover:text-red-700"><X size={14} /></button>}
+    </button>
+    {url && <a href={url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-brand-600 hover:underline block mt-0.5">View file</a>}
+  </div>
+);
+
 const ROLE_OPTIONS = [
   { value: 'buyer', title: 'Buyer', desc: 'Shop products and order home delivery.', icon: ShoppingBag },
   { value: 'seller', title: 'Vendor', desc: 'List products and reach more customers.', icon: Store },
@@ -192,46 +234,6 @@ export default function Register() {
     }
   };
 
-  const Field = ({ label, type = 'text', value, onChange, onBlur, error, required, placeholder, autoComplete, className = '' }) => (
-    <div className={className}>
-      <label className="label">{label}{required && <span className="text-red-500"> *</span>}</label>
-      <input
-        className={`input h-12 ${error ? 'border-red-300' : ''}`}
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onBlur={onBlur}
-        autoComplete={autoComplete}
-        placeholder={placeholder}
-        required={required}
-      />
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
-    </div>
-  );
-
-  const FileUploadBtn = ({ field, label, url, accept = 'image/*' }) => (
-    <div>
-      <label className="label">{label}</label>
-      <input ref={field === 'tinOrLicenseUrl' || field === 'licenseOrIdUrl' ? docRef : field === 'shopPhotoUrl' ? doc2Ref : null} type="file" accept={accept} className="hidden"
-        onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) uploadFile(f, field); }}
-      />
-      <button type="button" onClick={() => {
-        const ref = field === 'tinOrLicenseUrl' || field === 'licenseOrIdUrl' ? docRef : doc2Ref;
-        ref.current?.click();
-      }} disabled={uploading[field]} className="input h-12 flex items-center justify-between text-sm cursor-pointer hover:border-brand-400">
-        {uploading[field] ? (
-          <span className="text-slate-400">Uploading…</span>
-        ) : url ? (
-          <span className="text-green-600 truncate">✓ Uploaded</span>
-        ) : (
-          <span className="text-slate-400"><Upload size={14} className="inline mr-1" />Upload</span>
-        )}
-        {url && <button type="button" onClick={(e) => { e.stopPropagation(); set({ [field]: '' }); }} className="text-red-500 hover:text-red-700"><X size={14} /></button>}
-      </button>
-      {url && <a href={url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-brand-600 hover:underline block mt-0.5">View file</a>}
-    </div>
-  );
-
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-white">
       <div className="relative hidden lg:flex flex-col justify-between p-10 overflow-hidden text-white"
@@ -351,8 +353,8 @@ export default function Register() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <FileUploadBtn field="tinOrLicenseUrl" label="Business License / TIN" url={form.tinOrLicenseUrl} />
-                  <FileUploadBtn field="shopPhotoUrl" label="Shop front photo" url={form.shopPhotoUrl} />
+                  <FileUploadBtn field="tinOrLicenseUrl" label="Business License / TIN" url={form.tinOrLicenseUrl} uploading={uploading} docRef={docRef} doc2Ref={doc2Ref} onUpload={uploadFile} onClear={(f) => set({ [f]: '' })} />
+                  <FileUploadBtn field="shopPhotoUrl" label="Shop front photo" url={form.shopPhotoUrl} uploading={uploading} docRef={docRef} doc2Ref={doc2Ref} onUpload={uploadFile} onClear={(f) => set({ [f]: '' })} />
                 </div>
 
                 <div>
@@ -398,7 +400,7 @@ export default function Register() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <FileUploadBtn field="profilePhotoUrl" label="Profile photo" url={form.profilePhotoUrl} />
+                  <FileUploadBtn field="profilePhotoUrl" label="Profile photo" url={form.profilePhotoUrl} uploading={uploading} docRef={docRef} doc2Ref={doc2Ref} onUpload={uploadFile} onClear={(f) => set({ [f]: '' })} />
                   <div>
                     <label className="label">Vehicle type <span className="text-red-500"> *</span></label>
                     <div className="flex gap-2 mt-1">
@@ -419,11 +421,11 @@ export default function Register() {
                     <Field label="Plate number" value={form.plateNumber} onChange={(v) => set({ plateNumber: v })}
                       onBlur={() => touch('plateNumber')} error={touched.plateNumber && errors.plateNumber}
                       placeholder="e.g. AA-12345" required />
-                    <FileUploadBtn field="licenseOrIdUrl" label="Driver's License" url={form.licenseOrIdUrl} />
+                    <FileUploadBtn field="licenseOrIdUrl" label="Driver's License" url={form.licenseOrIdUrl} uploading={uploading} docRef={docRef} doc2Ref={doc2Ref} onUpload={uploadFile} onClear={(f) => set({ [f]: '' })} />
                   </div>
                 )}
                 {!needsPlate && isDelivery && (
-                  <FileUploadBtn field="licenseOrIdUrl" label="National ID" url={form.licenseOrIdUrl} />
+                  <FileUploadBtn field="licenseOrIdUrl" label="National ID" url={form.licenseOrIdUrl} uploading={uploading} docRef={docRef} doc2Ref={doc2Ref} onUpload={uploadFile} onClear={(f) => set({ [f]: '' })} />
                 )}
 
                 <div className="border-t border-slate-200 pt-3">

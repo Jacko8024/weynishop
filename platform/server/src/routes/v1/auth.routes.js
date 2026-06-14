@@ -17,6 +17,7 @@ const userPayload = (u) => ({
   phone: u.phone || '',
   shopName: u.shopName || '',
   photoUrl: u.photoUrl || '',
+  rejectionReason: u.rejectionReason || '',
 });
 
 router.post(

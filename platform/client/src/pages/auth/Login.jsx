@@ -19,12 +19,17 @@ export default function Login() {
     setLoading(true);
     try {
       const user = await login(form.email, form.password);
-      toast.success(`Welcome, ${user.name}`);
-      if (user.status === 'pending') {
-        nav('/pending-approval', { replace: true });
-      } else {
-        nav(`/${user.role}`, { replace: true });
+      if (user.status === 'rejected') {
+        toast.error('Your account was rejected. Contact support for details.');
+        return;
       }
+      if (user.status === 'pending') {
+        toast('Account under review', { icon: '⏳' });
+        nav('/pending-approval', { replace: true });
+        return;
+      }
+      toast.success(`Welcome, ${user.name}`);
+      nav(`/${user.role}`, { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed');
     } finally {

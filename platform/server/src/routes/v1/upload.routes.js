@@ -33,9 +33,9 @@ const docUpload = multer({
   },
 });
 
-const storeDoc = async ({ buffer, bucket, prefix }) => {
+const storeDoc = async ({ buffer, bucket, prefix, contentType = 'application/octet-stream' }) => {
   const key = `${prefix}${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  return uploadToBucket({ bucket, key, buffer, contentType: 'application/octet-stream' });
+  return uploadToBucket({ bucket, key, buffer, contentType });
 };
 
 const router = Router();
@@ -128,6 +128,7 @@ router.post(
       buffer: req.file.buffer,
       bucket: env.SUPABASE_BUCKET_DOCS,
       prefix: `onboarding/`,
+      contentType: req.file.mimetype || 'application/octet-stream',
     });
     res.status(201).json({ url });
   })

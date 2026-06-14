@@ -15,6 +15,7 @@ export const User = sequelize.define(
     photoUrl: { type: DataTypes.STRING(500), defaultValue: '' },
     role: { type: DataTypes.ENUM('buyer', 'seller', 'delivery', 'admin'), allowNull: false },
     status: { type: DataTypes.ENUM('pending', 'active', 'suspended', 'rejected'), defaultValue: 'active' },
+    rejectionReason: { type: DataTypes.TEXT },
     flagged: { type: DataTypes.BOOLEAN, defaultValue: false },
 
     shopName: { type: DataTypes.STRING(160), defaultValue: '' },

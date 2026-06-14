@@ -57,8 +57,12 @@ import AdminPendingRequests from './pages/admin/PendingRequests.jsx';
 import AdminProducts from './pages/admin/Products.jsx';
 
 const Protected = ({ role, children }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
+  if (user.status === 'rejected') {
+    logout();
+    return <Navigate to="/login" replace />;
+  }
   if (user.status === 'pending') return <Navigate to="/pending-approval" replace />;
   if (role && user.role !== role) return <Navigate to={`/${user.role}`} replace />;
   return children;

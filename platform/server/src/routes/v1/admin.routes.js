@@ -2,7 +2,7 @@ import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import { Op, fn, col } from 'sequelize';
 import { User, Order, Product, Dispute, Settings, VendorProfile, DeliveryProfile } from '../../models/index.js';
-import { protect, requireRole } from '../../middleware/auth.js';
+import { protect, requireRole, signToken } from '../../middleware/auth.js';
 
 const router = Router();
 router.use(protect, requireRole('admin'));
@@ -186,7 +186,7 @@ router.put(
   })
 );
 
-/** Reject a pending user — sets status to 'rejected' */
+/** Reject a pending user — sets status to 'rejected' with an optional reason */
 router.put(
   '/users/:id/reject',
   asyncHandler(async (req, res) => {
@@ -194,8 +194,24 @@ router.put(
     if (!u) return res.status(404).json({ message: 'User not found' });
     if (u.status !== 'pending') return res.status(400).json({ message: 'User is not in pending status' });
     u.status = 'rejected';
+    u.rejectionReason = req.body.reason || '';
     await u.save();
     res.json({ user: u });
+  })
+);
+
+// ── Impersonation — generate a JWT for any user ───────────────────────────
+
+router.post(
+  '/impersonate/:id',
+  asyncHandler(async (req, res) => {
+    const target = await User.findByPk(req.params.id);
+    if (!target) return res.status(404).json({ message: 'User not found' });
+    const token = signToken(target);
+    res.json({
+      token,
+      user: { id: target.id, name: target.name, email: target.email, role: target.role, status: target.status },
+    });
   })
 );
 
