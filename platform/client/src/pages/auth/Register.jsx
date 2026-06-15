@@ -1,4 +1,4 @@
-﻿import { useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Eye, EyeOff, ShoppingBag, Store, Truck, Camera, X, CheckCircle2,
@@ -30,11 +30,6 @@ const passwordStrength = (pw) => {
   ];
   return { score, ...map[Math.min(score, map.length - 1)] };
 };
-
-const SHOP_CATEGORIES = [
-  'Grocery', 'Fashion', 'Electronics', 'Home', 'Beauty',
-  'Sports', 'Kids', 'Children', 'Gifts', 'Furniture', 'Crafts', 'Other',
-];
 
 const Field = ({ label, type = 'text', value, onChange, onBlur, error, required, placeholder, autoComplete, className = '', onFocus, onMouseLeave }) => (
   <div className={className}>
@@ -90,6 +85,14 @@ export default function Register() {
   const fileRef = useRef(null);
   const docRef = useRef(null);
   const doc2Ref = useRef(null);
+
+  const [shopCategories, setShopCategories] = useState([]);
+
+  useEffect(() => {
+    api.get('/categories').then(({ data }) => {
+      setShopCategories(data.items || []);
+    }).catch(() => {});
+  }, []);
 
   const [form, setForm] = useState({
     name: '', email: '', phone: '', role: 'buyer', password: '', confirmPassword: '',
@@ -339,12 +342,12 @@ export default function Register() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="label">Shop category <span className="text-red-500"> *</span></label>
-                    <select className={`input h-12 ${touched.shopCategory && errors.shopCategory ? 'border-red-300' : ''}`}
-                      value={form.shopCategory} onChange={(e) => set({ shopCategory: e.target.value })}
-                      onBlur={() => touch('shopCategory')}>
-                      <option value="">Select…</option>
-                      {SHOP_CATEGORIES.map((c) => <option key={c} value={c.toLowerCase()}>{c}</option>)}
-                    </select>
+                      <select className={`input h-12 ${touched.shopCategory && errors.shopCategory ? 'border-red-300' : ''}`}
+                        value={form.shopCategory} onChange={(e) => set({ shopCategory: e.target.value })}
+                        onBlur={() => touch('shopCategory')}>
+                        <option value="">Select…</option>
+                        {shopCategories.map((c) => <option key={c.key} value={c.key}>{c.emoji} {c.label}</option>)}
+                      </select>
                     {touched.shopCategory && errors.shopCategory && <p className="text-xs text-red-500 mt-1">{errors.shopCategory}</p>}
                   </div>
                   <Field label="Phone number" type="tel" value={form.phoneNumber} onChange={(v) => set({ phoneNumber: v })}
