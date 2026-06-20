@@ -39,4 +39,23 @@ router.put(
   })
 );
 
+router.put(
+  '/me/password',
+  protect,
+  asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current and new password required' });
+    }
+    const user = await User.findByPk(req.user.id);
+    const ok = await user.comparePassword(currentPassword);
+    if (!ok) return res.status(401).json({ message: 'Invalid current password' });
+
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: 'Password updated successfully' });
+  })
+);
+
 export default router;
