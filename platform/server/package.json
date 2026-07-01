@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "seed": "node src/seed.js"
+    "seed": "node src/seed.js",
+    "seed-bulk": "node src/seed-bulk.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.1",

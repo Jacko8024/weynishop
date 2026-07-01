@@ -1,7 +1,7 @@
 ﻿import { useEffect } from 'react';
 
 const DEFAULT_DESCRIPTION =
-  "Weynishop | Ethiopian Online Shopping in Beirut. Shop Ethiopian food, clothes, cosmetics & more with cash on delivery.";
+  " Weynishop connects Ethiopian merchants in the Middle East with customers and helps Ethiopians abroad send gifts, furniture, toys, cakes and surprises to their families in Ethiopia. ";
 
 const ensureMeta = (name, content) => {
   if (!content) return;
@@ -46,7 +46,7 @@ const ensureCanonical = (href) => {
  */
 export default function useDocumentTitle(title, description = DEFAULT_DESCRIPTION, image = '/logo/weynishopping-icon.png') {
   useEffect(() => {
-    const fullTitle = title ? `${title} · Weynishop` : "Weynishop | Ethiopian Online Shopping in Beirut";
+    const fullTitle = title ? `${title} · Weynishop` : "Weynishop | Ethiopian Marketplace & Gift Delivery to Ethiopia";
     document.title = fullTitle;
     ensureMeta('description', description);
     ensureMetaProperty('og:title', fullTitle);

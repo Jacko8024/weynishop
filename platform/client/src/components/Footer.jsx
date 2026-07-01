@@ -30,7 +30,37 @@ const NAV = [
 
 export default function Footer() {
   return (
-    <footer
+    <>
+      {/* ── About Weynishop ── */}
+      <section className="pt-16 pb-10" style={{ background: 'var(--color-surface)' }}>
+        <div className="max-w-page mx-auto px-3 md:px-4">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">About Weynishop</h2>
+            <p className="text-lg md:text-xl font-medium mb-6" style={{ color: 'var(--color-muted)' }}>
+              Ethiopia's Marketplace for Families at Home and Abroad
+            </p>
+            <p className="text-sm md:text-base leading-relaxed mb-4" style={{ color: 'var(--color-muted)' }}>
+              Weynishop is an online marketplace that serves Ethiopians both in the Middle East and around the world.
+            </p>
+            <div className="grid md:grid-cols-2 gap-6 text-left mt-8">
+              <div className="p-5 rounded-xl" style={{ background: 'var(--color-surface-elevated, #fff)', border: '1px solid var(--color-border)' }}>
+                <h3 className="font-semibold mb-2">Shop from Ethiopian businesses in Arab countries</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+                  We help Ethiopian merchants in Lebanon and other Arab countries sell their products online, making it easier for Ethiopian domestic workers and busy families to shop and receive deliveries without leaving home.
+                </p>
+              </div>
+              <div className="p-5 rounded-xl" style={{ background: 'var(--color-surface-elevated, #fff)', border: '1px solid var(--color-border)' }}>
+                <h3 className="font-semibold mb-2">Send gifts and surprises to loved ones in Ethiopia</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+                  Weynishop also allows Ethiopians living abroad to buy gifts, children's clothes, toys, furniture, cakes, flowers, and special surprises for their families in Ethiopia. Whether you're celebrating a birthday, holiday, graduation, or preparing your home before returning to Ethiopia, Weynishop helps you turn your love into meaningful gifts.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer
       className="mt-12 pt-10 pb-6"
       style={{ borderTop: '1px solid var(--color-border)', background: 'var(--color-surface)' }}
     >
@@ -101,5 +131,6 @@ export default function Footer() {
         </div>
       </div>
     </footer>
+    </>
   );
 }
