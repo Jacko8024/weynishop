@@ -137,7 +137,7 @@ export default function AdminBanners() {
               <div className="aspect-[8/3] rounded-xl overflow-hidden border relative bg-slate-50"
                    style={{ borderColor: 'var(--color-border)' }}>
                 {editing.imageUrl ? (
-                  <img src={editing.imageUrl} alt="" className="w-full h-full object-cover" />
+                  <img src={editing.imageUrl} alt={editing.title} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full grid place-items-center text-sm text-slate-400">
                     No image yet

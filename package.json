@@ -1,4 +1,6 @@
 {
+  "name": "weynishop",
+  "version": "1.0.0",
   "dependencies": {
     "firebase": "^12.12.1"
   }

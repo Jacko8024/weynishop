@@ -160,7 +160,7 @@ export default function AdminProducts() {
               <tr key={p._id || p.id} className="border-t">
                 <td className="p-2">
                   {p.images?.[0] ? (
-                    <img src={p.images[0]} alt="" className="w-10 h-10 rounded object-cover" />
+                    <img src={p.images[0]} alt={p.name} className="w-10 h-10 rounded object-cover" />
                   ) : (
                     <div className="w-10 h-10 rounded" style={{ background: 'var(--color-bg)' }} />
                   )}
@@ -284,7 +284,7 @@ export default function AdminProducts() {
                 <div className="grid grid-cols-4 gap-2 mt-3">
                   {editing.images.map((src, i) => (
                     <div key={i} className="relative aspect-square rounded-lg overflow-hidden border" style={{ borderColor: 'var(--color-border)' }}>
-                      <img src={src} alt="" className="w-full h-full object-cover" />
+                      <img src={src} alt={`Product image ${i + 1}`} className="w-full h-full object-cover" />
                       <button type="button" onClick={() => removeImg(i)}
                               className="absolute top-1 right-1 w-6 h-6 grid place-items-center rounded-full bg-black/60 text-white hover:bg-black/80">
                         <X size={12} />

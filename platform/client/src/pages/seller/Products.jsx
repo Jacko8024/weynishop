@@ -262,7 +262,7 @@ export default function SellerProducts() {
                 <div className="grid grid-cols-4 gap-2 mt-3">
                   {editing.images.map((src, i) => (
                     <div key={i} className="relative aspect-square rounded-lg overflow-hidden border" style={{ borderColor: 'var(--color-border)' }}>
-                      <img src={src} alt="" className="w-full h-full object-cover" />
+                      <img src={src} alt={`Product image ${i + 1}`} className="w-full h-full object-cover" />
                       <button type="button" onClick={() => removeImg(i)}
                               className="absolute top-1 right-1 w-6 h-6 grid place-items-center rounded-full bg-black/60 text-white hover:bg-black/80"
                               aria-label="Remove image">

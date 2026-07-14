@@ -17,9 +17,9 @@ export const OrganizationSchema = {
     email: 'hello@weynishopping.com',
   },
   sameAs: [
-    'https://facebook.com',
-    'https://instagram.com',
-    'https://twitter.com',
+    'https://www.facebook.com/share/1ChhMsmGrb/',
+    'https://www.instagram.com/weynishop',
+    'https://www.tiktok.com/@weynishop.berut',
   ],
 };
 

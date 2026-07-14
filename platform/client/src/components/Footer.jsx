@@ -1,5 +1,5 @@
 ﻿import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Mail, Phone, MapPin } from 'lucide-react';
 
 const NAV = [
   {
@@ -37,25 +37,35 @@ export default function Footer() {
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl font-bold mb-2">About Weynishop</h2>
             <p className="text-lg md:text-xl font-medium mb-6" style={{ color: 'var(--color-muted)' }}>
-              Ethiopia's Marketplace for Families at Home and Abroad
+              The First Ethiopian Marketplace in Arab Countries
             </p>
             <p className="text-sm md:text-base leading-relaxed mb-4" style={{ color: 'var(--color-muted)' }}>
-              Weynishop is an online marketplace that serves Ethiopians both in the Middle East and around the world.
+              Weynishop connects Ethiopian merchants in the Middle East with customers and helps Ethiopians
+              abroad send gifts, furniture, toys, cakes and surprises to their families in Ethiopia.
             </p>
             <div className="grid md:grid-cols-2 gap-6 text-left mt-8">
               <div className="p-5 rounded-xl" style={{ background: 'var(--color-surface-elevated, #fff)', border: '1px solid var(--color-border)' }}>
                 <h3 className="font-semibold mb-2">Shop from Ethiopian businesses in Arab countries</h3>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-                  We help Ethiopian merchants in Lebanon and other Arab countries sell their products online, making it easier for Ethiopian domestic workers and busy families to shop and receive deliveries without leaving home.
+                  We help Ethiopian merchants in Lebanon and other Arab countries sell their products online,
+                  making it easier for Ethiopian domestic workers and busy families to shop and receive
+                  deliveries without leaving home.
                 </p>
               </div>
               <div className="p-5 rounded-xl" style={{ background: 'var(--color-surface-elevated, #fff)', border: '1px solid var(--color-border)' }}>
                 <h3 className="font-semibold mb-2">Send gifts and surprises to loved ones in Ethiopia</h3>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-                  Weynishop also allows Ethiopians living abroad to buy gifts, children's clothes, toys, furniture, cakes, flowers, and special surprises for their families in Ethiopia. Whether you're celebrating a birthday, holiday, graduation, or preparing your home before returning to Ethiopia, Weynishop helps you turn your love into meaningful gifts.
+                  Weynishop also allows Ethiopians living abroad to buy gifts, children's clothes, toys,
+                  furniture, cakes, flowers, and special surprises for their families in Ethiopia. Whether
+                  you're celebrating a birthday, holiday, graduation, or preparing your home before returning
+                  to Ethiopia, Weynishop helps you turn your love into meaningful gifts.
                 </p>
               </div>
             </div>
+            <Link to="/about" className="inline-block mt-6 text-sm font-semibold hover:underline"
+                  style={{ color: 'var(--color-brand)' }}>
+              Learn more about Weynishop →
+            </Link>
           </div>
         </div>
       </section>
@@ -115,17 +125,19 @@ export default function Footer() {
         >
           <div>© {new Date().getFullYear()} WeyniShopping. All rights reserved. · Made in Ethiopia 🇪🇹</div>
           <div className="flex items-center gap-3">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
+            <a href="https://www.facebook.com/share/1ChhMsmGrb/" target="_blank" rel="noopener noreferrer"
                aria-label="Facebook" className="hover:text-brand-700">
               <Facebook size={18} />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
+            <a href="https://www.instagram.com/weynishop" target="_blank" rel="noopener noreferrer"
                aria-label="Instagram" className="hover:text-brand-700">
               <Instagram size={18} />
             </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
-               aria-label="Twitter" className="hover:text-brand-700">
-              <Twitter size={18} />
+            <a href="https://www.tiktok.com/@weynishop.berut" target="_blank" rel="noopener noreferrer"
+               aria-label="TikTok" className="hover:text-brand-700">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+              </svg>
             </a>
           </div>
         </div>
