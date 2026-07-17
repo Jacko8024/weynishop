@@ -15,6 +15,7 @@ import StorePage from './pages/public/StorePage.jsx';
 import DealsPage from './pages/public/DealsPage.jsx';
 import WishlistPage from './pages/public/WishlistPage.jsx';
 import AboutPage from './pages/public/AboutPage.jsx';
+import BlogPage from './pages/public/BlogPage.jsx';
 import ContactPage from './pages/public/ContactPage.jsx';
 import FAQPage from './pages/public/FAQPage.jsx';
 import TermsPage from './pages/public/TermsPage.jsx';
@@ -83,6 +84,7 @@ export default function App() {
         <Route path="/deals" element={<DealsPage />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/blog" element={<BlogPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/terms" element={<TermsPage />} />

@@ -4,6 +4,17 @@ import useDocumentTitle from '../../lib/useDocumentTitle.js';
 
 const FAQ_GROUPS = [
   {
+    title: 'Weynishop Services (የዌይኒሾፕ አገልግሎቶች)',
+    items: [
+      { q: 'ከሼን (Shein) እቃ እንዴት ማዘዝ እችላለሁ?', a: 'መግዛት የሚፈልጉትን የShein እቃ መርጠው ያሳዩን፤ የዋጋውን 30% ቅድመ ክፍያ (Advance Payment) በመክፈል ትዕዛዝዎን ማረጋገጥ ይችላሉ። እቃው ሲደርስዎ ቀሪውን ይከፍላሉ።' },
+      { q: 'How to pre-order from Shein?', a: 'Choose your items from Shein, send them to us, and pay a 30% down payment to confirm. You pay the remaining amount upon delivery.' },
+      { q: 'ነጋዴዎች እንዴት ነው እቃቸውን እዚህ ዌብሳይት ላይ የሚሸጡት?', a: 'ዌብሳይቱ ላይ በመግባት "Register as Seller" የሚለውን በመጫን አካውንት ይከፍታሉ፤ በመቀጠል የእቃዎቻቸውን ፎቶ፣ መግለጫና ዋጋ በማስገባት በቀጥታ መሸጥ ይጀምራሉ።' },
+      { q: 'How can merchants sell on Weynishop?', a: 'Simply click "Register as Seller", set up your account, upload your product photos along with prices and descriptions, and start selling instantly.' },
+      { q: 'ዴሊቨሪዎች እንዴት መመዝገብ ይችላሉ?', a: '"Become a Driver" የሚለውን ገጽ በመጫን ስምዎን፣ ስልክዎን እና የመኪና/ሞተርሳይክል መረጃዎን ሞልተው ሲጨርሱ ቡድናችን አነጋግሮዎት ስራ መጀመር ይችላሉ።' },
+      { q: 'How can drivers register to deliver?', a: 'Go to our "Become a Driver" page, fill in your personal and vehicle details, and our team will contact you to activate your account.' },
+    ],
+  },
+  {
     title: 'Orders',
     items: [
       { q: 'How do I place an order?', a: 'Browse products, add them to your cart, then go to checkout. Pick a delivery address (or tap "Use my current location"), confirm your order, and a rider will bring it to your door. You only pay when it arrives.' },

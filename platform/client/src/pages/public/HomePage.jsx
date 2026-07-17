@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Zap } from 'lucide-react';
+import { Zap, Store, Truck, ShoppingBag, ArrowRight } from 'lucide-react';
 import { api } from '../../api/client.js';
 import { useCategories } from '../../lib/categories.js';
 import ProductGrid from '../../components/ProductGrid.jsx';
@@ -123,6 +123,129 @@ export default function HomePage() {
       <section>
         <h2 className="text-lg md:text-xl font-bold mb-3 md:mb-4 font-localized">Trending now</h2>
         <ProductGrid products={trending} loading={loading} />
+      </section>
+
+      {/* ── Hero About Section ── */}
+      <section className="card p-6 md:p-8 text-center">
+        <h2 className="text-2xl md:text-3xl font-extrabold mb-4 font-localized leading-tight">
+          አረብ ሀገር ላሉ ኢትዮጵያውያን የመጀመሪያው ሁሉን አቀፍ የገበያ መድረክ!
+        </h2>
+        <p className="text-base md:text-lg leading-relaxed max-w-4xl mx-auto" style={{ color: 'var(--color-muted)' }}>
+          ከቤት ሳይወጡ የሚፈልጉትን የሀገር ምርቶች፣ ባህላዊ ምግቦች፣ የባልትና ውጤቶች፣ አልባሳት እና የውበት መጠበቂያዎችን በአንድ ቦታ ይግዙ። ሁሉንም በአንድ ላይ አዝዘው በጋራ ዴሊቨሪ ያሉበት ድረስ እናመጣለን። ከተለያዩ ቦታዎች በመግዛት ለተለያየ ዴሊቨሪ የሚያወጡትን አላስፈላጊ ወጪ ያስቀሩ!
+        </p>
+        <div className="mt-6 max-w-3xl mx-auto" style={{ color: 'var(--color-muted)' }}>
+          <p className="text-base md:text-lg leading-relaxed">
+            <strong className="text-brand">The First All-in-One Ethiopian Marketplace in Arab Countries!</strong><br />
+            Shop authentic Ethiopian foods, traditional spices, clothing, and beauty products from the comfort of your home. Consolidate your purchases into a single order to save on multiple delivery fees! Every product comes with clear benefits and step-by-step usage guides.
+          </p>
+        </div>
+      </section>
+
+      {/* ── Product Categories ── */}
+      <section>
+        <h2 className="text-xl md:text-2xl font-bold mb-5 text-center font-localized">የምንሰጣቸው አገልግሎቶች</h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <div className="card p-5">
+            <div className="w-12 h-12 rounded-xl grid place-items-center text-white mb-4" style={{ background: 'linear-gradient(135deg,#EB5824,#C7461A)' }}>
+              <ShoppingBag size={24} />
+            </div>
+            <h3 className="font-bold text-lg mb-2">የኢትዮጵያ ባህላዊ ምግቦች (Traditional Meals)</h3>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+              ክትፎ፣ ጥብስ፣ ፍርፍር እና ሌሎችም ተወዳጅ ምግቦች ባሉበት ሆነው ያዙ፤ ትኩስነታቸውን ሳይለቁ እናደርሳለን።
+            </p>
+            <p className="text-xs mt-2 italic" style={{ color: 'var(--color-muted)' }}>
+              Freshly prepared Ethiopian dishes like Kitfo, Tibs, Firfir, and more delivered hot to your door.
+            </p>
+          </div>
+
+          <div className="card p-5">
+            <div className="w-12 h-12 rounded-xl grid place-items-center text-white mb-4" style={{ background: 'linear-gradient(135deg,#EB5824,#C7461A)' }}>
+              <Store size={24} />
+            </div>
+            <h3 className="font-bold text-lg mb-2">የሀገር ውስጥ የባልትና ውጤቶች (Authentic Baltina &amp; Spices)</h3>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+              ንፁህ የአበሻ ሽሮ፣ በርበሬ፣ ሚጥሚጣ፣ በሶ፣ ቆሎ እና ሌሎችም የሀገር ቤት ጣዕሞች።
+            </p>
+            <p className="text-xs mt-2 italic" style={{ color: 'var(--color-muted)' }}>
+              Premium Ethiopian spices, Shiro, Berbere, Besso, Kolo, and kitchen essentials.
+            </p>
+          </div>
+
+          <div className="card p-5 sm:col-span-2 lg:col-span-1">
+            <div className="w-12 h-12 rounded-xl grid place-items-center text-white mb-4" style={{ background: 'linear-gradient(135deg,#EB5824,#C7461A)' }}>
+              <Truck size={24} />
+            </div>
+            <h3 className="font-bold text-lg mb-2">ዘመናዊ አልባሳት እና ጫማዎች (Fashion, Shoes &amp; Pre-Orders)</h3>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+              ከተለያዩ ታማኝ ነጋዴዎች እጅ ላይ ያሉ ዘመናዊ አልባሳት፣ የህፃናት እና የአዋቂዎች ልብሶችና ጫማዎች። በተጨማሪም ከሼን (Shein) ላይ የሚፈልጉትን መርጠው በ30% ቅድመ ክፍያ ብቻ እናስመጣለን!
+            </p>
+            <p className="text-xs mt-2 italic" style={{ color: 'var(--color-muted)' }}>
+              Trending fashion, kids' and adults' wear, and shoes from local merchants. We also offer Shein pre-orders with just a 30% down payment!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Partners Section ── */}
+      <section>
+        <h2 className="text-xl md:text-2xl font-bold mb-5 text-center font-localized">ከእኛ ጋር አብረው ለመስራት</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* For Merchants */}
+          <div className="card p-6 text-center">
+            <div className="w-16 h-16 mx-auto rounded-full grid place-items-center text-white mb-4" style={{ background: 'linear-gradient(135deg,#EB5824,#C7461A)' }}>
+              <Store size={28} />
+            </div>
+            <h3 className="font-bold text-xl mb-3">ለነጋዴዎች (For Sellers/Merchants)</h3>
+            <ul className="space-y-2 text-sm text-left mb-4" style={{ color: 'var(--color-muted)' }}>
+              <li className="flex items-start gap-2">
+                <ArrowRight size={16} className="shrink-0 mt-0.5 text-brand" />
+                ምርቶችዎን ለብዙ ሺህ ደንበኞች ያስተዋውቁ!
+              </li>
+              <li className="flex items-start gap-2">
+                <ArrowRight size={16} className="shrink-0 mt-0.5 text-brand" />
+                በአረብ ሀገር ያሉ ኢትዮጵያውያን በቀላሉ እንዲያገኟቸው በዌይኒሾፕ ላይ ነጻ የአቅራቢነት አካውንት ይክፈቱ።
+              </li>
+              <li className="flex items-start gap-2">
+                <ArrowRight size={16} className="shrink-0 mt-0.5 text-brand" />
+                የሚሸጧቸውን ምርቶች ፎቶ፣ ዋጋ እና ዝርዝር መግለጫ በማስገባት ሽያጭዎን ዛሬውኑ ያሳድጉ።
+              </li>
+            </ul>
+            <p className="text-xs mb-4 italic" style={{ color: 'var(--color-muted)' }}>
+              Register as a merchant, list your products (food, hair care, clothes, or spices), and reach thousands of ready-to-buy customers in your area.
+            </p>
+            <Link to="/register?role=seller" className="btn-primary inline-flex items-center gap-2 text-sm">
+              <Store size={16} /> Register as Seller
+            </Link>
+          </div>
+
+          {/* For Delivery Drivers */}
+          <div className="card p-6 text-center">
+            <div className="w-16 h-16 mx-auto rounded-full grid place-items-center text-white mb-4" style={{ background: 'linear-gradient(135deg,#EB5824,#C7461A)' }}>
+              <Truck size={28} />
+            </div>
+            <h3 className="font-bold text-xl mb-3">ለዴሊቨሪ አቅራቢዎች (For Delivery Drivers)</h3>
+            <ul className="space-y-2 text-sm text-left mb-4" style={{ color: 'var(--color-muted)' }}>
+              <li className="flex items-start gap-2">
+                <ArrowRight size={16} className="shrink-0 mt-0.5 text-brand" />
+                ከትራንስፖርት ስራዎ ተጨማሪ ገቢ ያግኙ!
+              </li>
+              <li className="flex items-start gap-2">
+                <ArrowRight size={16} className="shrink-0 mt-0.5 text-brand" />
+                በራስዎ መኪና ወይም ሞተርሳይክል እቃዎችን በማድረስ ተጨማሪ ገቢ ያግኙ።
+              </li>
+              <li className="flex items-start gap-2">
+                <ArrowRight size={16} className="shrink-0 mt-0.5 text-brand" />
+                በዌይኒሾፕ ላይ የዴሊቨሪ አካውንት ይክፈቱ፤ አስፈላጊ መረጃዎችንና ሰነዶችን በማሟላት የስራ ቤተሰባችን ይሁኑ!
+              </li>
+            </ul>
+            <p className="text-xs mb-4 italic" style={{ color: 'var(--color-muted)' }}>
+              Sign up as a delivery partner, complete your profile, and start earning by delivering packages to customers near you.
+            </p>
+            <Link to="/register?role=delivery" className="btn-primary inline-flex items-center gap-2 text-sm">
+              <Truck size={16} /> Become a Driver
+            </Link>
+          </div>
+        </div>
       </section>
     </div>
   );

@@ -11,21 +11,19 @@ export default function AboutPage() {
       {/* ── Hero ── */}
       <section className="text-center max-w-4xl mx-auto">
         <h1 className="text-3xl md:text-5xl font-extrabold mb-4 font-localized">
-          Weynishop – The First Ethiopian Marketplace in Arab Countries
+          ስለ ዌይኒሾፕ (About Weynishop)
         </h1>
         <p className="text-lg md:text-xl leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-          Whether you're in Lebanon, Saudi Arabia, the UAE, Qatar, Kuwait, Oman, Bahrain, or Jordan,
-          Weynishop makes it easy to shop from trusted Ethiopian businesses using only your mobile phone.
+          ዌይኒሾፕ በአረብ ሀገራት (ሊባኖስ፣ ሳውዲ አረቢያ፣ ዱባይ፣ ኳታር፣ ኩዌት እና ሌሎችም) በቤት ሰራተኝነት እና በተለያዩ ስራዎች ላይ ለሚገኙ ውድ እህቶቻችን እና ወንድሞቻችን ታስቦ የተሰራ ትልቁ የኢትዮጵያውያን የገበያ መድረክ ነው።
         </p>
         <p className="text-base md:text-lg mt-4 leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-          Order fresh Ethiopian meals, traditional Baltina products, groceries, Habesha clothing, shoes,
-          beauty products, hair care items, electronics, and everyday essentials — all with convenient home delivery.
+          ከቤት ወጥቶ ለመገብየት ጊዜ ለሌላቸው ወገኖቻችን ሁሉንም ፍላጎቶቻቸውን (ምግብ፣ አልባሳት፣ ኮስሞቲክስ) በአንድ ዌብሳይት ላይ በተደራጀ መልኩ አቅርበናል። ከተለያዩ ቦታዎች በመግዛት ለተለያዩ የዴሊቨሪ ሰራተኞች የሚከፈለውን ወጪ በማስቀረት፣ ሁሉንም እቃዎች በአንድ ላይ አሽገን በአንድ ዴሊቨሪ እናደርሳለን። እያንዳንዱ ምርት ጥቅሙና አጠቃቀሙ በአማርኛ በዝርዝር ተብራርቶ ስለሚቀመጥ፣ ደንበኞቻችን ሙሉ መረጃ ኖሯቸው በልበ ሙሉነት እንዲገዙ እንረዳለን።
         </p>
       </section>
 
       {/* ── About ── */}
       <section className="max-w-4xl mx-auto text-center">
-        <h2 className="text-2xl md:text-3xl font-bold mb-3">About Weynishop</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-3">ስለ ዌይኒሾፕ (About Weynishop)</h2>
         <h3 className="text-xl md:text-2xl font-semibold mb-5">
           Built by Ethiopians, for Ethiopians Living in Arab Countries
         </h3>
