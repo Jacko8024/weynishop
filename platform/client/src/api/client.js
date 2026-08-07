@@ -16,10 +16,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (r) => r,
   (err) => {
-    // Only force-logout if we actually had a token (i.e. it just expired).
-    // Guests calling protected endpoints get the 401 thrown to the caller,
-    // which is responsible for showing the login modal.
-    if (err.response?.status === 401 && localStorage.getItem('token')) {
+    // Force-logout on 401 OR 403 when we actually had a token
+    // (some backends return 403 for expired/invalid tokens).
+    const status = err.response?.status;
+    if ((status === 401 || status === 403) && localStorage.getItem('token')) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       if (!window.location.pathname.startsWith('/login')) {
