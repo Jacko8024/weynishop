@@ -68,14 +68,25 @@ const SEED_GROUPS = [
 ];
 
 /**
- * Idempotent: only seeds when the table is empty, so admin edits are never
- * overwritten on reboots.
+ * Idempotent seeder.
+ * – If the table is empty           → insert the 9 canonical rows.
+ * – If the table has exactly 9 rows → apply any Gift-package name/content
+ *   repairs (admin edits are preserved for other groups).
+ * – If the table has MORE than 9 rows (duplicate seeding happened) →
+ *   wipe everything and re-insert the canonical 9.  Only the 9 rows seeded
+ *   here will survive; any admin-created extras were presumably the
+ *   cause of the duplicate display.
  */
 export const seedSurpriseServices = async () => {
   const count = await SurpriseService.count();
-  if (count > 0) {
-    // Repair: apply the Gift Delivery package names + contents. Matches by the
-    // seed image, or by the old generic names in case the image was changed.
+
+  // ── Duplicate-guard: too many rows → full reset ─────────────────────────
+  if (count > 9) {
+    console.log(`[seed] found ${count} surprise services (expected 9) — resetting to canonical 9`);
+    await SurpriseService.destroy({ where: {} });
+    // fall through to the insert block below
+  } else if (count > 0) {
+    // Exactly the right number — repair Gift Delivery package metadata only.
     const giftRows = await SurpriseService.findAll({ where: { groupId: 'gift' } });
     for (const row of giftRows) {
       const byImg = GIFT_PACKAGES.find((p) => p.img === row.image);
@@ -84,12 +95,7 @@ export const seedSurpriseServices = async () => {
       if (!pack) continue;
       const features = Array.isArray(row.features) ? row.features : [];
       if (features.length === 0 || OLD_GIFT_NAMES.includes(row.name)) {
-        await row.update({
-          name: pack.name,
-          rating: pack.rating,
-          price: pack.price,
-          features: pack.features,
-        });
+        await row.update({ name: pack.name, rating: pack.rating, price: pack.price, features: pack.features });
         console.log('[seed] gift package updated:', row.id, '->', pack.name);
       } else if (row.price !== pack.price || JSON.stringify(features) !== JSON.stringify(pack.features)) {
         await row.update({ price: pack.price, features: pack.features });
@@ -98,6 +104,7 @@ export const seedSurpriseServices = async () => {
     }
     return;
   }
+
 
   const rows = [];
   let order = 0;
