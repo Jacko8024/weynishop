@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import { Op, fn, col } from 'sequelize';
-import { User, Order, Product, Dispute, Settings, VendorProfile, DeliveryProfile } from '../../models/index.js';
+import { User, Order, Product, Dispute, Settings, VendorProfile, DeliveryProfile, SurpriseBooking } from '../../models/index.js';
 import { protect, requireRole, signToken } from '../../middleware/auth.js';
 
 const router = Router();
@@ -59,12 +59,14 @@ router.get(
 router.get(
   '/analytics',
   asyncHandler(async (_req, res) => {
-    const [totalOrders, completedRows, activeOrders, totalProducts, byRole] = await Promise.all([
+    const [totalOrders, completedRows, activeOrders, totalProducts, byRole, surpriseNew, surpriseTotal] = await Promise.all([
       Order.count(),
       Order.findAll({ where: { currentStage: 'delivered_paid' } }),
       Order.count({ where: { currentStage: { [Op.ne]: 'delivered_paid' }, cancelledAt: null } }),
       Product.count(),
       User.findAll({ attributes: ['role', [fn('COUNT', col('id')), 'n']], group: ['role'], raw: true }),
+      SurpriseBooking.count({ where: { status: 'new' } }),
+      SurpriseBooking.count(),
     ]);
     const revenue = completedRows.reduce((s, o) => s + Number(o.total), 0);
     const usersByRole = Object.fromEntries(byRole.map((r) => [r.role, Number(r.n)]));
@@ -75,6 +77,8 @@ router.get(
       revenue,
       totalProducts,
       usersByRole,
+      surpriseBookings: surpriseTotal,
+      surpriseNew,
     });
   })
 );

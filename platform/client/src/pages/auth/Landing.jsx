@@ -1,12 +1,13 @@
 ﻿import { Link } from 'react-router-dom';
 import { ShoppingBag, Store, Truck, Shield } from 'lucide-react';
+import Logo from '../../components/Logo.jsx';
 
 export default function Landing() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-orange-100">
       <header className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
         <div className="flex items-center" aria-label="WeyniShopping">
-          <img src="/logo/weynishopping-full.png" alt="WeyniShopping" style={{ height: 36 }} />
+          <Logo height={36} />
         </div>
         <div className="flex items-center gap-2">
           <Link to="/login" className="btn-ghost">Log in</Link>

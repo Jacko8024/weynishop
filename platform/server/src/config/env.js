@@ -36,6 +36,20 @@ export const env = {
   GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY || '',
   STOREFRONT_URL: process.env.STOREFRONT_URL || 'http://localhost:5173',
 
+  // The ONE merchant account (seller user id) that owns the surprise page.
+  // It manages the surprise services and booking forms with the same account
+  // it uses to sell on the main Weyni shop. Admins always have access too.
+  // Leave empty to disable seller management (admin-only).
+  SURPRISE_OWNER_ID: (() => {
+    const n = Number(process.env.SURPRISE_OWNER_ID || '');
+    return Number.isInteger(n) && n > 0 ? n : null;
+  })(),
+
+  // Easier alternative to SURPRISE_OWNER_ID: just put the login email of the
+  // owner account here and it will be looked up in the Users table at runtime
+  // (cached). If SURPRISE_OWNER_ID is set, it wins over this.
+  SURPRISE_OWNER_EMAIL: (process.env.SURPRISE_OWNER_EMAIL || '').trim().toLowerCase(),
+
   // Firebase Admin (Google sign-in verification). All three required to enable.
   FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || 'weynishopping',
   FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL || '',

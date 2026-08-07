@@ -9,6 +9,7 @@ import { useAuth } from '../../store/auth.js';
 import { api } from '../../api/client.js';
 import GoogleSignInButton from '../../components/GoogleSignInButton.jsx';
 import AnimatedCharacters from '../../components/AnimatedCharacters.jsx';
+import Logo from '../../components/Logo.jsx';
 
 const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -242,13 +243,13 @@ export default function Register() {
       <div className="relative hidden lg:flex flex-col justify-between p-10 overflow-hidden text-white"
         style={{ background: 'linear-gradient(135deg, #FF8A4C 0%, #EC5C2C 50%, #B83E1A 100%)' }}>
         <Link to="/" className="relative z-20 inline-flex items-center gap-2" aria-label="WeyniShopping home">
-          <img src="/logo/weynishopping-full.png" alt="WeyniShopping" style={{ height: 40, filter: 'brightness(0) invert(1)' }} />
+          <Logo inverse height={40} />
         </Link>
         <div className="relative z-20 flex items-end justify-center">
           <AnimatedCharacters typing={typing} hasPassword={form.password.length > 0} showPassword={showPassword} />
         </div>
         <div className="relative z-20 space-y-1 text-sm">
-          <p className="text-white/85 text-base font-medium">Join WeyniShopping in under a minute.</p>
+          <p className="text-white/85 text-base font-medium">{t('brand.join')}</p>
           <p className="text-white/65 max-w-md">Buy, sell or deliver in your neighbourhood — your role unlocks the right tools automatically.</p>
         </div>
         <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
@@ -258,7 +259,7 @@ export default function Register() {
       <div className="flex items-start justify-center p-6 sm:p-10 overflow-y-auto">
         <div className="w-full max-w-xl">
           <Link to="/" className="lg:hidden flex items-center justify-center mb-8" aria-label="WeyniShopping home">
-            <img src="/logo/weynishopping-full.png" alt="WeyniShopping" style={{ height: 40 }} />
+            <Logo height={40} />
           </Link>
 
           <div className="text-center mb-6">

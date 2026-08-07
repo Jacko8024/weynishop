@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { LogOut, ExternalLink, Menu, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../store/auth.js';
 
 const STOREFRONT_URL = import.meta.env.VITE_STOREFRONT_URL || '/';
@@ -25,6 +26,7 @@ export default function PortalShell({
   showStorefrontLink = false,
 }) {
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -61,7 +63,7 @@ export default function PortalShell({
             <Link to="." className="flex items-center gap-2 font-bold min-w-0">
               <img src="/logo/weynishopping-icon.png" alt="WeyniShopping" className="w-7 h-7 sm:w-8 sm:h-8 shrink-0" />
               <span className="truncate">
-                <span className="hidden sm:inline">WeyniShopping </span>
+                <span className="hidden sm:inline">{t('brand.name')} </span>
                 <span className="text-xs font-normal text-slate-500">{title}</span>
               </span>
             </Link>
@@ -118,7 +120,7 @@ export default function PortalShell({
               <div className="flex items-center gap-2 font-bold min-w-0">
                 <img src="/logo/weynishopping-icon.png" alt="" className="w-7 h-7 shrink-0" />
                 <span className="truncate">
-                  WeyniShopping <span className="text-xs font-normal text-slate-500">{title}</span>
+                  {t('brand.name')} <span className="text-xs font-normal text-slate-500">{title}</span>
                 </span>
               </div>
               <button

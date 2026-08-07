@@ -6,10 +6,11 @@ import { Server as SocketServer } from 'socket.io';
 
 import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
-import { sequelize, Settings, CommissionLedger, DeliveryEarning, SellerEarning, OrderItem, User, Product, Banner, Category, ContactInquiry } from './models/index.js';
+import { sequelize, Settings, CommissionLedger, DeliveryEarning, SellerEarning, OrderItem, User, Product, Banner, Category, ContactInquiry, SurpriseBooking, SurpriseService } from './models/index.js';
 import { errorHandler, notFound } from './middleware/error.js';
 import { backfillDeliveredCommissions } from './services/commission.service.js';
 import { backfillWalletsForDelivered } from './services/wallet.service.js';
+import { seedSurpriseServices } from './services/surprise.seed.js';
 import { VendorProfile } from './models/VendorProfile.js';
 import { DeliveryProfile } from './models/DeliveryProfile.js';
 
@@ -31,6 +32,7 @@ import categoryRoutes from './routes/v1/category.routes.js';
 import uploadRoutes from './routes/v1/upload.routes.js';
 import contactRoutes from './routes/v1/contact.routes.js';
 import sitemapRoutes from './routes/v1/sitemap.routes.js';
+import surpriseRoutes from './routes/v1/surprise.routes.js';
 
 import { registerSocketHandlers } from './sockets/index.js';
 
@@ -91,6 +93,7 @@ app.use('/api/v1/banners', bannerRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/uploads', uploadRoutes);
 app.use('/api/v1/contact', contactRoutes);
+app.use('/api/v1/surprise', surpriseRoutes);
 app.use(sitemapRoutes);
 
 app.use(notFound);
@@ -125,6 +128,8 @@ const start = async () => {
   await safeAlter('ContactInquiry',   ContactInquiry);
   await safeAlter('VendorProfile',    VendorProfile);
   await safeAlter('DeliveryProfile',  DeliveryProfile);
+  await safeAlter('SurpriseBooking',  SurpriseBooking);
+  await safeAlter('SurpriseService',  SurpriseService);
 
   // One-time backfill: any pre-existing product rows have basePrice = 0 from
   // the column default. Initialise them to the current price so seller
@@ -153,6 +158,13 @@ const start = async () => {
     await backfillWalletsForDelivered();
   } catch (e) {
     console.warn('[migrate] wallet backfill skipped:', e.message);
+  }
+
+  // Seed the surprise service catalog (only when empty — admin edits are kept).
+  try {
+    await seedSurpriseServices();
+  } catch (e) {
+    console.warn('[migrate] surprise services seed skipped:', e.message);
   }
 
   server.listen(env.PORT, () => {

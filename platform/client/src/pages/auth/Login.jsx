@@ -1,18 +1,27 @@
 ﻿import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../store/auth.js';
 import GoogleSignInButton from '../../components/GoogleSignInButton.jsx';
 import AnimatedCharacters from '../../components/AnimatedCharacters.jsx';
+import Logo from '../../components/Logo.jsx';
 
 export default function Login() {
   const { login } = useAuth();
   const nav = useNavigate();
+  const location = useLocation();
+  const redirect = new URLSearchParams(location.search).get('redirect') || '';
+  const afterLogin = redirect.startsWith('/') ? redirect : null;
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [typing, setTyping] = useState(false);
+
+  const next = (user) => {
+    if (user.status === 'pending') return '/pending-approval';
+    return afterLogin || `/${user.role}`;
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -23,13 +32,8 @@ export default function Login() {
         toast.error('Your account was rejected. Contact support for details.');
         return;
       }
-      if (user.status === 'pending') {
-        toast('Account under review', { icon: '⏳' });
-        nav('/pending-approval', { replace: true });
-        return;
-      }
       toast.success(`Welcome, ${user.name}`);
-      nav(`/${user.role}`, { replace: true });
+      nav(next(user), { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed');
     } finally {
@@ -53,8 +57,7 @@ export default function Login() {
       <div className="relative hidden lg:flex flex-col justify-between p-10 overflow-hidden text-white"
            style={{ background: 'linear-gradient(135deg, #FF8A4C 0%, #EC5C2C 50%, #B83E1A 100%)' }}>
         <Link to="/" className="relative z-20 inline-flex items-center gap-2" aria-label="WeyniShopping home">
-          <img src="/logo/weynishopping-full.png" alt="WeyniShopping"
-               style={{ height: 40, filter: 'brightness(0) invert(1)' }} />
+          <Logo inverse height={40} />
         </Link>
 
         <div className="relative z-20 flex items-end justify-center">
@@ -81,7 +84,7 @@ export default function Login() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <Link to="/" className="lg:hidden flex items-center justify-center mb-10" aria-label="WeyniShopping home">
-            <img src="/logo/weynishopping-full.png" alt="WeyniShopping" style={{ height: 40 }} />
+            <Logo height={40} />
           </Link>
 
           <div className="text-center mb-8">
@@ -147,11 +150,7 @@ export default function Login() {
           <GoogleSignInButton
             onSuccess={(user) => {
               toast.success(`Welcome, ${user.name}`);
-              if (user.status === 'pending') {
-                nav('/pending-approval', { replace: true });
-              } else {
-                nav(`/${user.role}`, { replace: true });
-              }
+              nav(next(user), { replace: true });
             }}
           />
 

@@ -26,7 +26,7 @@ export default function PendingApproval() {
                 <>Your {roleLabel} registration was not approved.</>
               ) : (
                 <>Your {roleLabel} account is currently being verified by the{' '}
-                <strong className="text-slate-800">Weyni Shopping</strong> Admin team.
+                <strong className="text-slate-800">{t('brand.name')}</strong> Admin team.
                 You will receive access once your documents are approved.</>
               )}
             </p>
@@ -75,7 +75,7 @@ export default function PendingApproval() {
               <LogOut size={16} /> Sign out
             </button>
             <Link to="/" className="text-xs text-slate-400 hover:text-slate-600 underline">
-              Back to WeyniShopping
+              Back to {t('brand.name')}
             </Link>
           </div>
         </div>

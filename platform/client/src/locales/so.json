@@ -1,5 +1,11 @@
 ﻿{
   "lang": { "en": "English", "am": "አማርኛ", "or": "Afaan Oromoo", "ti": "ትግርኛ", "so": "Af Soomaali" },
+  "brand": {
+    "name": "WeyniShop",
+    "rights": "Xaqiisa waa la dhawray",
+    "aboutTitle": "Ku saabsan {{name}}",
+    "join": "Ku biir {{name}} gudaha daqiiqad ka yar."
+  },
   "nav": {
     "home": "Bogga Hore",
     "categories": "Qaybaha",
@@ -12,7 +18,7 @@
     "account": "Akoonka",
     "orders": "Dalbashooyinkayga",
     "wishlist": "Liiska Jeclaanshaha",
-    "becomeSeller": "Ka iibi WeyniShopping"
+    "becomeSeller": "Ka iibi WeyniShop"
   },
   "product": {
     "sold": "la iibiyay",
@@ -128,6 +134,152 @@
     "next": "Xiga",
     "prev": "Hore",
     "yes": "Haa",
-    "no": "Maya"
+    "no": "Maya",
+    "you": "adiga"
+  },
+  "surprise": {
+    "metaDesc": "Adeegga surpriiska ee Beirut — dhalashada, murugada, digaaga, booqashada bukaanka, hadiyad gaarsiin iyo soo jeedinta jacayl.",
+    "heroTitle1": "💞 Haddii qalbiga",
+    "heroTitle2": "uusan kala go'in,",
+    "heroTitle3": "masaafadu dad kuma kala dayn karto!! 💞",
+    "heroSub": "Qoysaska, kuwa aad jeceshahay ama lamaanaha ku nool Beirut — iimaarka, ka qaybgalka farxadda, iyo dhiirigelinta murugada. Waxaan kuu fududaynay inaad joogto xitaa aad fog tahay.",
+    "bookNow": "Hadda Dalbo",
+    "howItWorks": "Sidee ayay u shaqeysaa",
+    "sameDay": "Maalinta islaa",
+    "trustedProviders": "Bixiyeyaal la aamini karo",
+    "categoriesTitle": "Hadiyad noocee ah ayaad rabtaa?",
+    "categories": {
+      "birthday": "Dhalasho",
+      "flowers": "Ubax",
+      "decoration": "Qurxin",
+      "giftbox": "Sanduuq Hadiyad",
+      "cake": "Keeg",
+      "proposal": "Soo Jeedin Jacayl"
+    },
+    "groupTitle": {
+      "birthday": "Dhalashada iyo Surpriisyada",
+      "event": "Murugada, Farxadda (Digaaga) ama Booqashada Bukaanka",
+      "gift": "Hadiyad Gaarsiin",
+      "proposal": "Soo Jeedin & Sannadguurada"
+    },
+    "groupSubtitle": {
+      "birthday": "Adiga kuuguna, waxaan u gudbinaynaa dhalashada, barakada, ama jacaylka sidii aad na amarto.",
+      "event": "Haddii aadan joogi karin digaaga, murugada, ama jirranka, waxaan kuuga tagaynaa oo waxaan tusi doonnaa inay kuu qalimaan.",
+      "gift": "Hadiyad u gudbi jacaylkaaga, qoyskaaga ama saaxiibadaada adiga oo naga sii maraya.",
+      "proposal": "Surpriisyada soo jeedinta / sannadguurada."
+    },
+    "giftIntro": "",
+    "steps": {
+      "chooseTitle": "Dooro",
+      "chooseText": "Dooro surpriiska / adeegga aad rabto",
+      "bookTitle": "Dalbo",
+      "bookText": "Foomka buuxi ama WhatsApp nagala xiriir",
+      "deliverTitle": "Waan diyaarinaynaa",
+      "deliverText": "Adiga kuuguna sidii aad amartay waan diyaarinaa oo gaarsiiynaa"
+    },
+    "postedBy": "Waxaa dhigay {{name}}",
+    "startingFrom": "Laga bilaabo",
+    "bookingTitle": "🎁 Dalbashada Surpriiska",
+    "loggedInAs": "👤 Sida {{name}} — macluumaadkaaga waa la buuxiyay",
+    "loginHint": "👤 Gal / isdiiwaangeli si aad macluumaadkaaga ugu buuxiso si degdeg ah",
+    "name": "Magac (Name) *",
+    "phone": "Tilifoon (Phone) *",
+    "email": "E-mail (Email)",
+    "service": "Adeeg (Service)",
+    "serviceOpts": {
+      "birthday": "Dhalasho / Surpriis",
+      "event": "Murugo / Digaag / Booqasho bukaan",
+      "gift": "Hadiyad gaarsiin",
+      "proposal": "Soo jeedin / Sannadguurad",
+      "other": "Kale"
+    },
+    "date": "Taariikh (Date)",
+    "city": "Magaalo (City)",
+    "provider": "Bixiyaha (Provider)",
+    "budget": "Miyaan (Budget $)",
+    "details": "Faahfaahin (Details)",
+    "notesPlaceholder": "Waxa aad rabto si faahfaahsan u qor... (keegga dhalashada, ubax, qurxin...)",
+    "sending": "Waa la dirirayaa...",
+    "bookBtn": "📨 Dalbo (Book Now)",
+    "adminNotice": "Wuxuu si toos ah ugu tagayaa maamulka — dhawaan waanu kula xiriiri doonnaa",
+    "success": "Codsigaaga waa la helay! Dhawaan waanu kula xiriiri doonnaa",
+    "fail": "Diri waa lagu guuldareystay. Fadlan mar kale isku day",
+    "whatsappText": "Hello WeyniShopping! Waxaan rabaa inaan dalbo adeeg Surpriis.",
+    "tihunSub": "Adeegga munaasabadda iyo surpriiska ee Beirut ee bulshada Itoobiya — dhalashada, digaaga, booqashada murugada, hadiyad gaarsiin iyo kuwa kale.",
+    "ph": {
+      "name": "Magacaaga",
+      "email": "ikhtiyaar",
+      "provider": "Tihun Surprise Team",
+      "budget": "50"
+    },
+    "features": {
+      "prepared": "Waxaa diyaarina anaga",
+      "cake": "Keeg iyo ubax",
+      "delivery": "🚚 Gaarsiin kala duwan",
+      "food": "Cunto 10 qof",
+      "water": "2 biyo la xidhay nus litir"
+    },
+    "giftPackages": [
+      {
+        "name": "Sanad-guurada (Anniversary)",
+        "features": ["Kuwa aan diyaarinno", "Ubax xidhmaysan", "Kaarad jacayl", "Keeg"],
+        "price": 50
+      },
+      {
+        "name": "Soo-jeedin Guur (Proposal)",
+        "features": ["Kuwa aan diyaarinno", "Ubax xidhmaysan", "Kaarad jacayl", "Keeg"],
+        "price": 50
+      },
+      {
+        "name": "Surpriis",
+        "features": ["Kuwa aan diyaarinno", "Ubax xidhmaysan", "Kaarad jacayl", "Keeg"],
+        "price": 50
+      }
+    ],
+    "tihun": {
+      "quote": "💞 “Haddii qalbiga uusan kala go'in, kala duwanaanshaha dalka dad kuma kala dayn karo!”",
+      "intro": "In qoysaska dalka iyo shaqada ku kala fogaaday lagu soo dhaweeyo dareen ayaa ah ujeeddada ugu weyn ee adeegga surpriiska ee Tihun.",
+      "story": "Fogaanshaha iyo kalinimada u dhaxaysa Itoobiya iyo Lubnaan (Beirut) waxaan u beddelnaa jacayl iyo xusuus. Inaan gabadhaada qaaliga ah ee Beirut ku nool maalinta dhalashadeeda “Waxaad ku dhalatay!” kuugu sheegno magacaaga, ama qaraabadaada Beirut markay guursato, markay murugaysan tahay, ama markay bukto cidhifkeeda joogno oo aan u qabanno waxa loo baahan yahay — {{brand}} oo Tihun la jira ayaa had iyo jeer diyaar u ah.",
+      "pillTitle": "Adeeggeenna waxaan u diyaarinay saddex qaybood oo waaweyn:",
+      "pillars": {
+        "birthday": { "title": "Dhalashada iyo Maalmaha Xuska", "text": "Hadiyado surpriis ah iyo ubax aan la ilaawi karin." },
+        "hardship": { "title": "Waqtiyada Dhibka, Murugada iyo Arooska", "text": "Waxaan kaa wakiilnaa booqashada bukaanka iyo cidhifka ku sugnaanshaha murugada." },
+        "love": { "title": "Jacaylka iyo Guurka", "text": "In jacaylka Beirut ku nool loo soo jeediyo guur (proposal) iyo in sannad-guurada guurka si qurux badan loo xuso oo loo dabaaldego." }
+      },
+      "promise": "Meeshaad joogto iyadoo ay tahay, waxaan si daacad ah u shaqeynaa si doonista qalbigaaga ay meesheeda u gaarto!",
+      "final": "Sida shaamacda gubata oo qoyskeeda noolaysa — naagta geesinimada leh, tani runtii waa fal mahadnaq oo ay mutayso!!"
+    }
+  },
+  "about": {
+    "hero": "{{name}} waxaa loo sameeyay walaalahayaga qaaliga ah ee ku shaqeeya wadamada Carabta (Lubnaan, Sacuudi Carabiya, Dubai, Qatar, Kuwayt iyo kuwa kale) shaqo guri iyo shaqooyin kala duwan — waa suuqa ugu weyn ee Itoobiya.",
+    "hero2": "Kuwa aan haysan waqti ay u baxaan dukaamada, waxaan u soo diyaarinay baahidooda oo dhan (cunto, dharka, qurxinta) hal website oo habaysan. Halkii aad ka iibsan lahayd meelo kala duwan oo aad ka bixin lahayd gaarsiiyeyaal kala duwan, waxaan isku soo xiraa alaabta oo dhan hal gaarsiin ayaan kuu keenayaa. Maadaama alaab kasta si faahfaahsan loo sharaxo, macaamiishu waxay wax ku iibsadaan macluumaad buuxa iyo xasillooni buuxda.",
+    "builtBy": "Waxaa dhisay Itoobiyanku, Itoobiyanka wadamada Carabta ku nool",
+    "whatTitle": "Maxaad dalban kartaa",
+    "what": [
+      { "title": "Gaarsiinta Cuntada Itoobiya", "items": ["Injera", "Wot", "Shiro", "Kitfo", "Tibs", "Firfir", "Cunto khudrad", "Bun iyo cabitaan"] },
+      { "title": "Alaabta Baltina", "items": ["Berbere", "Mitmita", "Budo Shiro", "Budo Teff", "Bun cagaaran", "Malab Itoobiya", "Udug", "Alaab dhaqameed"] },
+      { "title": "Fashion iyo Dharka", "items": ["Fashion dumarka", "Fashion ragga", "Dharka carruurta", "Kab", "Boorso", "Dharka dhaqanka Itoobiya"] },
+      { "title": "Timo iyo Qurux", "items": ["Saliidaha timaha", "Weave iyo wig", "Shampoo iyo conditioner", "Daryeelka maqaarka", "Qurxinta"] }
+    ],
+    "howTitle": "Sida {{name}} u shaqeeyo",
+    "how": [
+      { "role": "Macmiisha", "steps": ["Daawo alaabta ganacsiyada Itoobiya", "Dalbo dalabkaaga taleefankaaga", "Xulo gaarsiinta guriga", "Qaado dalabkaaga albaabkaaga"] },
+      { "role": "Ganacsatada", "steps": ["Abuur dukaankaaga online", "Soo geli alaabtaada", "Qaado dalabyada macmiisha", "Kori ganacsigaaga"] },
+      { "role": "Ganacsiga gaarsiinta", "steps": ["Qaado codsiyada gaarsiinta", "Gaarsii alaabta si ammaan ah", "Hel dakhli adoo u adeegaya bulshadaada"] }
+    ],
+    "missionTitle": "Hadafkeena",
+    "missionP1": "In la fududeeyo iibsiga Itoobiyanka wadamada Carabta ku nool iyadoo la isku xiro macmiil, ganacsato iyo gaarsiin hal suuq lagu kalsoon yahay.",
+    "missionP2": "Waxaan aaminsanahay in Itoobiyan kasta uu helo cunto, raashin, dharka iyo alaabta qurxinta si dhakhso leh, ammaan ah oo ku habboon, meel uu ku nool yahay iyo shaqo uu ka shaqeeyaba.",
+    "whyTitle": "Maxaad u dooranaysaa {{name}}?",
+    "why": [
+      "Si gaar ah loogu sameeyay Itoobiyanka wadamada Carabta ku nool",
+      "Ganacsiyada Itoobiya ee la aamini karo",
+      "Iibsasho taleefan oo ku habboon",
+      "Nidaam dalab ammaan ah",
+      "Gaarsiin guri oo degdeg ah",
+      "Alaab Itoobiya oo ballaaran",
+      "Taageeridda ganacsiyada Itoobiya",
+      "Hal suuq oo loogu talagalay baahidaada maalinlaha ah"
+    ]
   }
 }

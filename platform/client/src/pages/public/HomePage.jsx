@@ -203,7 +203,7 @@ export default function HomePage() {
               </li>
               <li className="flex items-start gap-2">
                 <ArrowRight size={16} className="shrink-0 mt-0.5 text-brand" />
-                በአረብ ሀገር ያሉ ኢትዮጵያውያን በቀላሉ እንዲያገኟቸው በዌይኒሾፕ ላይ ነጻ የአቅራቢነት አካውንት ይክፈቱ።
+                በአረብ ሀገር ያሉ ኢትዮጵያውያን በቀላሉ እንዲያገኟቸው በወይኒገበያ ላይ ነጻ የአቅራቢነት አካውንት ይክፈቱ።
               </li>
               <li className="flex items-start gap-2">
                 <ArrowRight size={16} className="shrink-0 mt-0.5 text-brand" />
@@ -235,7 +235,7 @@ export default function HomePage() {
               </li>
               <li className="flex items-start gap-2">
                 <ArrowRight size={16} className="shrink-0 mt-0.5 text-brand" />
-                በዌይኒሾፕ ላይ የዴሊቨሪ አካውንት ይክፈቱ፤ አስፈላጊ መረጃዎችንና ሰነዶችን በማሟላት የስራ ቤተሰባችን ይሁኑ!
+                በወይኒገበያ ላይ የዴሊቨሪ አካውንት ይክፈቱ፤ አስፈላጊ መረጃዎችንና ሰነዶችን በማሟላት የስራ ቤተሰባችን ይሁኑ!
               </li>
             </ul>
             <p className="text-xs mb-4 italic" style={{ color: 'var(--color-muted)' }}>

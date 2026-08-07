@@ -1,5 +1,11 @@
 ﻿{
   "lang": { "en": "English", "am": "አማርኛ", "or": "Afaan Oromoo", "ti": "ትግርኛ", "so": "Af Soomaali" },
+  "brand": {
+    "name": "WeyniShop",
+    "rights": "All rights reserved.",
+    "aboutTitle": "About {{name}}",
+    "join": "Join {{name}} in under a minute."
+  },
   "nav": {
     "home": "Home",
     "categories": "Categories",
@@ -12,7 +18,7 @@
     "account": "Account",
     "orders": "My Orders",
     "wishlist": "Wishlist",
-    "becomeSeller": "Sell on WeyniShopping"
+    "becomeSeller": "Sell on WeyniShop"
   },
   "product": {
     "sold": "sold",
@@ -128,6 +134,180 @@
     "next": "Next",
     "prev": "Previous",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "you": "you"
+  },
+  "surprise": {
+    "metaDesc": "Surprise service in Beirut — birthday, funeral, feast, health visit, gift delivery and proposal surprises with same-day representation.",
+    "heroTitle1": "💞 Where there's love,",
+    "heroTitle2": "distance",
+    "heroTitle3": "can't keep us apart!! 💞",
+    "heroSub": "For families, loved ones or partners living in Beirut — checking in on someone who is sick, sharing in their joy, or comforting them in sorrow. We make it possible to be there, even from afar.",
+    "bookNow": "Book Now",
+    "howItWorks": "How It Works",
+    "sameDay": "Same Day",
+    "trustedProviders": "Trusted Providers",
+    "categoriesTitle": "What kind of gift are you looking for?",
+    "categories": {
+      "birthday": "Birthday",
+      "flowers": "Flowers",
+      "decoration": "Decoration",
+      "giftbox": "Gift Box",
+      "cake": "Cake",
+      "proposal": "Proposal"
+    },
+    "groupTitle": {
+      "birthday": "For Birthdays and Surprises",
+      "event": "For Sorrow, Celebration (Feast) or Visiting the Sick",
+      "gift": "Gift Delivery",
+      "proposal": "Proposal & Anniversary"
+    },
+    "groupSubtitle": {
+      "birthday": "On your behalf, we deliver birthday wishes, blessings, or expressions of love the way you ask us to.",
+      "event": "When you can't be there for a feast, a funeral, or an illness, we attend on your behalf and show your loved ones how much they mean to you.",
+      "gift": "Send gifts to your loved ones — your partner, your family or your friends — through us.",
+      "proposal": "Proposal / anniversary surprises for the special moment."
+    },
+    "giftIntro": "If you have a girlfriend in Arab countries who will one day be your 'future wife', you can end her lonely, slow life of exile with a sweet new breath of life — send her a 'Will You Marry Me' or a surprise on our behalf and make her happy.\n\nOr if you have a brave wife who worked abroad for her home, her marriage and her children — by sending her the different wedding-anniversary surprises, you too can tell her your love, renew her love, and even honor her in front of her employers.\n\nFor that too, we are here.",
+    "form": {
+      "subtitle": "Fill in the details — we prepare, deliver and do it on your behalf, same-day in Beirut.",
+      "loginRequired": "Please create or log in to your account to place an order — exactly like buying a product.",
+      "secured": "Order placed with your account · {{name}}",
+      "secureTag": "Secure booking",
+      "service": "Service",
+      "customService": "Custom wish",
+      "contactTitle": "Your contact details",
+      "detailsTitle": "Surprise details",
+      "extrasTitle": "Message & extra details",
+      "toWhom": "Who is the surprise for?",
+      "toWhomPh": "Name of the person",
+      "occasion": "Occasion",
+      "occasions": {
+        "celebration": "Celebration / party",
+        "wedding": "Wedding",
+        "funeral": "Sorrow / mourning",
+        "sick": "Visiting someone sick"
+      },
+      "people": "Number of people",
+      "address": "Delivery / visit address",
+      "ideas": "What to include in the gift (tap to choose)",
+      "message": "Message you want us to say",
+      "messagePh": "Your words — delivered together with the gift",
+      "notes": "Other details",
+      "summaryHint": "After you send it, our team contacts you on WhatsApp to confirm and arrange everything.",
+      "success": "Your order was received! We will contact you shortly."
+    },
+    "steps": {
+      "chooseTitle": "Choose",
+      "chooseText": "Pick the surprise / service you want",
+      "bookTitle": "Book",
+      "bookText": "Fill the form or contact us on WhatsApp",
+      "deliverTitle": "We deliver",
+      "deliverText": "We prepare and deliver on your behalf, the way you asked us to"
+    },
+    "postedBy": "Posted by {{name}}",
+    "startingFrom": "Starting from",
+    "bookingTitle": "🎁 Surprise Booking",
+    "loggedInAs": "👤 Logged in as {{name}} — your details are prefilled",
+    "loginHint": "👤 Sign in / register to fill your details quickly",
+    "name": "Name *",
+    "phone": "Phone *",
+    "email": "Email",
+    "service": "Service",
+    "serviceOpts": {
+      "birthday": "Birthday / Surprise",
+      "event": "Funeral / Feast / Health visit",
+      "gift": "Gift delivery",
+      "proposal": "Proposal / Anniversary",
+      "other": "Other"
+    },
+    "date": "Date",
+    "city": "City",
+    "provider": "Provider",
+    "budget": "Budget ($)",
+    "details": "Details",
+    "notesPlaceholder": "Describe what you need in detail... (birthday cake, flowers, decoration...)",
+    "sending": "Sending...",
+    "bookBtn": "📨 Book Now",
+    "adminNotice": "Goes directly to the admin — we'll contact you soon",
+    "success": "Your request was received! We'll contact you soon",
+    "fail": "Failed to send. Please try again",
+    "whatsappText": "Hello WeyniShopping! I would like to book a Surprise Service.",
+    "tihunSub": "Event & surprise services in Beirut for the Ethiopian community — birthdays, feasts, sympathy visits, gift delivery and more.",
+    "ph": {
+      "name": "Your name",
+      "email": "optional",
+      "provider": "Tihun Surprise Team",
+      "budget": "50"
+    },
+    "features": {
+      "prepared": "Prepared by us",
+      "cake": "Cake & bouquet",
+      "delivery": "🚚 Delivery extra",
+      "food": "Catered food for 10 people",
+      "water": "2 sealed half-liter water bottles"
+    },
+    "giftPackages": [
+      {
+        "name": "Anniversary",
+        "features": ["Prepared by us", "Flower bouquet", "Romantic message card", "Cake"],
+        "price": 50
+      },
+      {
+        "name": "Will You Marry Me — Proposal",
+        "features": ["Prepared by us", "Flower bouquet", "Romantic message card", "Cake"],
+        "price": 50
+      },
+      {
+        "name": "Surprise",
+        "features": ["Prepared by us", "Flower bouquet", "Romantic message card", "Cake"],
+        "price": 50
+      }
+    ],
+    "tihun": {
+      "quote": "💞 \"As long as the heart stays close, distance and a country's borders cannot keep people apart!\"",
+      "intro": "Bringing families separated by country and work back together through feeling is the main goal of the Tihun surprise service.",
+      "story": "We turn the distance and the loneliness between Ethiopia and Lebanon (Beirut) into love and memory. To tell the dear daughter in Beirut \"Happy Birthday!\" on your behalf, to stand beside a relative in Beirut when they get married, when they mourn, or when they fall sick, and give them what they need — {{brand}} together with Tihun is always ready.",
+      "pillTitle": "Our service is arranged into three main branches:",
+      "pillars": {
+        "birthday": { "title": "For Birthdays & Celebration Days", "text": "Unforgettable surprise gifts and flowers." },
+        "hardship": { "title": "For Hardship, Mourning & Wedding Times", "text": "To visit the sick and stand beside someone during mourning, representing you." },
+        "love": { "title": "For Love & Marriage", "text": "To help a loved one propose and celebrate an anniversary beautifully in Beirut." }
+      },
+      "promise": "Wherever you are, the longing of your heart reaches its place — we work faithfully!",
+      "final": "For the girl who melts like a candle to keep her family — this is, truly, an act of gratitude she deserves!!"
+    }
+  },
+  "about": {
+    "hero": "{{name}} — the biggest Ethiopian marketplace built with our dear brothers and sisters in mind, the ones working in Arab countries (Lebanon, Saudi Arabia, Dubai, Qatar, Kuwait and others) as domestic workers and in various jobs.",
+    "hero2": "For those of you with no time to go shopping in person, we gather every need — food, clothes, cosmetics — in one website. Instead of buying from many places and paying many delivery riders, we pack everything together and deliver in one trip. Because every product is described in detail, customers buy with full information and total peace of mind.",
+    "builtBy": "Built by Ethiopians, for Ethiopians Living in Arab Countries",
+    "whatTitle": "What You Can Order",
+    "what": [
+      { "title": "Ethiopian Food Delivery", "items": ["Injera", "Doro Wat", "Shiro", "Kitfo", "Tibs", "Firfir", "Vegetarian dishes", "Coffee and beverages"] },
+      { "title": "Baltina Groceries", "items": ["Berbere", "Mitmita", "Shiro powder", "Teff flour", "Green coffee beans", "Ethiopian honey", "Spices", "Traditional groceries"] },
+      { "title": "Fashion & Clothing", "items": ["Women's fashion", "Men's fashion", "Children's clothing", "Shoes", "Bags", "Traditional Ethiopian clothing"] },
+      { "title": "Hair & Beauty", "items": ["Hair oils", "Weaves & wigs", "Shampoo & conditioner", "Skin care", "Cosmetics"] }
+    ],
+    "howTitle": "How {{name}} Works",
+    "how": [
+      { "role": "For Customers", "steps": ["Browse products from Ethiopian businesses", "Place your order from your phone", "Choose home delivery", "Receive your order at your doorstep"] },
+      { "role": "For Merchants", "steps": ["Create your online shop", "Upload your products", "Receive orders from customers", "Grow your business"] },
+      { "role": "For Delivery Partners", "steps": ["Accept delivery requests", "Deliver products safely", "Earn while serving your community"] }
+    ],
+    "missionTitle": "Our Mission",
+    "missionP1": "To make shopping easier for every Ethiopian living in Arab countries by connecting customers, merchants and delivery partners on one trusted marketplace.",
+    "missionP2": "We believe every Ethiopian should reach food, groceries, clothes and beauty products quickly, safely and conveniently, no matter where they live or work.",
+    "whyTitle": "Why Choose {{name}}?",
+    "why": [
+      "Built specifically for Ethiopians living in Arab countries",
+      "Trusted Ethiopian merchants",
+      "Convenient mobile shopping",
+      "Secure ordering process",
+      "Fast local home delivery",
+      "Wide range of Ethiopian products",
+      "Supporting Ethiopian-owned businesses",
+      "One platform for all your daily needs"
+    ]
   }
 }

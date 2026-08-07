@@ -63,7 +63,7 @@ export default function BlogPage() {
     <div className="max-w-page mx-auto px-3 md:px-4 py-8 md:py-12">
       <header className="text-center mb-12">
         <h1 className="text-3xl md:text-5xl font-extrabold mb-4 font-localized">
-          የዌይኒሾፕ ብሎግ
+          የወይኒገበያ ብሎግ
         </h1>
         <p className="text-lg md:text-xl max-w-3xl mx-auto" style={{ color: 'var(--color-muted)' }}>
           Weynishop Blog — ለአረብ ሀገር ለሚኖሩ ኢትዮጵያውያን ጠቃሚ ምክሮች እና መረጃዎች

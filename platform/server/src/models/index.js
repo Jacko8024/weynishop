@@ -19,6 +19,8 @@ import { Category } from './Category.js';
 import { ContactInquiry } from './ContactInquiry.js';
 import { VendorProfile } from './VendorProfile.js';
 import { DeliveryProfile } from './DeliveryProfile.js';
+import { SurpriseBooking, SURPRISE_STATUSES } from './SurpriseBooking.js';
+import { SurpriseService } from './SurpriseService.js';
 
 // Core associations
 Product.belongsTo(User, { as: 'seller', foreignKey: 'sellerId' });
@@ -81,6 +83,12 @@ User.hasOne(VendorProfile, { as: 'vendorProfile', foreignKey: 'userId', onDelete
 DeliveryProfile.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 User.hasOne(DeliveryProfile, { as: 'deliveryProfile', foreignKey: 'userId', onDelete: 'CASCADE' });
 
+SurpriseService.belongsTo(User, { as: 'provider', foreignKey: 'providerId' });
+User.hasMany(SurpriseService, { as: 'surpriseServices', foreignKey: 'providerId' });
+
+SurpriseBooking.belongsTo(SurpriseService, { as: 'service', foreignKey: 'serviceId' });
+SurpriseService.hasMany(SurpriseBooking, { as: 'bookings', foreignKey: 'serviceId' });
+
 export {
   sequelize,
   User,
@@ -103,6 +111,9 @@ export {
   ContactInquiry,
   VendorProfile,
   DeliveryProfile,
+  SurpriseBooking,
+  SURPRISE_STATUSES,
+  SurpriseService,
   STAGES,
   STAGE_LABELS,
 };

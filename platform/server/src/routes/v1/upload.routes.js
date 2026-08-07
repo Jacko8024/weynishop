@@ -2,7 +2,7 @@ import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import multer from 'multer';
 import sharp from 'sharp';
-import { protect, requireRole } from '../../middleware/auth.js';
+import { protect, requireRole, requireSurpriseOwner } from '../../middleware/auth.js';
 import { uploadToBucket } from '../../lib/supabase.js';
 import { env } from '../../config/env.js';
 
@@ -112,6 +112,47 @@ router.post(
       height: BANNER_H,
       bucket: env.SUPABASE_BUCKET_BANNERS,
       prefix: '',
+    });
+    res.status(201).json({ url });
+  })
+);
+
+// POST /api/v1/uploads/surprise — single service image, 900x660 cover-crop.
+// Allowed for the ONE merchant account that owns the surprise page (and for
+// admins), using their main Weyni shop account.
+router.post(
+  '/surprise',
+  protect,
+  requireSurpriseOwner,
+  upload.single('image'),
+  asyncHandler(async (req, res) => {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+    const url = await processAndStore({
+      buffer: req.file.buffer,
+      width: 900,
+      height: 660,
+      bucket: env.SUPABASE_BUCKET_BANNERS,
+      prefix: `surprise/user-${req.user.id}/`,
+    });
+    res.status(201).json({ url });
+  })
+);
+
+// POST /api/v1/uploads/surprise/admin — same crop, admin-only (services the
+// admin publishes directly).
+router.post(
+  '/surprise/admin',
+  protect,
+  requireRole('admin'),
+  upload.single('image'),
+  asyncHandler(async (req, res) => {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+    const url = await processAndStore({
+      buffer: req.file.buffer,
+      width: 900,
+      height: 660,
+      bucket: env.SUPABASE_BUCKET_BANNERS,
+      prefix: 'surprise/admin/',
     });
     res.status(201).json({ url });
   })

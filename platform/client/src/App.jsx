@@ -21,6 +21,7 @@ import FAQPage from './pages/public/FAQPage.jsx';
 import TermsPage from './pages/public/TermsPage.jsx';
 import PrivacyPage from './pages/public/PrivacyPage.jsx';
 import NotFoundPage from './pages/public/NotFoundPage.jsx';
+import SurprisePage from './pages/public/SurprisePage.jsx';
 
 // Buyer-protected (cart/checkout/orders only)
 import BuyerLayout from './pages/buyer/Layout.jsx';
@@ -36,6 +37,7 @@ import SellerProducts from './pages/seller/Products.jsx';
 import SellerOrders from './pages/seller/Orders.jsx';
 import SellerProfile from './pages/seller/Profile.jsx';
 import SellerCommission from './pages/seller/Commission.jsx';
+import SellerSurprise from './pages/seller/Surprise.jsx';
 
 // Delivery
 import DeliveryLayout from './pages/delivery/Layout.jsx';
@@ -56,6 +58,8 @@ import AdminBanners from './pages/admin/Banners.jsx';
 import AdminCategories from './pages/admin/Categories.jsx';
 import AdminPendingRequests from './pages/admin/PendingRequests.jsx';
 import AdminProducts from './pages/admin/Products.jsx';
+import SurpriseBookings from './pages/admin/SurpriseBookings.jsx';
+import SurpriseServices from './pages/admin/SurpriseServices.jsx';
 
 const Protected = ({ role, children }) => {
   const { user, logout } = useAuth();
@@ -89,6 +93,7 @@ export default function App() {
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/surprise" element={<SurprisePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
 
@@ -112,6 +117,7 @@ export default function App() {
         <Route path="orders" element={<SellerOrders />} />
         <Route path="profile" element={<SellerProfile />} />
         <Route path="commission" element={<SellerCommission />} />
+        <Route path="surprise" element={<SellerSurprise />} />
       </Route>
 
       {/* DELIVERY */}
@@ -134,6 +140,8 @@ export default function App() {
         <Route path="categories" element={<AdminCategories />} />
         <Route path="pending" element={<AdminPendingRequests />} />
         <Route path="products" element={<AdminProducts />} />
+        <Route path="surprise" element={<SurpriseBookings />} />
+        <Route path="surprise/services" element={<SurpriseServices />} />
       </Route>
 
     </Routes>

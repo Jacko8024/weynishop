@@ -4,7 +4,7 @@ import useDocumentTitle from '../../lib/useDocumentTitle.js';
 
 const FAQ_GROUPS = [
   {
-    title: 'Weynishop Services (የዌይኒሾፕ አገልግሎቶች)',
+    title: 'Weynishop Services (የወይኒገበያ አገልግሎቶች)',
     items: [
       { q: 'ከሼን (Shein) እቃ እንዴት ማዘዝ እችላለሁ?', a: 'መግዛት የሚፈልጉትን የShein እቃ መርጠው ያሳዩን፤ የዋጋውን 30% ቅድመ ክፍያ (Advance Payment) በመክፈል ትዕዛዝዎን ማረጋገጥ ይችላሉ። እቃው ሲደርስዎ ቀሪውን ይከፍላሉ።' },
       { q: 'How to pre-order from Shein?', a: 'Choose your items from Shein, send them to us, and pay a 30% down payment to confirm. You pay the remaining amount upon delivery.' },

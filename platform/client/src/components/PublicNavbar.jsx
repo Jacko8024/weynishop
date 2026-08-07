@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Search, ShoppingCart, Heart, User as UserIcon, Menu, X,
-  ClipboardList, LogOut, Store, Zap,
+  ClipboardList, LogOut, Store, Zap, Gift, Info,
 } from 'lucide-react';
 import { useAuth } from '../store/auth.js';
 import LangSwitcher from './LangSwitcher.jsx';
@@ -72,6 +72,13 @@ export default function PublicNavbar() {
 
         {/* Desktop right cluster */}
         <div className="hidden md:flex items-center gap-1">
+          <Link to="/surprise" className="btn-ghost text-sm gap-1.5 font-semibold"
+                style={{ color: 'var(--color-brand)' }}>
+            <Gift size={16} /> Surprise
+          </Link>
+          <Link to="/about" className="btn-ghost text-sm gap-1.5">
+            <Info size={16} /> About
+          </Link>
           <Link to="/deals" className="btn-ghost text-sm gap-1.5">
             <Zap size={16} className="text-flash" /> {t('nav.deals')}
           <ThemeToggle />
@@ -157,6 +164,13 @@ export default function PublicNavbar() {
           </div>
           <Link to="/deals" onClick={() => setMenuOpen(false)} className="block btn-ghost w-full justify-start text-sm">
             <Zap size={16} className="text-flash" /> {t('nav.deals')}
+          </Link>
+          <Link to="/surprise" onClick={() => setMenuOpen(false)} className="block btn-ghost w-full justify-start text-sm font-semibold"
+                style={{ color: 'var(--color-brand)' }}>
+            <Gift size={16} /> Surprise
+          </Link>
+          <Link to="/about" onClick={() => setMenuOpen(false)} className="block btn-ghost w-full justify-start text-sm">
+            <Info size={16} /> About
           </Link>
           {!user ? (
             <div className="flex gap-2">

@@ -1,5 +1,11 @@
 ﻿{
   "lang": { "en": "English", "am": "አማርኛ", "or": "Afaan Oromoo", "ti": "ትግርኛ", "so": "Af Soomaali" },
+  "brand": {
+    "name": "WeyniShop",
+    "rights": "Mirgii hundaa eegameera",
+    "aboutTitle": "Waa'ee {{name}}",
+    "join": "Dakikaa tokko keessatti {{name}} wajjin makamaa."
+  },
   "nav": {
     "home": "Mana",
     "categories": "Ramaddii",
@@ -12,7 +18,7 @@
     "account": "Herrega",
     "orders": "Ajajawwan Koo",
     "wishlist": "Kuufannaa",
-    "becomeSeller": "WeyniShopping irratti gurguri"
+    "becomeSeller": "WeyniShop irratti gurguri"
   },
   "product": {
     "sold": "gurguramee",
@@ -128,6 +134,152 @@
     "next": "Itti aanu",
     "prev": "Duraa",
     "yes": "Eeyyee",
-    "no": "Lakki"
+    "no": "Lakki",
+    "you": "ati"
+  },
+  "surprise": {
+    "metaDesc": "Tajaajila surprise Baayroota keessa — guyyaa dhalootaa, gaddaa, xorsoo, dhukkubsataa gaafachuu, kennaa dhiyeessuu fi gaaffii jaalalaa.",
+    "heroTitle1": "💞 Yoo jaalalli jiraate,",
+    "heroTitle2": "fageenyi",
+    "heroTitle3": "namoota addaan hin baasu!! 💞",
+    "heroSub": "Warra Beeroo keessa jiraataniif, jaalallee yookiin lammaanotaaf — dhukkubsatanii gaafachuu, gammachuutti hirmaachuu, gaddattis jajjabeessuu dandeessan. Fageenya irraa ta'aniyyuu argamuu dandeessaniif karaa isiniif qopheessinee jirra.",
+    "bookNow": "Amma Baafadhaa",
+    "howItWorks": "Akkamitti Hojjata",
+    "sameDay": "Guyyaa Duubaan",
+    "trustedProviders": "Tajaajiltoota Amanamoo",
+    "categoriesTitle": "Gosa kennaa kam barbaadda?",
+    "categories": {
+      "birthday": "Guyyaa Dhaloota",
+      "flowers": "Daraaraa",
+      "decoration": "Faaya",
+      "giftbox": "Saanduqa Kennaa",
+      "cake": "Keekii",
+      "proposal": "Gaaffii Jaalalaa"
+    },
+    "groupTitle": {
+      "birthday": "Guyyaa dhalootaaf fi dinqisiisuuf",
+      "event": "Gaddaaf, gammachuuf (xorsoof) ykn dhukkubsataa gaafachuuf",
+      "gift": "Kennaa Dhiyeessuu",
+      "proposal": "Gaaffii Jaalalaa fi Waraabbii"
+    },
+    "groupSubtitle": {
+      "birthday": "Bakka keessaniin, guyyaa dhalootaa, eebbisa, ykn jaalala akka isin ajajdanitti dhiyeessina.",
+      "event": "Yoo xorsoo, gaddaa ykn dhukkuba irratti argamuu baattanillee, bakka keessaniin dhaqxee warra jaallattan isaanitti baayyee ta'uu keessan isaanitti mul'isina.",
+      "gift": "Kennaa jaalallee keessaniif, maatii keessaniif ykn hiriyaa keessaniif nuun dhiyeessaa.",
+      "proposal": "Gaaffii jaalalaa / yeroo addaatiif dinqii."
+    },
+    "giftIntro": "Yoo jaalalluu 'haadha mana koo taatu' jettu qabaatte — 'proposal' ykn 'surprise' nuun ergi; jireenya ishee gaddaa sana gara jalqabaa jireenya haaraa mi'aawaa, gammachuu itti geessi.\n\nYoo niitii jabduu, mana, gaa'ila ykn ijoollee isheetiif hojjatte qabaatte — 'anniversary' (yaadanno gala) nuun dhiyeessi, jaalala kee itti ibisi, isheef ulfina mana hojii isheet keessatti kenni.\n\nKanaafuu nu jirra.",
+    "steps": {
+      "chooseTitle": "Filadhaa",
+      "chooseText": "Surprise / tajaajila barbaaddan filadhaa",
+      "bookTitle": "Baafadhaa",
+      "bookText": "Foormii guutaa ykn WhatsApp irratti nu quunnamaa",
+      "deliverTitle": "Nuti qopheessina",
+      "deliverText": "Bakka keessaniin akka isin ajajdanitti qopheessinee dhiheessina"
+    },
+    "postedBy": "Kan maxxanse {{name}}",
+    "startingFrom": "Irraa jalqaba",
+    "bookingTitle": "🎁 Baafannaa Surprise",
+    "loggedInAs": "👤 Akka {{name}} — odeeffannoon kee guutameera",
+    "loginHint": "👤 Odeeffannoo keessan saffisatti guutuuf seenaa / galmaa'aa",
+    "name": "Maqaa (Name) *",
+    "phone": "Bilbila (Phone) *",
+    "email": "Imeelii (Email)",
+    "service": "Tajaajila (Service)",
+    "serviceOpts": {
+      "birthday": "Guyyaa dhalootaa / Surprise",
+      "event": "Gadda / Xorsoo / Dhukkubsataa gaafachuu",
+      "gift": "Kennaa dhiyeessuu",
+      "proposal": "Gaaffii jaalalaa / Waraabbii",
+      "other": "Kan biraa"
+    },
+    "date": "Guyyaa (Date)",
+    "city": "Magaalaa (City)",
+    "provider": "Tajaajilaa (Provider)",
+    "budget": "Baajetaa (Budget $)",
+    "details": "Odeeffannoo (Details)",
+    "notesPlaceholder": "Waan barbaaddan ibsaa... (keekii, daraaraa, faayaa...)",
+    "sending": "Ergachaa jira...",
+    "bookBtn": "📨 Baafadhaa (Book Now)",
+    "adminNotice": "Kallattiin gara admin deema — dhiyootti isin quunnamna",
+    "success": "Gaaffiin keessan ga'eera! Dhiyootti isin quunnamna",
+    "fail": "Erguu hin dandeenye. Maaloo yeroo biroo yaalaa",
+    "whatsappText": "Hello WeyniShopping! Tajaajila Surprise tokko baafachuu barbaada.",
+    "tihunSub": "Tajaajila dinqii fi ximmataa Baayroot keessatti ummata Itiyoophiyaatiif — guyyaa dhalootaa, xorsoo, gadda gaafachuu, kennaa dhiyeessuu fi kan biraa.",
+    "ph": {
+      "name": "Maqaa kee",
+      "email": "filannoo",
+      "provider": "Tihun Surprise Team",
+      "budget": "50"
+    },
+    "features": {
+      "prepared": "Nuti qopheessina",
+      "cake": "Keekii fi daraaraa",
+      "delivery": "🚚 Dhiyeessaan adda",
+      "food": "Nyaata nama 10'f",
+      "water": "Bishaan 2 (litira walakkaa)"
+    },
+    "giftPackages": [
+      {
+        "name": "Guyyaa Yaadannoo (Anniversary)",
+        "features": ["Kan nuun qopheessinu", "Iddeettuu daraaraa", "Kaardii jaalalaa", "Keekii"],
+        "price": 50
+      },
+      {
+        "name": "Gaaffii Fuudhaa (Proposal)",
+        "features": ["Kan nuun qopheessinu", "Iddeettuu daraaraa", "Kaardii jaalalaa", "Keekii"],
+        "price": 50
+      },
+      {
+        "name": "Surpriizii",
+        "features": ["Kan nuun qopheessinu", "Iddeettuu daraaraa", "Kaardii jaalalaa", "Keekii"],
+        "price": 50
+      }
+    ],
+    "tihun": {
+      "quote": "💞 “Yoo qalbiin addaan ba'u malee, adda-addummaan biyyaa nama addaan hin baafu!”",
+      "intro": "Warra biyyaa fi hojii irraa addaan ba'an qalbii waliin walitti fiduun kaayyoo guddaa tajaajila surpriizii Tiixaanii dha.",
+      "story": "Addummaa fi kophaa gidduu Itiyoophiyaa fi Libaanoon (Baayroot) jiru jaalalaa fi yaadannoodhaan jijjiirra. Ilma/obboleettii keessan Baayroot jirtu guyyaa dhaloota isheetiif bakka keessaniin “Handhuuraa dhalatte!” jechuuf, yookaan firii keessan Baayroot yommuu fuudhu, yommuu gaddatu, yookiin yommuu dhukkubsatu cinaacha isaa argamee waan barbaachisu hojjechuuf {{brand}} Tiixaaniin waliin yeroo hunda qophaa'ee dha.",
+      "pillTitle": "Tajaajila keenya damee gurguddoo saditti qopheessinee jirra:",
+      "pillars": {
+        "birthday": { "title": "Guyyaa Dhalootaa fi Ayyaanaa", "text": "Kennaa surpriizii fi daraaraa hin dagatamne." },
+        "hardship": { "title": "Yeroo Rakkoo, Gaddaa fi Fuudhaa", "text": "Bakka keessaniin argamee dhukkubsataa gaafachuu fi gaddattis cinaacha isaanii ta'uu dandeessina." },
+        "love": { "title": "Jaalalaaf fi Fuudhaaf", "text": "Jaalallee Baayroot jiraatuuf gaaffii fuudhaa (proposal) dhiheessuu fi guyyaa fuudhaa bareechaan yaadachuu fi kabajuu." }
+      },
+      "promise": "Eessattuu taatanillee, fedhii qalbii keessanii bakka isaa akka ga'u amanamummaadhaan hojjanna!",
+      "final": "Akkuma shaamaa baqee maatii ishee jiraachiftee, dubartii gootummaa kanaaf kuni dhugumatti hojii galata isheef malu dha!!"
+    }
+  },
+  "about": {
+    "hero": "{{name}} jaallatamoo obboleeyyan keenyaf qophaa'e — warra biyya Arabaa keessatti (Libaanoon, Sa'ud Arabiyaa, Dubai, Qataar, Kuweeytii fi kan biraa) hojii manaatti fi hojii adda addaa keessa jiraniif — bakka guddaa gabaa Itiyoophiyaa dha.",
+    "hero2": "Warra bittaa hojjechuuf yeroo hin qabneef, fedhii isaanii hunda (nyaata, uffata, kosmetiksii) marsaalee tokko keessatti qopheessinee jirra. Bakka adda addaatti bituu fi dhiyeessitoota baay'ee kafaluu irraa, wantoota hunda walitti qabee dhiyeessa tokkoon dhiyeessina. Wanti tokkoon tokkoo adda addatti ibsameef, maamilli odeeffannoo guutuu qabaatee amanamummaadhaan bituu danda'a.",
+    "builtBy": "Itiyoophiyaadhaan ijaarame, biyya Arabaa keessa jiraataniif",
+    "whatTitle": "Maal ajajachuu dandeessu",
+    "what": [
+      { "title": "Nyaata Itiyoophiyaa Dhiyeessuu", "items": ["Injera", "Wot", "Shiro", "Kitfo", "Tibs", "Firfir", "Nyaata vegetarian", "Buna fi dhugaatii"] },
+      { "title": "Galmee Baltinaa", "items": ["Berbere", "Mitmita", "Daakuu shiro", "Daakuu teff", "Buna magariisa", "Damma Itiyoophiyaa", "Mi'eesa", "Galmee aadaa"] },
+      { "title": "Faashinii fi Uffata", "items": ["Faashinii dubaraa", "Faashinii dhiiraa", "Uffata ijoollee", "Cophee", "Boorsaa", "Uffata aadaa Itiyoophiyaa"] },
+      { "title": "Rifeensa fi Babbareessituu", "items": ["Zayitii rifeensaa", "Weave fi wig", "Shamboofi kandishinara", "Eegumsa gogaa", "Kosmetiksii"] }
+    ],
+    "howTitle": "{{name}} akkamitti hojjata",
+    "how": [
+      { "role": "Maamilootaaf", "steps": ["Meeshaalee daldaltoota Itiyoophiyaa irraa ilaali", "Ajaja kee bilbila kee irraa kenni", "Dhiyeessa mana filadhu", "Ajaja kee balbala keetti fudhadhu"] },
+      { "role": "Daldaltootaaf", "steps": ["Suuqa online kee uumi", "Meeshaalee kee fe'i", "Ajaja maamila fudhadhu", "Bittaa kee guddisi"] },
+      { "role": "Hiriyoota dhiyeessaaf", "steps": ["Gaaffii dhiyeessaa fudhadhu", "Meeshaalee nagaadhaan dhiyeessi", "Ummata kee tajaajiluudhaan galii argadhu"] }
+    ],
+    "missionTitle": "Kaayyoo keenya",
+    "missionP1": "Gabaasa amanamtuu tokko irratti maamila, daldaltoota fi hiriyoota dhiyeessaa walitti fiduudhaan bittaa Itiyoophiyaa biyya Arabaa keessa jiraatuuf salphisuudha.",
+    "missionP2": "Itiyoophiyaan hundi nyaataa, galmeetti, uffataa fi meeshaalee babbareessituu yeroo, nagaadhaan fi mijjeessummaadhaan argachuu qaba jedhannee amanna.",
+    "whyTitle": "Maaliif {{name}} filachuu?",
+    "why": [
+      "Addaan Itiyoophiyaa biyya Arabaa keessa jiraataniif ijaarame",
+      "Daldaltoota Itiyoophiyaa amanamoo",
+      "Bittaa bilbilaan mijaa'aa",
+      "Hojii ajajaa nagaadhaan eegame",
+      "Dhiyeessa mana ariifataa",
+      "Meeshaalee Itiyoophiyaa baay'ee",
+      "Deeggarsa daldala Itiyoophiyaa",
+      "Fedhii guyyaa kee hundaaf marsaalee tokko"
+    ]
   }
 }
