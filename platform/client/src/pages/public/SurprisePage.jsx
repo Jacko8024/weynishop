@@ -27,59 +27,6 @@ const SHARED_FEATURES = ['ከእኛ የምናዘጋጀው', 'ኬክ እና ሪ�
 // Gift Delivery packages (shown directly from the front-end).
 const GIFT_FEATURES = ['ከእኛ የምናዘጋጀው', 'እቅፍ አበባ', 'የፍቅር መልእክት ካርድ', 'ኬክ'];
 
-const FALLBACK_GROUPS = [
-  {
-    id: 'birthday',
-    title: 'ለልደት እና እንዲሁ ሰርፕራይዝ ለማድረግ',
-    subtitle:
-      'እርሶን ወክለን, ልደት, ምርቃት, ለተለያዮ በአላት ወይንም እንዲሁ ፍቅሮትን ለመግለፅ እርሶን ወክለን ባዘዙን መንገድ እናደርስሎታለን',
-    providers: [
-      { name: 'Tihun Surprise Team', img: '/surprise/1.1.jpg', rating: 4.9, price: 50, features: SHARED_FEATURES },
-      { name: 'Tihun Events', img: '/surprise/2.jpg', rating: 4.8, price: 50, features: SHARED_FEATURES },
-      { name: 'Tihun Surprise', img: '/surprise/6.jpg', rating: 5.0, price: 50, features: SHARED_FEATURES },
-    ],
-  },
-  {
-    id: 'event',
-    title: 'ለሀዘን, ለደስታ (ድግስ) ወይንም የታመመ ለመጠየቅ',
-    subtitle:
-      'በሀገር መራራቅ ምክንያት ለሚወዷቸው ሰዎች ድግስ, ሀዘን ወይንም ህመም ተፈጥሮ እርሶ መምጣት ባይችሉ እንኳን, እርሶ ለወዳጆ ትልቅ ቦታ እንዳሎት እያሰቧቸው እንደሆነ እኛ እርሶን ወክለን ተገኝተንሎት ማሳየት ይችላሉ',
-    providers: [
-      {
-        name: 'Tihun Surprise Team',
-        img: '/surprise/7.jpg',
-        rating: 4.9,
-        price: 125,
-        features: ['ለ10 ሰው የሚሆን አገልግል ምግብ', '2 የታሸገ ውሀ ግማሽ ሌትር', '🚚 ከድላይቨሪ ውጪ'],
-      },
-      {
-        name: 'Tihun Events',
-        img: '/surprise/8.jpg',
-        rating: 4.8,
-        price: 125,
-        features: ['ለ10 ሰው የሚሆን አገልግል ምግብ', '2 የታሸገ ውሀ ግማሽ ሌትር', '🚚 ከድላይቨሪ ውጪ'],
-      },
-      {
-        name: 'Tihun Surprise',
-        img: '/surprise/9.jpg',
-        rating: 5.0,
-        price: 125,
-        features: ['ለ10 ሰው የሚሆን አገልግል ምግብ', '2 የታሸገ ውሀ ግማሽ ሌትር', '🚚 ከድላይቨሪ ውጪ'],
-      },
-    ],
-  },
-  {
-    id: 'gift',
-    title: 'ስጦታ ማድረስ (Gift Delivery)',
-    subtitle: 'ለፍቅረኛዎ, ለቤተሰብዎ ወይም ለጓደኛዎ ስጦታ በእኛ አማካኝነት ወደ ውድ ሰዎችዎ ያድርሱ',
-    providers: [
-      { name: 'የአንቨርሰሪ', img: '/surprise/4.jpg', rating: 4.9, price: 50, features: GIFT_FEATURES },
-      { name: 'የታገቢኛለሽ ፕሮፖዝ ማድረጊያ', img: '/surprise/5.jpg', rating: 4.8, price: 50, features: GIFT_FEATURES },
-      { name: 'ሰርፕራይዝ ማድረጊያ', img: '/surprise/6.jpg', rating: 5.0, price: 50, features: GIFT_FEATURES },
-    ],
-  },
-];
-
 // The 3 canonical Gift Delivery packages — used so the section always shows
 // the right names + contents on the front-end, even when the API still
 // returns the old/empty seed data.
@@ -112,12 +59,12 @@ export default function SurprisePage() {
   const [booking, setBooking] = useState(null);
   const [sending, setSending] = useState(false);
 
-  const [groups, setGroups] = useState(FALLBACK_GROUPS);
+  const [groups, setGroups] = useState([]);
 
   useEffect(() => {
     let on = true;
     api.get('/surprise')
-      .then(({ data }) => { if (on && data.groups?.length) setGroups(data.groups); })
+      .then(({ data }) => { if (on && data.groups) setGroups(data.groups); })
       .catch(() => {});
     return () => { on = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
