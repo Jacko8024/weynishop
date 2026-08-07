@@ -1,4 +1,4 @@
-import { SurpriseService } from '../models/index.js';
+import { SurpriseService, SurpriseBooking } from '../models/index.js';
 
 const SHARED_FEATURES = ['ከእኛ የምናዘጋጀው', 'ኬክ እና ሪችት', '🚚 ከድላይቨሪ ውጪ'];
 
@@ -80,11 +80,29 @@ const SEED_GROUPS = [
 export const seedSurpriseServices = async () => {
   const count = await SurpriseService.count();
 
-  // ── Duplicate-guard: too many rows → full reset ─────────────────────────
+  // ── Duplicate-guard: too many rows → deduplicate safely ─────────────────
   if (count > 9) {
-    console.log(`[seed] found ${count} surprise services (expected 9) — resetting to canonical 9`);
-    await SurpriseService.destroy({ where: {} });
-    // fall through to the insert block below
+    console.log(`[seed] found ${count} surprise services (expected 9) — cleaning duplicates...`);
+    const all = await SurpriseService.findAll({ order: [['id', 'ASC']] });
+    const seen = new Map();
+    for (const s of all) {
+      const key = `${s.groupId}__${s.name}`;
+      if (seen.has(key)) {
+        const origId = seen.get(key);
+        try {
+          // Reassign any bookings from this duplicate to the original ID
+          if (SurpriseBooking) {
+            await SurpriseBooking.update({ serviceId: origId }, { where: { serviceId: s.id } });
+          }
+        } catch (e) {
+          // ignore FK issues if there are no bookings
+        }
+        await s.destroy();
+      } else {
+        seen.set(key, s.id);
+      }
+    }
+    return; // Done cleaning duplicates. On next boot, count will be 9 and it will run normally.
   } else if (count > 0) {
     // Exactly the right number — repair Gift Delivery package metadata only.
     const giftRows = await SurpriseService.findAll({ where: { groupId: 'gift' } });
