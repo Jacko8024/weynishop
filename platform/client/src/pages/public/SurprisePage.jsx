@@ -80,12 +80,6 @@ const FALLBACK_GROUPS = [
   },
 ];
 
-const GIFT_PACKAGES = [
-  { name: 'የአንቨርሰሪ', features: GIFT_FEATURES },
-  { name: 'የታገቢኛለሽ ፕሮፖዝ ማድረጊያ', features: GIFT_FEATURES },
-  { name: 'ሰርፕራይዝ ማድረጊያ', features: GIFT_FEATURES },
-];
-
 // The 3 canonical Gift Delivery packages — used so the section always shows
 // the right names + contents on the front-end, even when the API still
 // returns the old/empty seed data.
@@ -94,18 +88,6 @@ const TIHUN_PILLARS = [
   { icon: '🤝', key: 'hardship' },
   { icon: '💍', key: 'love' },
 ];
-
-function applyGiftPackages(groups, packages) {
-  return groups.map((g) => {
-    if (g.id !== 'gift' || !Array.isArray(packages)) return g;
-    return {
-      ...g,
-      providers: g.providers.map((p, i) =>
-        packages[i] ? { ...p, name: packages[i].name, features: packages[i].features, price: packages[i].price ?? p.price } : p
-      ),
-    };
-  });
-}
 
 const STEP_KEYS = [
   { icon: '📋', title: 'chooseTitle', text: 'chooseText' },
@@ -130,28 +112,16 @@ export default function SurprisePage() {
   const [booking, setBooking] = useState(null);
   const [sending, setSending] = useState(false);
 
-  // Gift Delivery packages come from the translations file so they show in all
-  // 5 languages; the module-level Amharic list is only a safety fallback.
-  const giftPackages = (() => {
-    const loc = t('surprise.giftPackages', { returnObjects: true });
-    return Array.isArray(loc) && loc.length === 3 ? loc : GIFT_PACKAGES;
-  })();
-  const giftKey = JSON.stringify(giftPackages);
-
-  const [groups, setGroups] = useState(() => applyGiftPackages(FALLBACK_GROUPS, giftPackages));
+  const [groups, setGroups] = useState(FALLBACK_GROUPS);
 
   useEffect(() => {
     let on = true;
     api.get('/surprise')
-      .then(({ data }) => { if (on && data.groups?.length) setGroups(applyGiftPackages(data.groups, giftPackages)); })
+      .then(({ data }) => { if (on && data.groups?.length) setGroups(data.groups); })
       .catch(() => {});
     return () => { on = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    setGroups((prev) => applyGiftPackages(prev, giftPackages));
-  }, [giftKey]);
 
   // Placing an order requires an account — exactly like buying in the shop.
   const openBooking = (provider, serviceType) => {
