@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../../api/client.js';
@@ -42,7 +42,7 @@ export default function ContactPage() {
       <div className="grid md:grid-cols-3 gap-6">
         <aside className="md:col-span-1 space-y-4">
           <ContactCard icon={<Mail size={18} />} label="Email" value="hello@weynishopping.com" href="mailto:hello@weynishopping.com" />
-          <ContactCard icon={<Phone size={18} />} label="Phone" value="+251 911 000 000" href="tel:+251911000000" />
+          <ContactCard icon={<Phone size={18} />} label="Phone" value="+251 952 655 404" href="tel:+251952655404" />
           <ContactCard icon={<MapPin size={18} />} label="Address" value="Addis Ababa, Ethiopia" />
         </aside>
 

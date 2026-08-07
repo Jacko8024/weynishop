@@ -11,7 +11,7 @@ import SurpriseBookingModal from '../../components/SurpriseBookingModal.jsx';
 const PINK = '#e63956';
 const PINK_DARK = '#c72645';
 
-const WHATSAPP_NUMBER = '96176142921';
+const WHATSAPP_NUMBER = '251952655404';
 
 const CATEGORIES = [
   { icon: '🎂', key: 'birthday' },

@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Facebook, Instagram, Mail, Phone, MapPin } from 'lucide-react';
 import Logo from './Logo.jsx';
@@ -68,8 +68,8 @@ export default function Footer() {
                 </li>
                 <li className="flex items-center gap-2">
                   <Phone size={14} />{" "}
-                  <a className="hover:underline" href="tel:+251911000000">
-                    +251 911 000 000
+                  <a className="hover:underline" href="tel:+251952655404">
+                    +251 952 655 404
                   </a>
                 </li>
                 <li className="flex items-center gap-2">
