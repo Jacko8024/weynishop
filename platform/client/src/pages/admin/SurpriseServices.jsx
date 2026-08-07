@@ -52,7 +52,7 @@ export default function SurpriseServices() {
     if (!editing.image) return toast.error('Please upload a service image');
     try {
       const payload = {
-        groupId: editing.groupId,
+        groupId: editing.groupId === '___new___' ? editing.customGroupId : editing.groupId,
         groupTitle: editing.groupTitle,
         groupSubtitle: editing.groupSubtitle,
         name: editing.name,
@@ -209,7 +209,15 @@ export default function SurpriseServices() {
                   {groups.filter((g) => !GROUP_PRESETS.some((p) => p.id === g)).map((g) => (
                     <option key={g} value={g}>{g}</option>
                   ))}
+                  <option value="___new___">+ Add New Custom Section...</option>
                 </select>
+                {editing.groupId === '___new___' && (
+                  <div className="mt-2 text-sm">
+                    <label className="label text-xs text-brand-600">Enter custom ID (e.g. holiday)</label>
+                    <input className="input" placeholder="custom_id" 
+                           onChange={(e) => setEditing({ ...editing, customGroupId: e.target.value })} />
+                  </div>
+                )}
               </div>
               <div>
                 <label className="label">Service name</label>

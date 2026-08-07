@@ -1,4 +1,4 @@
-﻿import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 /**
  * WeyniShop logo. Two variants:
@@ -18,7 +18,7 @@ export default function Logo({ iconOnly = false, className = '', height = 32, in
 
   if (i18n.language === 'am' && !iconOnly) {
     const name = t('brand.name');
-    const split = name.indexOf('ገ');
+    const split = name.indexOf('ሾ');
     const partA = split > 0 ? name.slice(0, split) : name;
     const partB = split > 0 ? name.slice(split) : '';
     return (

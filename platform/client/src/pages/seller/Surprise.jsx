@@ -66,7 +66,7 @@ export default function SellerSurprise() {
     setBusy(true);
     try {
       const payload = {
-        groupId: editing.groupId,
+        groupId: editing.groupId === '___new___' ? editing.customGroupId : editing.groupId,
         groupTitle: editing.groupTitle,
         groupSubtitle: editing.groupSubtitle,
         name: editing.name,
@@ -303,7 +303,18 @@ export default function SellerSurprise() {
                 <label className="label">Group</label>
                 <select className="input" value={editing.groupId} onChange={(e) => onPickGroup(e.target.value)}>
                   {GROUP_PRESETS.map((g) => <option key={g.id} value={g.id}>{g.title}</option>)}
+                  {[...new Set(services.map((s) => s.groupId))].filter((g) => !GROUP_PRESETS.some((p) => p.id === g)).map((g) => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                  <option value="___new___">+ Add New Custom Section...</option>
                 </select>
+                {editing.groupId === '___new___' && (
+                  <div className="mt-2 text-sm">
+                    <label className="label text-xs text-brand-600">Enter custom ID (e.g. holiday)</label>
+                    <input className="input" placeholder="custom_id" 
+                           onChange={(e) => setEditing({ ...editing, customGroupId: e.target.value })} />
+                  </div>
+                )}
               </div>
               <div>
                 <label className="label">Service name</label>
