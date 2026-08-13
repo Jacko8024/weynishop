@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Clock, Mail, LogOut, XCircle } from 'lucide-react';
 import { useAuth } from '../../store/auth.js';
+import { useTranslation } from 'react-i18next';
 
 export default function PendingApproval() {
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
   const isRejected = user?.status === 'rejected';
   const rejectionReason = user?.rejectionReason || '';
 
