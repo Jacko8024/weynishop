@@ -25,7 +25,7 @@ export const SurpriseBooking = sequelize.define(
   },
   {
     tableName: 'surprise_bookings',
-    indexes: [{ fields: ['status'] }, { fields: ['serviceId'] }, { fields: ['providerId'] }],
+    indexes: [{ fields: ['status'] }, { fields: ['serviceId'] }],
   }
 );
 
