@@ -9,6 +9,7 @@ export const SurpriseBooking = sequelize.define(
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     userId: { type: DataTypes.INTEGER, allowNull: true },
     serviceId: { type: DataTypes.INTEGER, allowNull: true },
+    providerId: { type: DataTypes.INTEGER, allowNull: true },
     name: { type: DataTypes.STRING(120), allowNull: false },
     phone: { type: DataTypes.STRING(40), allowNull: false },
     email: { type: DataTypes.STRING(180), defaultValue: '' },
@@ -24,7 +25,7 @@ export const SurpriseBooking = sequelize.define(
   },
   {
     tableName: 'surprise_bookings',
-    indexes: [{ fields: ['status'] }, { fields: ['serviceId'] }],
+    indexes: [{ fields: ['status'] }, { fields: ['serviceId'] }, { fields: ['providerId'] }],
   }
 );
 

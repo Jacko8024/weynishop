@@ -23,8 +23,8 @@ export default function Logo({ iconOnly = false, className = '', height = 32, in
     const partB = split > 0 ? name.slice(split) : '';
     return (
       <span
-        className={`items-center gap-2 whitespace-nowrap ${className}`}
-        style={{ height, display: 'inline-flex', flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 0 }}
+        className={`inline-flex items-center gap-2 whitespace-nowrap ${className}`}
+        style={{ height, flexShrink: 0 }}
         role="img"
         aria-label={name}
       >

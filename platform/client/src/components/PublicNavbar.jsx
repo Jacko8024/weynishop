@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -53,7 +53,7 @@ export default function PublicNavbar() {
         {/* Logo */}
         <Link to="/" className="flex items-center shrink-0" aria-label="WeyniShopping home">
           <Logo iconOnly className="sm:hidden" height={36} />
-          <Logo className="hidden sm:block" height={32} />
+          <Logo className="hidden sm:flex" height={32} />
         </Link>
 
         {/* Search bar — full width */}

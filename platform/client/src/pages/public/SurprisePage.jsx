@@ -270,11 +270,6 @@ export default function SurprisePage() {
       {/* ── TIHUN EVENT ── */}
       <section className="max-w-[1200px] mx-auto px-5 pb-16">
         <div className="bg-white rounded-[30px] p-8 md:p-12 text-center shadow-[0_12px_35px_rgba(0,0,0,.06)]">
-          <img
-            src="/surprise/tihun-event-logo.jpg"
-            alt="Tihun Event"
-            className="mx-auto w-24 h-24 md:w-28 md:h-28 rounded-full object-cover shadow-[0_10px_30px_rgba(0,0,0,.15)] mb-5"
-          />
           <h2 className="text-2xl md:text-4xl font-extrabold mb-3">Tihun Event</h2>
           <p className="max-w-2xl mx-auto text-[#666] leading-relaxed">{t('surprise.tihunSub')}</p>
           <div className="grid sm:grid-cols-2 gap-5 mt-8">

@@ -1,4 +1,5 @@
 import { SurpriseService, SurpriseBooking } from '../models/index.js';
+import { resolveSurpriseOwnerId } from '../middleware/auth.js';
 
 const SHARED_FEATURES = ['ከእኛ የምናዘጋጀው', 'ኬክ እና ሪችት', '🚚 ከድላይቨሪ ውጪ'];
 
@@ -78,6 +79,20 @@ const SEED_GROUPS = [
  *   cause of the duplicate display.
  */
 export const seedSurpriseServices = async () => {
+  const ownerId = await resolveSurpriseOwnerId();
+  if (ownerId == null) {
+    console.warn(
+      '[seed] SURPRISE_OWNER_ID / SURPRISE_OWNER_EMAIL is not set — surprise services ' +
+        'have no owner yet, so the merchant account will not see incoming bookings.'
+    );
+  }
+
+  const backfillOwner = async () => {
+    if (ownerId == null) return;
+    const [n] = await SurpriseService.update({ providerId: ownerId }, { where: { providerId: null } });
+    if (n > 0) console.log(`[seed] assigned ${n} surprise services to owner #${ownerId}`);
+  };
+
   const count = await SurpriseService.count();
 
   // ── Duplicate-guard: too many rows → deduplicate safely ─────────────────
@@ -102,9 +117,11 @@ export const seedSurpriseServices = async () => {
         seen.set(key, s.id);
       }
     }
+    await backfillOwner();
     return; // Done cleaning duplicates. On next boot, count will be 9 and it will run normally.
   } else if (count > 0) {
     // Exactly the right number — repair Gift Delivery package metadata only.
+    await backfillOwner();
     const giftRows = await SurpriseService.findAll({ where: { groupId: 'gift' } });
     for (const row of giftRows) {
       const byImg = GIFT_PACKAGES.find((p) => p.img === row.image);
@@ -129,6 +146,7 @@ export const seedSurpriseServices = async () => {
   for (const g of SEED_GROUPS) {
     for (const p of g.providers) {
       rows.push({
+        providerId: ownerId,
         groupId: g.groupId,
         groupTitle: g.title,
         groupSubtitle: g.subtitle,

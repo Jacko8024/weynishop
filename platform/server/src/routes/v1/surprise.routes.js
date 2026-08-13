@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
+import { Op } from 'sequelize';
 import { SurpriseBooking, SurpriseService, User } from '../../models/index.js';
 import { protect, requireRole, requireSurpriseOwner, resolveSurpriseOwnerId } from '../../middleware/auth.js';
 import { env } from '../../config/env.js';
@@ -41,10 +42,18 @@ router.post(
     if (!phone || !String(phone).trim()) return res.status(400).json({ message: 'Phone is required' });
 
     let serviceIdNum = null;
+    let serviceProviderId = null;
     if (serviceId != null && Number(serviceId) > 0) {
       const service = await SurpriseService.findByPk(Number(serviceId));
-      if (service && service.isActive) serviceIdNum = service.id;
+      if (service && service.isActive) {
+        serviceIdNum = service.id;
+        serviceProviderId = service.providerId ?? null;
+      }
     }
+
+    // Every booking must reach the surprise owner's inbox — even custom orders
+    // that did not match a service.
+    const ownerId = await resolveSurpriseOwnerId();
 
     const cleanExtras = extras && typeof extras === 'object' && !Array.isArray(extras)
       ? {
@@ -63,6 +72,7 @@ router.post(
     const booking = await SurpriseBooking.create({
       userId: req.user?.id || req.body?.userId || null,
       serviceId: serviceIdNum,
+      providerId: serviceProviderId ?? ownerId,
       name: String(name).trim(),
       phone: String(phone).trim(),
       email: String(email || '').trim(),
@@ -325,14 +335,14 @@ router.get(
       attributes: ['id'],
     });
     const ids = myServices.map((s) => s.id);
-    const items = ids.length
-      ? await SurpriseBooking.findAll({
-          where: { serviceId: ids },
-          include: [{ model: SurpriseService, as: 'service', attributes: ['id', 'name', 'groupId'] }],
-          order: [['createdAt', 'DESC']],
-          limit: 200,
-        })
-      : [];
+    const where = { [Op.or]: [{ providerId: req.user.id }] };
+    if (ids.length) where[Op.or].push({ serviceId: { [Op.in]: ids } });
+    const items = await SurpriseBooking.findAll({
+      where,
+      include: [{ model: SurpriseService, as: 'service', attributes: ['id', 'name', 'groupId'] }],
+      order: [['createdAt', 'DESC']],
+      limit: 200,
+    });
     const counts = {
       new: items.filter((b) => b.status === 'new').length,
       total: items.length,
@@ -350,8 +360,11 @@ router.patch(
       where: { providerId: req.user.id },
       attributes: ['id'],
     });
+    const ids = myServices.map((s) => s.id);
+    const where = { [Op.or]: [{ providerId: req.user.id }] };
+    if (ids.length) where[Op.or].push({ serviceId: { [Op.in]: ids } });
     const booking = await SurpriseBooking.findOne({
-      where: { id: req.params.id, serviceId: myServices.map((s) => s.id) },
+      where: { id: req.params.id, ...where },
     });
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
     const { status } = req.body || {};
