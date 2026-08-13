@@ -1,5 +1,6 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Eye, EyeOff, ShoppingBag, Store, Truck, Camera, X, CheckCircle2,
   MapPin, Upload,
@@ -81,6 +82,7 @@ const ROLE_OPTIONS = [
 ];
 
 export default function Register() {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const nav = useNavigate();
   const fileRef = useRef(null);

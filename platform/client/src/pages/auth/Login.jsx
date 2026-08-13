@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -41,15 +41,7 @@ export default function Login() {
     }
   };
 
-  const setRoleDemo = (role) => {
-    const demo = {
-      buyer: { email: 'buyer@weynshop.test', password: 'Buyer@123' },
-      seller: { email: 'seller@weynshop.test', password: 'Seller@123' },
-      delivery: { email: 'delivery@weynshop.test', password: 'Delivery@123' },
-      admin: { email: 'admin@weynshop.test', password: 'Admin@123' },
-    }[role];
-    setForm(demo);
-  };
+
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-white">
@@ -154,21 +146,7 @@ export default function Login() {
             }}
           />
 
-          <div className="mt-6 text-sm">
-            <div className="text-slate-500 mb-2">Quick demo logins:</div>
-            <div className="flex flex-wrap gap-2">
-              {['buyer', 'seller', 'delivery', 'admin'].map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  className="btn-secondary text-xs py-1 px-2 capitalize"
-                  onClick={() => setRoleDemo(r)}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
-          </div>
+
 
           <div className="text-center text-sm text-slate-600 mt-8">
             Don't have an account?{' '}
