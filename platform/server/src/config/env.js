@@ -57,7 +57,7 @@ export const env = {
   SURPRISE_OWNER_EMAIL: (process.env.SURPRISE_OWNER_EMAIL || '').trim().toLowerCase(),
 
   // Firebase Admin (Google sign-in verification). All three required to enable.
-  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || 'weynishopping',
+  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || 'weynishop',
   FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL || '',
   // Service-account PEM (begins with "-----BEGIN PRIVATE KEY-----"). Leave empty
   // to disable Firebase Admin token verification on the server.

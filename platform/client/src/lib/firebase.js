@@ -10,12 +10,12 @@ import {
 // Override any value with VITE_FIREBASE_* if you want per-env configs.
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyC9pHmRut5vIm0BUzz5RVXGsQbUA2Dv7Sw',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'weynishopping.firebaseapp.com',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'weynishopping',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'weynishopping.firebasestorage.app',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'weynishop.firebaseapp.com',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'weynishop',
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'weynishop.firebasestorage.app',
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '700988913337',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:700988913337:web:1010b09b8317fd31570d68',
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || 'G-YYV0X430EZ',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:700988913337:web:eca95d910787a16d570d68',
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || 'G-KVDBVZ91MD',
 };
 
 // Idempotent: HMR may re-evaluate this module.

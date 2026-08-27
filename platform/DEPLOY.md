@@ -58,7 +58,7 @@ Copy from your local `platform/server/.env`. Don't paste real secrets into this 
 | `CLIENT_URL` | **set after Part 2** — your Vercel URL, e.g. `https://www.weynishoping.com` (you can also CSV multiple, like `https://www.weynishoping.com,https://weynishopping.com`) |
 | `STOREFRONT_URL` | same as `CLIENT_URL` (used in commission emails / receipts) |
 | `GOOGLE_MAPS_API_KEY` | your Google Maps key |
-| `FIREBASE_PROJECT_ID` | `weynishopping` |
+| `FIREBASE_PROJECT_ID` | `weynishop` |
 | `FIREBASE_CLIENT_EMAIL` | service-account email |
 | `FIREBASE_PRIVATE_KEY` | full PEM with literal `\n`, wrapped in double-quotes |
 
@@ -94,9 +94,9 @@ You'll need it in Part 2. Looks like `https://weynishopping-api.onrender.com`.
 | `VITE_API_URL` | `https://weynishopping-api.onrender.com` (your Render URL — no trailing slash) |
 | `VITE_GOOGLE_MAPS_API_KEY` | same Google Maps key as backend |
 | `VITE_FIREBASE_API_KEY` | from Firebase Console → Project Settings → Web app config |
-| `VITE_FIREBASE_AUTH_DOMAIN` | `weynishopping.firebaseapp.com` |
-| `VITE_FIREBASE_PROJECT_ID` | `weynishopping` |
-| `VITE_FIREBASE_STORAGE_BUCKET` | `weynishopping.firebasestorage.app` |
+| `VITE_FIREBASE_AUTH_DOMAIN` | `weynishop.firebaseapp.com` |
+| `VITE_FIREBASE_PROJECT_ID` | `weynishop` |
+| `VITE_FIREBASE_STORAGE_BUCKET` | `weynishop.firebasestorage.app` |
 | `VITE_FIREBASE_MESSAGING_SENDER_ID` | from Firebase web app config |
 | `VITE_FIREBASE_APP_ID` | from Firebase web app config |
 | `VITE_FIREBASE_MEASUREMENT_ID` | optional |

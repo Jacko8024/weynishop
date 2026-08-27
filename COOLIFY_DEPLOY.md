@@ -145,7 +145,7 @@ create your admin account (first user becomes root).
 | `STOREFRONT_URL` | `https://www.yourdomain.com` |
 | `GOOGLE_MAPS_API_KEY` | your Maps key |
 | `SURPRISE_OWNER_ID` / `SURPRISE_OWNER_EMAIL` | optional |
-| `FIREBASE_PROJECT_ID` | `weynishopping` (optional, for Google sign-in) |
+| `FIREBASE_PROJECT_ID` | `weynishop` (optional, for Google sign-in) |
 | `FIREBASE_CLIENT_EMAIL` | service-account email (optional) |
 | `FIREBASE_PRIVATE_KEY` | PEM with literal `\n` (optional) |
 
