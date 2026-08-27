@@ -15,6 +15,7 @@
     "signup": "Galmaa'i",
     "logout": "Ba'i",
     "search": "Oomishaalee, beekkamtii fi ramaddii barbaadi",
+    "searchLabel": "Barbaadi",
     "account": "Herrega",
     "orders": "Ajajawwan Koo",
     "wishlist": "Kuufannaa",
@@ -70,7 +71,18 @@
     "createAccount": "Herrega Uumi",
     "alreadyHaveAccount": "Herrega qabdaa?",
     "newHere": "Asitti haaraa?",
-    "rolePending": "Herregni gurguraa fi geejjibaa mirkaneessa bulchaa eega."
+    "rolePending": "Herregni gurguraa fi geejjibaa mirkaneessa bulchaa eega.",
+    "welcomeBack": "Baga nagaan dhufte!",
+    "phoneLabel": "Lakkoofsa bilbilaa",
+    "emailOptional": "Imeelii (dirqama miti)",
+    "useEmail": "Imeelii fayyadami",
+    "usePhone": "Lakkoofsa bilbilaa fayyadami",
+    "invalidPhone": "Lakkoofsa bilbilaa Itoophiyaa sirrii galchi",
+    "loggingIn": "Seenua…",
+    "noAccount": "Herrega hin qabduu?",
+    "buyerDesc": "Oomishaalee bitadhaa, gara mana keessaniitti geejjibsiifadhaa.",
+    "sellerDesc": "Oomishaalee keessan galmeessaa, maamiltoota hedduu qaqqabaa.",
+    "deliveryDesc": "Ajajawwan fuudhaa, geejjibaan galii argadhaa."
   },
   "filters": {
     "title": "Calaltuu",
@@ -281,5 +293,29 @@
       "Deeggarsa daldala Itiyoophiyaa",
       "Fedhii guyyaa kee hundaaf marsaalee tokko"
     ]
+  },
+  "mobile": {
+    "popular": "Wantoota beekamoo",
+    "moreForYou": "Siif dabalata",
+    "buyNow": "Amma biti",
+    "recentSearches": "Barbaacha dhiyoo",
+    "language": "Afaan",
+    "help": "Gargaarsa & Gaaffilee",
+    "aboutWeyni": "Waa'ee WeyniShop",
+    "greeting": "Baga nagaan dhuftan!",
+    "signInToShop": "Bituuf seeni",
+    "food": "Nyaata",
+    "groceries": "Grocery",
+    "deals": "Hir'ina gatii",
+    "recentlyViewed": "Kanu dhiyoo ilaale"
+  },
+  "onboarding": {
+    "welcome": "Baga nagaan {{name}} tti dhufte",
+    "chooseLanguage": "Afaan kee filadhu",
+    "recommended": "Kan gorfamu",
+    "continue": "Itti fufi",
+    "authTitle": "Seeni ykn herrega uumi",
+    "authSub": "Herrega tokkoon bitadhaa, gurguraa, geejjibsiisaa.",
+    "browseFirst": "Darbi — dura oomishaalee ilaali"
   }
 }

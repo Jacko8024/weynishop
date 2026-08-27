@@ -22,9 +22,11 @@ api.interceptors.response.use(
     if ((status === 401 || status === 403) && localStorage.getItem('token')) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      if (!window.location.pathname.startsWith('/login')) {
-        window.location.href = '/login';
-      }
+      // Soft sign-out: notify the app store instead of a hard page reload.
+      // A full reload replays the branded splash and wipes navigation
+      // state, making the app feel like it is restarting. Protected
+      // routes redirect to /login via React Router on the next render.
+      window.dispatchEvent(new Event('weynshop:auth-expired'));
     }
     return Promise.reject(err);
   }

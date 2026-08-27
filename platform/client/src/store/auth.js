@@ -22,6 +22,16 @@ export const useAuth = create((set, get) => ({
     return data.user;
   },
 
+  // Phone-first sign-in (Ethiopian numbers). The backend accepts the
+  // normalized E.164 phone as an alternative identifier to email.
+  loginWithPhone: async (phone, password) => {
+    const { data } = await api.post('/auth/login', { phone, password });
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    set({ user: data.user, token: data.token });
+    return data.user;
+  },
+
   register: async (payload) => {
     const { data } = await api.post('/auth/register', payload);
     localStorage.setItem('token', data.token);
@@ -86,3 +96,14 @@ export const useAuth = create((set, get) => ({
     set({ cart: [] });
   },
 }));
+
+// Soft sign-out hook: the API interceptor dispatches this when a token
+// expires (instead of reloading the page), so the UI returns to the
+// guest state without a full app restart.
+if (typeof window !== 'undefined') {
+  window.addEventListener('weynshop:auth-expired', () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    useAuth.setState({ user: null, token: null });
+  });
+}

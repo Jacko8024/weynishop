@@ -15,6 +15,7 @@
     "signup": "Sign Up",
     "logout": "Sign Out",
     "search": "Search products, brands, and categories",
+    "searchLabel": "Search",
     "account": "Account",
     "orders": "My Orders",
     "wishlist": "Wishlist",
@@ -70,7 +71,18 @@
     "createAccount": "Create account",
     "alreadyHaveAccount": "Already have an account?",
     "newHere": "New here?",
-    "rolePending": "Sellers and delivery accounts await admin approval."
+    "rolePending": "Sellers and delivery accounts await admin approval.",
+    "welcomeBack": "Welcome back!",
+    "phoneLabel": "Phone number",
+    "emailOptional": "Email (optional)",
+    "useEmail": "Use email instead",
+    "usePhone": "Use phone number instead",
+    "invalidPhone": "Enter a valid Ethiopian phone number",
+    "loggingIn": "Logging in…",
+    "noAccount": "Don't have an account?",
+    "buyerDesc": "Shop products and order home delivery.",
+    "sellerDesc": "List products and reach more customers.",
+    "deliveryDesc": "Pick up orders and earn on every delivery."
   },
   "filters": {
     "title": "Filters",
@@ -309,5 +321,29 @@
       "Supporting Ethiopian-owned businesses",
       "One platform for all your daily needs"
     ]
+  },
+  "mobile": {
+    "popular": "Popular",
+    "moreForYou": "More for you",
+    "buyNow": "Buy Now",
+    "recentSearches": "Recent searches",
+    "language": "Language",
+    "help": "Help & FAQ",
+    "aboutWeyni": "About WeyniShop",
+    "greeting": "Welcome!",
+    "signInToShop": "Sign in to start shopping",
+    "food": "Food",
+    "groceries": "Groceries",
+    "deals": "Deals",
+    "recentlyViewed": "Recently viewed"
+  },
+  "onboarding": {
+    "welcome": "Welcome to {{name}}",
+    "chooseLanguage": "Choose your language",
+    "recommended": "Recommended",
+    "continue": "Continue",
+    "authTitle": "Sign in or create an account",
+    "authSub": "One account for shopping, selling, and delivery.",
+    "browseFirst": "Skip for now — just browse"
   }
 }

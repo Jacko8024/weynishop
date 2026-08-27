@@ -1,19 +1,30 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../store/auth.js';
+import { isValidEthPhone, toE164EthPhone, formatEthPhoneLocal, ETH_DIAL_CODE } from '../../lib/phone.js';
 import GoogleSignInButton from '../../components/GoogleSignInButton.jsx';
 import AnimatedCharacters from '../../components/AnimatedCharacters.jsx';
 import Logo from '../../components/Logo.jsx';
 
+/**
+ * Simplified mobile-first sign-in.
+ * Phone (+251) is the primary identifier; email remains an alternative.
+ * One primary action, no explanatory paragraphs. Desktop keeps the
+ * branded left panel; the form itself is shared.
+ */
 export default function Login() {
-  const { login } = useAuth();
+  const { t } = useTranslation();
+  const { login, loginWithPhone } = useAuth();
   const nav = useNavigate();
   const location = useLocation();
   const redirect = new URLSearchParams(location.search).get('redirect') || '';
   const afterLogin = redirect.startsWith('/') ? redirect : null;
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [mode, setMode] = useState('phone'); // 'phone' | 'email'
+  const [form, setForm] = useState({ phone: '', email: '', password: '' });
+  const [phoneError, setPhoneError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [typing, setTyping] = useState(false);
@@ -25,14 +36,20 @@ export default function Login() {
 
   const submit = async (e) => {
     e.preventDefault();
+    if (mode === 'phone' && !isValidEthPhone(form.phone)) {
+      setPhoneError(t('auth.invalidPhone'));
+      return;
+    }
     setLoading(true);
     try {
-      const user = await login(form.email, form.password);
+      const user = mode === 'phone'
+        ? await loginWithPhone(toE164EthPhone(form.phone), form.password)
+        : await login(form.email, form.password);
       if (user.status === 'rejected') {
         toast.error('Your account was rejected. Contact support for details.');
         return;
       }
-      toast.success(`Welcome, ${user.name}`);
+      toast.success(`${t('auth.welcomeBack')} ${user.name}`);
       nav(next(user), { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed');
@@ -41,6 +58,10 @@ export default function Login() {
     }
   };
 
+  const switchMode = (m) => {
+    setMode(m);
+    setPhoneError('');
+  };
 
 
   return (
@@ -75,34 +96,74 @@ export default function Login() {
       <div className="flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <Link to="/" className="lg:hidden flex items-center justify-center mb-10" aria-label="WeyniShopping home">
+          <Link to="/" className="lg:hidden flex items-center justify-center mb-8" aria-label="WeyniShopping home">
             <Logo height={40} />
           </Link>
 
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome back!</h1>
-            <p className="text-sm text-slate-500">Please enter your details</p>
+          <div className="text-center mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1.5 font-localized">
+              {t('auth.welcomeBack')}
+            </h1>
+            <p className="text-sm" style={{ color: 'var(--color-muted)' }}>{t('auth.loginPrompt')}</p>
           </div>
 
           <form onSubmit={submit} className="space-y-4">
-            <div>
-              <label className="label" htmlFor="email">Email</label>
-              <input
-                id="email"
-                className="input h-12"
-                type="email"
-                required
-                value={form.email}
-                placeholder="you@example.com"
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                onFocus={() => setTyping(true)}
-                onBlur={() => setTyping(false)}
-                autoComplete="email"
-              />
-            </div>
+            {mode === 'phone' ? (
+              <div>
+                <label className="label" htmlFor="phone">{t('auth.phoneLabel')}</label>
+                {/* Ethiopian phone input — fixed +251 prefix, numeric keyboard */}
+                <div
+                  className={`flex items-stretch overflow-hidden rounded-lg focus-within:ring-2 ${phoneError ? 'border-red-300' : ''}`}
+                  style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)', '--tw-ring-color': 'var(--color-brand)' }}
+                >
+                  <span
+                    className="flex items-center gap-1.5 px-3 text-sm font-semibold select-none shrink-0"
+                    style={{ borderRight: '1px solid var(--color-border)', background: 'var(--color-bg)' }}
+                    aria-hidden="true"
+                  >
+                    🇪🇹 {ETH_DIAL_CODE}
+                  </span>
+                  <input
+                    id="phone"
+                    className="flex-1 min-w-0 h-12 px-3 text-base tracking-wide focus:outline-none"
+                    style={{ background: 'transparent', color: 'var(--color-text)' }}
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel-national"
+                    placeholder="9XX XXX XXX"
+                    value={formatEthPhoneLocal(form.phone)}
+                    onChange={(e) => {
+                      // digits only — the +251 prefix is fixed, so it can
+                      // never be typed twice
+                      setForm({ ...form, phone: e.target.value.replace(/\D/g, '').slice(0, 12) });
+                      setPhoneError('');
+                    }}
+                    onFocus={() => setTyping(true)}
+                    onBlur={() => setTyping(false)}
+                  />
+                </div>
+                {phoneError && <p className="text-xs text-red-500 mt-1">{phoneError}</p>}
+              </div>
+            ) : (
+              <div>
+                <label className="label" htmlFor="email">{t('auth.email')}</label>
+                <input
+                  id="email"
+                  className="input h-12"
+                  type="email"
+                  required
+                  value={form.email}
+                  placeholder="you@example.com"
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  onFocus={() => setTyping(true)}
+                  onBlur={() => setTyping(false)}
+                  autoComplete="email"
+                />
+              </div>
+            )}
 
             <div>
-              <label className="label" htmlFor="password">Password</label>
+              <label className="label" htmlFor="password">{t('auth.password')}</label>
               <div className="relative">
                 <input
                   id="password"
@@ -129,9 +190,21 @@ export default function Login() {
             </div>
 
             <button className="btn-primary w-full h-12 text-base mt-1" disabled={loading}>
-              {loading ? 'Logging in…' : 'Log in'}
+              {loading ? t('auth.loggingIn') : t('auth.loginBtn')}
             </button>
           </form>
+
+          {/* Switch identifier: phone ⇄ email */}
+          <div className="text-center mt-4">
+            <button
+              type="button"
+              onClick={() => switchMode(mode === 'phone' ? 'email' : 'phone')}
+              className="text-sm font-medium hover:underline"
+              style={{ color: 'var(--color-brand)' }}
+            >
+              {mode === 'phone' ? t('auth.useEmail') : t('auth.usePhone')}
+            </button>
+          </div>
 
           <div className="flex items-center gap-3 my-6 text-xs text-slate-400">
             <div className="flex-1 h-px bg-slate-200" />
@@ -141,17 +214,15 @@ export default function Login() {
 
           <GoogleSignInButton
             onSuccess={(user) => {
-              toast.success(`Welcome, ${user.name}`);
+              toast.success(`${t('auth.welcomeBack')} ${user.name}`);
               nav(next(user), { replace: true });
             }}
           />
 
-
-
-          <div className="text-center text-sm text-slate-600 mt-8">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-brand-600 font-medium hover:underline">
-              Sign up
+          <div className="text-center text-sm mt-8" style={{ color: 'var(--color-muted)' }}>
+            {t('auth.noAccount')}{' '}
+            <Link to="/register" className="font-medium hover:underline" style={{ color: 'var(--color-brand)' }}>
+              {t('auth.signupBtn')}
             </Link>
           </div>
         </div>

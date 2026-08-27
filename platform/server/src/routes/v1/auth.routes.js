@@ -7,6 +7,18 @@ import { verifyFirebaseIdToken } from '../../config/firebase.js';
 
 const router = Router();
 
+// Normalize an Ethiopian phone number to E.164 (+251XXXXXXXXX).
+// Accepts 09…, 9…, +251…, 251…, 00251… with any separators.
+// Returns '' when the input has no digits.
+const normalizeEthPhone = (raw) => {
+  let d = String(raw || '').replace(/\D/g, '');
+  if (!d) return '';
+  if (d.startsWith('00')) d = d.slice(2);
+  if (d.startsWith('251')) d = d.slice(3);
+  if (d.startsWith('0')) d = d.slice(1);
+  return `+251${d}`;
+};
+
 // Trim a User instance down to the safe fields we expose to the frontend.
 const userPayload = (u) => ({
   id: u.id,
@@ -37,7 +49,7 @@ router.post(
       email: email.toLowerCase(),
       password,
       role,
-      phone: phone || '',
+      phone: normalizeEthPhone(phone),
       shopName: role === 'seller' ? shopName || '' : '',
       photoUrl: typeof photoUrl === 'string' && /^https?:\/\//.test(photoUrl) ? photoUrl : '',
       status: role === 'seller' || role === 'delivery' ? 'pending' : 'active',
@@ -53,9 +65,17 @@ router.post(
 router.post(
   '/login',
   asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ message: 'email and password required' });
-    const user = await User.findOne({ where: { email: email.toLowerCase() } });
+    const { email, phone, password } = req.body;
+    if (!password || (!email && !phone)) {
+      return res.status(400).json({ message: 'email or phone, and password required' });
+    }
+    // Identifier: email (existing behaviour) or normalized phone number.
+    let user = null;
+    if (email) user = await User.findOne({ where: { email: String(email).toLowerCase() } });
+    if (!user && phone) {
+      const normalized = normalizeEthPhone(phone);
+      if (normalized) user = await User.findOne({ where: { phone: normalized } });
+    }
     if (!user) return res.status(401).json({ message: 'Invalid credentials' });
     const ok = await user.comparePassword(password);
     if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
@@ -150,7 +170,7 @@ router.post(
     if (exists) return res.status(409).json({ message: 'Email already registered' });
 
     const user = await User.create({
-      name, email: email.toLowerCase(), password, phone: phone || '',
+      name, email: email.toLowerCase(), password, phone: normalizeEthPhone(phone),
       role: 'seller', status: 'pending', shopName: shopName || '',
     });
 
@@ -201,7 +221,7 @@ router.post(
     if (exists) return res.status(409).json({ message: 'Email already registered' });
 
     const user = await User.create({
-      name, email: email.toLowerCase(), password, phone: phone || '',
+      name, email: email.toLowerCase(), password, phone: normalizeEthPhone(phone),
       role: 'delivery', status: 'pending',
     });
 

@@ -15,6 +15,7 @@
     "signup": "ተመዝገብ",
     "logout": "ውጻእ",
     "search": "ፍርያት፣ ብራንዳትን ምድባትን ድለ",
+    "searchLabel": "ድለ",
     "account": "ሕሳብ",
     "orders": "ትእዛዛተይ",
     "wishlist": "ዝፈቱኹ",
@@ -70,7 +71,18 @@
     "createAccount": "ሕሳብ ፍጠር",
     "alreadyHaveAccount": "ሕሳብ ኣለካ ድዩ?",
     "newHere": "ሓድሽ ዲኻ?",
-    "rolePending": "ሕሳብ ሸያጢን መጓዓዝን ናይ ኣመሓዳሪ ምርግጋጽ ይጽበ።"
+    "rolePending": "ሕሳብ ሸያጢን መጓዓዝን ናይ ኣመሓዳሪ ምርግጋጽ ይጽበ።",
+    "welcomeBack": "እንቋዕ ብደሓን መጻእኩም!",
+    "phoneLabel": "ቁጽሪ ተሌፎን",
+    "emailOptional": "ኢመይል (ኣማራጺ)",
+    "useEmail": "ብኢመይል እቶ",
+    "usePhone": "ብቁጽሪ ተሌፎን እቶ",
+    "invalidPhone": "ትኽክለኛ ቁጽሪ ተሌፎን ኢትዮጵያ ኣእትዉ",
+    "loggingIn": "ይኣትዉ ኣለዉ…",
+    "noAccount": "ሕሳብ የብልኩምን?",
+    "buyerDesc": "ፍርያት ግዛእ እሞ ናብ ገዛኻ ክበጽሓካ ኣዝዝ።",
+    "sellerDesc": "ፍርያትካ ኣቐምጥ እሞ ብዙሓት ዓማዊል ርኸብ።",
+    "deliveryDesc": "ኣዘዝቲ ተቐቢልካ ኣብ ነፍሲ ወከፍ ምብጻሕ ኣታዊ ርኸብ።"
   },
   "filters": {
     "title": "ኣጻርዪ",
@@ -281,5 +293,29 @@
       "ደገፍ ኢትዮጵያውያን ንግዶ",
       "ንኹሉ መዓልታዊ ድሌታትካ ሓደ መድረኽ"
     ]
+  },
+  "mobile": {
+    "popular": "ፍሉጣት ፍርያት",
+    "moreForYou": "More for you",
+    "buyNow": "ሕጂ ግዛ",
+    "recentSearches": "Recent searches",
+    "language": "ቋንቋ",
+    "help": "ሓገዝ & FAQ",
+    "aboutWeyni": "ብዛዕባ WeyniShop",
+    "greeting": "እንቋዕ ብደሓን መጻእኩም!",
+    "signInToShop": "ንምግዛእ እቶ",
+    "food": "ምግቢ",
+    "groceries": "ግሮሰሪ",
+    "deals": "ቅናሻት",
+    "recentlyViewed": "ናይ ቀረባ ግዜ ርእይቶ"
+  },
+  "onboarding": {
+    "welcome": "ናብ {{name}} እንቋዕ ብደሓን መጻእኩም",
+    "chooseLanguage": "ቋንቋኻ ምረጽ",
+    "recommended": "ዝተመኸረ",
+    "continue": "ቀጽል",
+    "authTitle": "እቶ ወይ ሕሳብ ፍጠር",
+    "authSub": "ንግዚ፣ ንሽያጭን ንምብጻሕን ሓደ ሕሳብ።",
+    "browseFirst": "ሕለፍ — መጀመርታ ፍርያት ርአ"
   }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Eye, EyeOff, ShoppingBag, Store, Truck, Camera, X, CheckCircle2,
@@ -76,15 +76,20 @@ const FileUploadBtn = ({ field, label, url, accept = 'image/*', uploading, docRe
 );
 
 const ROLE_OPTIONS = [
-  { value: 'buyer', title: 'Buyer', desc: 'Shop products and order home delivery.', icon: ShoppingBag },
-  { value: 'seller', title: 'Vendor', desc: 'List products and reach more customers.', icon: Store },
-  { value: 'delivery', title: 'Delivery', desc: 'Pick up orders and earn on every delivery.', icon: Truck },
+  { value: 'buyer', titleKey: 'auth.buyer', descKey: 'auth.buyerDesc', icon: ShoppingBag },
+  { value: 'seller', titleKey: 'auth.seller', descKey: 'auth.sellerDesc', icon: Store },
+  { value: 'delivery', titleKey: 'auth.delivery', descKey: 'auth.deliveryDesc', icon: Truck },
 ];
 
 export default function Register() {
   const { t } = useTranslation();
   const { login } = useAuth();
   const nav = useNavigate();
+  const [searchParams] = useSearchParams();
+  // Role preselected from ?role= (used by onboarding & "sell on weynishop" links)
+  const initialRole = ['buyer', 'seller', 'delivery'].includes(searchParams.get('role'))
+    ? searchParams.get('role')
+    : 'buyer';
   const fileRef = useRef(null);
   const docRef = useRef(null);
   const doc2Ref = useRef(null);
@@ -98,7 +103,7 @@ export default function Register() {
   }, []);
 
   const [form, setForm] = useState({
-    name: '', email: '', phone: '', role: 'buyer', password: '', confirmPassword: '',
+    name: '', email: '', phone: '', role: initialRole, password: '', confirmPassword: '',
     photoUrl: '', agree: false,
     // Vendor fields
     ownerName: '', shopName: '', shopCategory: '', phoneNumber: '',
@@ -272,7 +277,7 @@ export default function Register() {
           <form onSubmit={submit} noValidate className="space-y-4">
             {/* Role */}
             <div>
-              <label className="label">I am a…</label>
+              <label className="label">{t('auth.iAmA')}</label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
                 {ROLE_OPTIONS.map((r) => {
                   const Icon = r.icon;
@@ -285,8 +290,8 @@ export default function Register() {
                       <div className={`size-8 rounded-lg flex items-center justify-center mb-2 ${active ? 'bg-brand-500 text-white' : 'bg-slate-100 text-slate-600'}`}>
                         <Icon size={16} />
                       </div>
-                      <div className="font-semibold text-sm">{r.title}</div>
-                      <div className="text-xs text-slate-500 mt-0.5">{r.desc}</div>
+                      <div className="font-semibold text-sm">{t(r.titleKey)}</div>
+                      <div className="text-xs text-slate-500 mt-0.5">{t(r.descKey)}</div>
                       {active && <CheckCircle2 size={16} className="absolute top-2 right-2 text-brand-500" />}
                     </button>
                   );

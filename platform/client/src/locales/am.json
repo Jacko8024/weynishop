@@ -15,6 +15,7 @@
     "signup": "ተመዝገብ",
     "logout": "ውጣ",
     "search": "ምርቶችን፣ ብራንዶችን እና ምድቦችን ፈልግ",
+    "searchLabel": "ፈልግ",
     "account": "መለያ",
     "orders": "ትዕዛዞቼ",
     "wishlist": "የተወደዱ",
@@ -70,7 +71,18 @@
     "createAccount": "መለያ ፍጠር",
     "alreadyHaveAccount": "መለያ አለዎት?",
     "newHere": "አዲስ ነዎት?",
-    "rolePending": "የሻጭ እና የአድራሽ መለያዎች የአስተዳዳሪ ማረጋገጫ ይፈልጋሉ።"
+    "rolePending": "የሻጭ እና የአድራሽ መለያዎች የአስተዳዳሪ ማረጋገጫ ይፈልጋሉ።",
+    "welcomeBack": "እንኳን ደህና መጡ!",
+    "phoneLabel": "ስልክ ቁጥር",
+    "emailOptional": "ኢሜይል (አማራጭ)",
+    "useEmail": "በኢሜይል ይግቡ",
+    "usePhone": "በስልክ ቁጥር ይግቡ",
+    "invalidPhone": "ትክክለኛ የኢትዮጵያ ስልክ ቁጥር ያስገቡ",
+    "loggingIn": "በመግባት ላይ…",
+    "noAccount": "መለያ የለዎትም?",
+    "buyerDesc": "ምርቶችን ገዝተው የቤት ማድረስ ያዝዙ።",
+    "sellerDesc": "ምርቶችዎን ዘርዝረው ብዙ ደንበኞችን ያግኙ።",
+    "deliveryDesc": "ትዕዛዞችን በማድረስ ገቢ ያግኙ።"
   },
   "filters": {
     "title": "ማጣሪያዎች",
@@ -309,5 +321,29 @@
       "የኢትዮጵያውያን ንግዶች ድጋፍ",
       "ለሁሉም ዕለታዊ ፍላጎቶችዎ አንድ መድረክ"
     ]
+  },
+  "mobile": {
+    "popular": "ታዋቂ እቃዎች",
+    "moreForYou": "ተጨማሪ ለእርስዎ",
+    "buyNow": "አሁን ይግዙ",
+    "recentSearches": "የቅርብ ፍለጋዎች",
+    "language": "ቋንቋ",
+    "help": "እርዳታ እና ጥያቄዎች",
+    "aboutWeyni": "ስለ WeyniShop",
+    "greeting": "እንኳን ደህና መጡ!",
+    "signInToShop": "ለመግዛት ይግቡ",
+    "food": "ምግብ",
+    "groceries": "ግሮሰሪ",
+    "deals": "ቅናሾች",
+    "recentlyViewed": "የቅርብ ጊዜ እይታዎች"
+  },
+  "onboarding": {
+    "welcome": "ወደ {{name}} እንኳን በደህና መጡ",
+    "chooseLanguage": "ቋንቋዎን ይምረጡ",
+    "recommended": "የተመከረ",
+    "continue": "ቀጥል",
+    "authTitle": "ይግቡ ወይም መለያ ይፍጠሩ",
+    "authSub": "ለግዢ፣ ለሽያጭ እና ለማድረስ አንድ መለያ።",
+    "browseFirst": "ዝለል — መጀመሪያ ምርቶችን ይመልከቱ"
   }
 }

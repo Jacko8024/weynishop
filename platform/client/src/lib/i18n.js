@@ -16,6 +16,20 @@ export const SUPPORTED_LANGS = [
   { code: 'so', name: 'Somali', native: 'Af Soomaali' },
 ];
 
+const LANG_KEY = 'weynshop:lang';
+
+// Ethiopian-first default: on a phone (Capacitor app or phone-sized
+// viewport) a first-time visitor starts in Amharic unless a language was
+// already saved. Desktop browsers keep the usual navigator detection.
+try {
+  const isMobileCtx =
+    typeof window !== 'undefined' &&
+    (window.Capacitor || window.matchMedia?.('(max-width: 767px)')?.matches);
+  if (isMobileCtx && !localStorage.getItem(LANG_KEY)) {
+    localStorage.setItem(LANG_KEY, 'am');
+  }
+} catch { /* storage unavailable — fall back to detection */ }
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -33,7 +47,7 @@ i18n
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
-      lookupLocalStorage: 'weynshop:lang',
+      lookupLocalStorage: LANG_KEY,
     },
     interpolation: { escapeValue: false },
   });

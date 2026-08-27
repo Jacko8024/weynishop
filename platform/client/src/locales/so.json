@@ -15,6 +15,7 @@
     "signup": "Iska diiwaangeli",
     "logout": "Ka bax",
     "search": "Raadi alaab, summado iyo qaybo",
+    "searchLabel": "Raadi",
     "account": "Akoonka",
     "orders": "Dalbashooyinkayga",
     "wishlist": "Liiska Jeclaanshaha",
@@ -70,7 +71,18 @@
     "createAccount": "Akoon Samee",
     "alreadyHaveAccount": "Akoon ma haysataa?",
     "newHere": "Ma cusubtahay halkan?",
-    "rolePending": "Akoonnada iibiyaha iyo gaadiidka waxay sugayaan oggolaanshaha maamulaha."
+    "rolePending": "Akoonnada iibiyaha iyo gaadiidka waxay sugayaan oggolaanshaha maamulaha.",
+    "welcomeBack": "Soo dhawoow!",
+    "phoneLabel": "Lambarka taleefanka",
+    "emailOptional": "Email (ikhtiyaari)",
+    "useEmail": "Email isticmaal",
+    "usePhone": "Lambarka taleefanka isticmaal",
+    "invalidPhone": "Geli lambarka taleefanka Itoobiya ee saxda ah",
+    "loggingIn": "Soo galaya…",
+    "noAccount": "Akoon ma leedahay?",
+    "buyerDesc": "Alaab iibso, gaarsiin guri dalbo.",
+    "sellerDesc": "Alaabtaada soo dhig, macaamiil badan gaadh.",
+    "deliveryDesc": "Dalabyada qaado, gaarsiin kasta lacag ka hel."
   },
   "filters": {
     "title": "Shaandhada",
@@ -281,5 +293,29 @@
       "Taageeridda ganacsiyada Itoobiya",
       "Hal suuq oo loogu talagalay baahidaada maalinlaha ah"
     ]
+  },
+  "mobile": {
+    "popular": "Alaabta caanka ah",
+    "moreForYou": "Waxyaabo kale si kuu ah",
+    "buyNow": "Iibso hadda",
+    "recentSearches": "Raadinta dhawaan",
+    "language": "Luqadda",
+    "help": "Caawimo & Su'aalo",
+    "aboutWeyni": "Ku saabsan WeyniShop",
+    "greeting": "Soo dhawoow!",
+    "signInToShop": "Gal si aad u iibsato",
+    "food": "Cunto",
+    "groceries": "Raashin",
+    "deals": "Qiimo dhimis",
+    "recentlyViewed": "Waxaad dhawaan eegtay"
+  },
+  "onboarding": {
+    "welcome": "Soo dhawoow {{name}}",
+    "chooseLanguage": "Dooro luqaddaada",
+    "recommended": "La taliyay",
+    "continue": "Sii wad",
+    "authTitle": "Soo gal ama akoon samee",
+    "authSub": "Hal akoon oo wax iibsi, iibin iyo gaarsiin ah.",
+    "browseFirst": "Ka bood — marka hore alaabta daawo"
   }
 }

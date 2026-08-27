@@ -9,6 +9,8 @@ import ProductCard from '../../components/ProductCard.jsx';
 import FlashCountdown from '../../components/FlashCountdown.jsx';
 import HeroSlider from '../../components/HeroSlider.jsx';
 import useDocumentTitle from '../../lib/useDocumentTitle.js';
+import useIsMobile from '../../lib/useIsMobile.js';
+import MobileHome from '../../components/mobile/MobileHome.jsx';
 import JsonLd, { OrganizationSchema, WebSiteSchema } from '../../components/JsonLd.jsx';
 
 const FALLBACK_BANNERS = [
@@ -25,9 +27,14 @@ const FALLBACK_BANNERS = [
 export default function HomePage() {
   const { t } = useTranslation();
   const categories = useCategories();
+  const isMobile = useIsMobile();
   const [banners, setBanners] = useState(FALLBACK_BANNERS);
   const [flash, setFlash] = useState([]);
   const [trending, setTrending] = useState([]);
+  const [food, setFood] = useState([]);
+  const [groceries, setGroceries] = useState([]);
+  const [foodKey, setFoodKey] = useState('');
+  const [groceryKey, setGroceryKey] = useState('');
   const [loading, setLoading] = useState(true);
 
   useDocumentTitle(
@@ -56,12 +63,60 @@ export default function HomePage() {
         if (!on) return;
         setFlash(f.data.items || []);
         setTrending(p.data.items || []);
+
+        // Mobile home rails: Food + Groceries from REAL category data.
+        // We discover which category keys actually have products and only
+        // render a section when it has real items (no fake inventory).
+        if (isMobile) {
+          try {
+            const { data: catData } = await api.get('/products/categories');
+            const keys = Array.isArray(catData.categories) ? catData.categories : [];
+            const fk = keys.find((k) => /food|meal|restaurant|ምግብ|ቡና|coffee|injera|berbere|spice/i.test(String(k)));
+            const gk = keys.find((k) => k !== fk && /grocer|baltina|ቅመም/i.test(String(k)));
+            const reqs = [];
+            if (fk) {
+              reqs.push(
+                api.get('/products', { params: { category: fk, sort: 'mostSold', limit: 8 } })
+                  .then(({ data }) => { if (on) { setFood(data.items || []); setFoodKey(fk); } })
+                  .catch(() => {})
+              );
+            }
+            if (gk) {
+              reqs.push(
+                api.get('/products', { params: { category: gk, sort: 'mostSold', limit: 8 } })
+                  .then(({ data }) => { if (on) { setGroceries(data.items || []); setGroceryKey(gk); } })
+                  .catch(() => {})
+              );
+            }
+            await Promise.all(reqs);
+          } catch { /* rails stay hidden */ }
+        }
       } finally { if (on) setLoading(false); }
     })();
     return () => { on = false; };
-  }, []);
+  }, [isMobile]);
 
   const flashEnd = flash[0]?.flashSaleEnd;
+
+  // Dedicated mobile shopping experience (phones only)
+  if (isMobile) {
+    return (
+      <>
+        <JsonLd data={OrganizationSchema} />
+        <JsonLd data={WebSiteSchema} />
+        <MobileHome
+          banners={banners}
+          flash={flash}
+          trending={trending}
+          food={food}
+          groceries={groceries}
+          foodKey={foodKey}
+          groceryKey={groceryKey}
+          loading={loading}
+        />
+      </>
+    );
+  }
 
   return (
     <div className="max-w-page mx-auto px-3 md:px-4 py-4 md:py-6 space-y-8">

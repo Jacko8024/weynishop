@@ -110,3 +110,42 @@ html[lang='ti'] .font-localized {
   70%  { transform: scale(0.9); }
   100% { transform: scale(1); }
 }
+
+/* ----------- Mobile app shell helpers ----------- */
+/* Safe areas for iPhone notch/Dynamic Island + Android gesture bars */
+.safe-top { padding-top: env(safe-area-inset-top, 0px); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* App-like feel on phones: no tap flash, no text selection on chrome */
+@media (max-width: 767px) {
+  * { -webkit-tap-highlight-color: transparent; }
+  header, nav { -webkit-user-select: none; user-select: none; }
+}
+
+/* Horizontal rails (flash deals / categories) snap cleanly */
+.mobile-rail {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+.mobile-rail > * { scroll-snap-align: start; flex-shrink: 0; }
+
+/* Sticky purchase bar on product page (mobile) */
+.mobile-buy-bar {
+  position: fixed;
+  bottom: calc(54px + env(safe-area-inset-bottom, 0px)); /* above bottom nav incl. gesture area */
+  left: 0;
+  right: 0;
+  z-index: 35;
+  padding: 8px 12px;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  gap: 8px;
+}
+
+/* Press feedback for tappable cards/buttons */
+.press { transition: transform 0.12s ease; }
+.press:active { transform: scale(0.97); }

@@ -13,7 +13,9 @@ import { useWishlist } from '../../store/wishlist.js';
 import { useLoginGate } from '../../store/loginGate.js';
 import { fmtPrice, fmtCompact, effectivePrice } from '../../lib/format.js';
 import { useCategories, findCategory } from '../../lib/categories.js';
+import { addRecentlyViewed } from '../../lib/recentlyViewed.js';
 import useDocumentTitle from '../../lib/useDocumentTitle.js';
+import useIsMobile from '../../lib/useIsMobile.js';
 import Stars from '../../components/Stars.jsx';
 import FlashCountdown from '../../components/FlashCountdown.jsx';
 import ProductCard from '../../components/ProductCard.jsx';
@@ -65,6 +67,7 @@ export default function ProductPage() {
         ]);
         if (!on) return;
         setProduct(p.data.product);
+        addRecentlyViewed(p.data.product); // local "recently viewed" history
         setRelated(rel.data.items || []);
         setReviews(rv.data.reviews || []);
         setBreakdown(rv.data.breakdown || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
@@ -80,6 +83,7 @@ export default function ProductPage() {
 
   const price = useMemo(() => product ? effectivePrice(product, qty) : 0, [product, qty]);
   const totalReviews = reviews.length;
+  const isMobile = useIsMobile();
 
   const onAddToCart = () => {
     if (!user) return openGate();
@@ -136,7 +140,7 @@ export default function ProductPage() {
   const percent = product.flashSalePercent ? Math.round(Number(product.flashSalePercent)) : null;
 
   return (
-    <div className="max-w-page mx-auto px-3 md:px-4 py-4 md:py-6">
+    <div className={`max-w-page mx-auto px-3 md:px-4 py-4 md:py-6 ${isMobile ? 'pb-[130px]' : ''}`}>
       {product && <JsonLd data={productSchema(product)} />}
       <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
         {/* Gallery */}
@@ -415,10 +419,30 @@ export default function ProductPage() {
       {related.length > 0 && (
         <section className="mt-8">
           <h2 className="font-bold text-lg mb-3">{t('product.peopleAlsoBought')}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
+          <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 ${isMobile ? 'pb-2' : ''}`}>
             {related.slice(0, 10).map((p) => <ProductCard key={p._id} product={p} />)}
           </div>
         </section>
+      )}
+
+      {/* Sticky mobile purchase bar — always one tap from buying */}
+      {isMobile && (
+        <div className="mobile-buy-bar" style={{ boxShadow: '0 -4px 14px rgba(0,0,0,0.07)' }}>
+          <button
+            onClick={onAddToCart}
+            disabled={product.stock === 0}
+            className="btn-secondary flex-1 h-11 rounded-full font-semibold text-sm"
+          >
+            <ShoppingCart size={17} /> {t('product.addToCart')}
+          </button>
+          <button
+            onClick={onBuyNow}
+            disabled={product.stock === 0}
+            className="btn-primary flex-[1.15] h-11 rounded-full font-semibold text-sm"
+          >
+            {t('mobile.buyNow')}
+          </button>
+        </div>
       )}
     </div>
   );

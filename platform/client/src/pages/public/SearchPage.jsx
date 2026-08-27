@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { SlidersHorizontal, X } from 'lucide-react';
+import { SlidersHorizontal, X, Search, Clock, Trash2 } from 'lucide-react';
 import { api } from '../../api/client.js';
 import { useCategories } from '../../lib/categories.js';
 import useDocumentTitle from '../../lib/useDocumentTitle.js';
+import useIsMobile from '../../lib/useIsMobile.js';
+import { getRecentSearches, addRecentSearch, clearRecentSearches } from '../../lib/recentSearches.js';
 import ProductGrid from '../../components/ProductGrid.jsx';
 
 const SORT_KEYS = ['best', 'priceLow', 'priceHigh', 'mostSold', 'newest', 'topRated'];
@@ -18,6 +20,22 @@ export default function SearchPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const searchQuery = params.get('q') || '';
+
+  // Mobile search experience
+  const isMobile = useIsMobile();
+  const [inputQ, setInputQ] = useState(searchQuery);
+  const [recent, setRecent] = useState(getRecentSearches);
+  useEffect(() => { setInputQ(searchQuery); }, [searchQuery]);
+
+  const onSearchSubmit = (e) => {
+    e.preventDefault();
+    const term = inputQ.trim();
+    if (term) {
+      addRecentSearch(term);
+      setRecent(getRecentSearches());
+    }
+    update({ q: term });
+  };
 
   useDocumentTitle(
     searchQuery ? `Search results for "${searchQuery}" · Weynishop` : 'Search products · Weynishop',
@@ -151,8 +169,56 @@ export default function SearchPage() {
 
   return (
     <div className="max-w-page mx-auto px-3 md:px-4 py-4 md:py-6">
+      {/* Mobile search bar */}
+      {isMobile && (
+        <form onSubmit={onSearchSubmit} className="flex items-center gap-2 mb-3" role="search">
+          <div className="relative flex-1">
+            <Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-muted)' }} />
+            <input
+              value={inputQ}
+              onChange={(e) => setInputQ(e.target.value)}
+              placeholder={t('nav.search')}
+              className="input pl-9 pr-9 h-10 rounded-full"
+              aria-label={t('nav.search')}
+              autoFocus={!searchQuery}
+            />
+            {inputQ && (
+              <button type="button" onClick={() => setInputQ('')} aria-label="Clear"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 grid place-items-center rounded-full btn-ghost">
+                <X size={15} />
+              </button>
+            )}
+          </div>
+        </form>
+      )}
+
+      {/* Recent searches (mobile, when nothing is filtered yet) */}
+      {isMobile && !searchQuery && chips.length === 0 && recent.length > 0 && (
+        <div className="mb-3">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs font-semibold flex items-center gap-1.5" style={{ color: 'var(--color-muted)' }}>
+              <Clock size={12} /> {t('mobile.recentSearches')}
+            </span>
+            <button onClick={() => { clearRecentSearches(); setRecent([]); }}
+                    className="w-8 h-8 grid place-items-center rounded-full btn-ghost" aria-label={t('filters.clear')}>
+              <Trash2 size={14} />
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {recent.map((term) => (
+              <button key={term} onClick={() => { addRecentSearch(term); setRecent(getRecentSearches()); update({ q: term }); }}
+                      className="badge press text-xs px-3 py-1.5"
+                      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}>
+                {term}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Top bar */}
-      <div className="flex items-center justify-between gap-3 mb-3">
+      <div className={`flex items-center justify-between gap-3 mb-3 ${isMobile ? 'sticky z-30 py-2 -mx-3 px-3 nav-blur' : ''}`}
+           style={isMobile ? { top: 'calc(48px + env(safe-area-inset-top, 0px))', borderBottom: '1px solid var(--color-border)' } : undefined}>
         <div className="text-sm">
           {filters.q && <span className="font-semibold">{filters.q} · </span>}
           <span style={{ color: 'var(--color-muted)' }}>{items.length} {t('product.reviews').replace('reviews','results') /* fallback */}</span>

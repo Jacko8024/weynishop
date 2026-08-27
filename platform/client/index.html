@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <link rel="icon" type="image/png" href="/logo/weynishopping-icon.png" />
   <link rel="apple-touch-icon" href="/logo/weynishopping-icon.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <title>ወይኒሾፕ (Weynishop) – First Ethiopian Marketplace in Arab Countries | Food, Baltina & Fashion Delivery</title>
 
@@ -339,31 +339,46 @@ Bahrain">
   <script>
     // ── Splash logic ──────────────────────────────────────────────────
     // Rules:
-    //   1. Always show for at least MIN_MS (4 s) – fast network included.
-    //   2. If the app takes longer, keep showing until React has rendered
-    //      real page content (not just the empty #root shell).
-    //   3. No hard upper-limit timeout – slow networks see the splash
-    //      until the page is genuinely ready.
+    //   1. The full branded splash is shown ONLY on true app startup
+    //      (once per session). If the WebView reloads mid-session
+    //      (app resume, config change, etc.) the splash is skipped so
+    //      the app never feels like it is restarting.
+    //   2. On a real startup it shows for a short brand moment (MIN_MS)
+    //      and hides as soon as React has painted real page content.
     // ──────────────────────────────────────────────────────────────────
     (function () {
       var splash  = document.getElementById('weyn-splash');
       if (!splash) return;
 
-      var MIN_MS   = 4000;          // minimum visible time (ms)
+      function hide(fast) {
+        splash.classList.add('hide');
+        setTimeout(function () {
+          if (splash.parentNode) splash.parentNode.removeChild(splash);
+        }, fast ? 150 : 600);
+      }
+
+      // Once-per-session guard: sessionStorage survives WebView reloads
+      // within the same app session but resets when the app process dies.
+      var firstRun = true;
+      try {
+        firstRun = !sessionStorage.getItem('weynshop:splashShown');
+        if (firstRun) sessionStorage.setItem('weynshop:splashShown', '1');
+      } catch (e) { /* storage unavailable — show splash */ }
+
+      if (!firstRun) { hide(true); return; }
+
+      var MIN_MS   = 1200;          // short brand moment on cold start
       var start    = Date.now();
       var appReady = false;         // true once React has painted real content
-      var timerDone = false;        // true once 4 s have elapsed
+      var timerDone = false;        // true once MIN_MS has elapsed
 
       function tryHide() {
         // Only hide when BOTH conditions are satisfied
         if (!appReady || !timerDone) return;
-        splash.classList.add('hide');
-        setTimeout(function () {
-          if (splash.parentNode) splash.parentNode.removeChild(splash);
-        }, 700);
+        hide(false);
       }
 
-      // ① 4-second minimum timer
+      // ① Minimum brand timer
       setTimeout(function () {
         timerDone = true;
         tryHide();

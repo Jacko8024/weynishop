@@ -22,6 +22,8 @@ import TermsPage from './pages/public/TermsPage.jsx';
 import PrivacyPage from './pages/public/PrivacyPage.jsx';
 import NotFoundPage from './pages/public/NotFoundPage.jsx';
 import SurprisePage from './pages/public/SurprisePage.jsx';
+import AccountPage from './pages/public/AccountPage.jsx';
+import CategoriesPage from './pages/public/CategoriesPage.jsx';
 
 // Buyer-protected (cart/checkout/orders only)
 import BuyerLayout from './pages/buyer/Layout.jsx';
@@ -87,6 +89,8 @@ export default function App() {
         <Route path="/store/:sellerId" element={<StorePage />} />
         <Route path="/deals" element={<DealsPage />} />
         <Route path="/wishlist" element={<WishlistPage />} />
+        <Route path="/account" element={<AccountPage />} />
+        <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/contact" element={<ContactPage />} />
