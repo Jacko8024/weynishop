@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log*
+.env
+.env.*
+!.env.example
+uploads
+*.log
+boot.log
+server-error.log
+render.yaml
+SUPABASE_MIGRATION.md
+clean_dups.js
+.git
+.vscode
+.idea

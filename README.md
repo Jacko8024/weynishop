@@ -4,9 +4,15 @@ A full-stack platform (Node + React + MySQL) with 4 portals (Buyer, Seller, Deli
 
 ## Stack
 
-- **Backend:** Node.js, Express, **MySQL (Sequelize ORM)**, Socket.io, JWT
+- **Backend:** Node.js, Express, **PostgreSQL (Sequelize ORM)**, Socket.io, JWT
 - **Frontend:** React 18 (Vite), React Router, TailwindCSS, Zustand, Socket.io-client, @react-google-maps/api
 - **Auth:** JWT with role-based access (`buyer | seller | delivery | admin`)
+- **Storage:** Supabase Storage (product/banner/onboarding images)
+
+## Deployment
+
+- **Self-hosted on your own VPS (Coolify + Contabo):** see [`COOLIFY_DEPLOY.md`](./COOLIFY_DEPLOY.md) — Dockerfiles for the API (`platform/server/Dockerfile`) and web (`platform/client/Dockerfile`) are included and tested.
+- **Managed (Vercel + Render + Supabase):** see [`platform/DEPLOY.md`](./platform/DEPLOY.md).
 
 ## Folder structure
 
