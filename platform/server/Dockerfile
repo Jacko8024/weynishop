@@ -1,7 +1,8 @@
 # =============================================================================
 # WeyniShop API — Coolify / Docker deployment
-# Express + Socket.io + Sequelize (Postgres). Stateless: all uploaded images
-# live in Supabase Storage, so no persistent volume is required.
+# Express + Socket.io + Sequelize (Postgres). Uploaded images/documents are
+# stored on local disk under /app/uploads — attach a Coolify persistent volume
+# at that path so files survive redeploys.
 #
 # Coolify injects PORT (default 3000) at runtime; the app reads it via env.js.
 # =============================================================================
@@ -17,6 +18,11 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 # Application source
 COPY src ./src
+
+# Uploads directory — a Coolify persistent volume is mounted at /app/uploads.
+# Pre-create it owned by the non-root user; Docker copies this ownership to a
+# fresh named volume on first mount.
+RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
 
 # Run as the built-in non-root user
 USER node

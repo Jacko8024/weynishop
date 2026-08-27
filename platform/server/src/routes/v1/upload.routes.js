@@ -3,7 +3,7 @@ import asyncHandler from 'express-async-handler';
 import multer from 'multer';
 import sharp from 'sharp';
 import { protect, requireRole, requireSurpriseOwner } from '../../middleware/auth.js';
-import { uploadToBucket } from '../../lib/supabase.js';
+import { uploadToBucket } from '../../lib/storage.js';
 import { env } from '../../config/env.js';
 
 // Standard product image size (square cover crop, no stretching).
@@ -33,15 +33,27 @@ const docUpload = multer({
   },
 });
 
+// Extension by mimetype — stored files are served by express.static, which
+// infers the Content-Type from the extension, so doc keys must carry one.
+const EXT_BY_MIME = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
+  'image/avif': '.avif',
+  'application/pdf': '.pdf',
+};
+
 const storeDoc = async ({ buffer, bucket, prefix, contentType = 'application/octet-stream' }) => {
-  const key = `${prefix}${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const ext = EXT_BY_MIME[contentType] || '';
+  const key = `${prefix}${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
   return uploadToBucket({ bucket, key, buffer, contentType });
 };
 
 const router = Router();
 
-// Cover-crop in memory using sharp, then push the WEBP buffer to Supabase
-// Storage. Returns the public URL of the stored object.
+// Cover-crop in memory using sharp, then write the WEBP buffer to local disk
+// storage (UPLOADS_DIR). Returns the public URL of the stored file.
 const processAndStore = async ({ buffer, width, height, bucket, prefix }) => {
   const out = await sharp(buffer)
     .rotate() // honor EXIF orientation
@@ -68,8 +80,8 @@ router.post(
         buffer: f.buffer,
         width: PRODUCT_W,
         height: PRODUCT_H,
-        bucket: env.SUPABASE_BUCKET_PRODUCTS,
-        // Group uploads by seller for easy moderation in the Supabase UI.
+        bucket: env.UPLOAD_FOLDER_PRODUCTS,
+        // Group uploads by seller for easy moderation on disk.
         prefix: `seller-${req.user.id}/`,
       });
       out.push(url);
@@ -80,8 +92,7 @@ router.post(
 
 // POST /api/v1/uploads/avatars — single profile photo, 400x400 cover-crop.
 // Public (no auth) so it can be called from the signup page before account
-// creation. Files are stored in the products bucket under `avatars/` to
-// avoid needing a separate bucket configuration.
+// creation. Files are stored in the products folder under `avatars/`.
 router.post(
   '/avatars',
   upload.single('image'),
@@ -91,7 +102,7 @@ router.post(
       buffer: req.file.buffer,
       width: 400,
       height: 400,
-      bucket: env.SUPABASE_BUCKET_PRODUCTS,
+      bucket: env.UPLOAD_FOLDER_PRODUCTS,
       prefix: 'avatars/',
     });
     res.status(201).json({ url });
@@ -110,7 +121,7 @@ router.post(
       buffer: req.file.buffer,
       width: BANNER_W,
       height: BANNER_H,
-      bucket: env.SUPABASE_BUCKET_BANNERS,
+      bucket: env.UPLOAD_FOLDER_BANNERS,
       prefix: '',
     });
     res.status(201).json({ url });
@@ -131,7 +142,7 @@ router.post(
       buffer: req.file.buffer,
       width: 900,
       height: 660,
-      bucket: env.SUPABASE_BUCKET_BANNERS,
+      bucket: env.UPLOAD_FOLDER_BANNERS,
       prefix: `surprise/user-${req.user.id}/`,
     });
     res.status(201).json({ url });
@@ -151,7 +162,7 @@ router.post(
       buffer: req.file.buffer,
       width: 900,
       height: 660,
-      bucket: env.SUPABASE_BUCKET_BANNERS,
+      bucket: env.UPLOAD_FOLDER_BANNERS,
       prefix: 'surprise/admin/',
     });
     res.status(201).json({ url });
@@ -167,7 +178,7 @@ router.post(
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
     const url = await storeDoc({
       buffer: req.file.buffer,
-      bucket: env.SUPABASE_BUCKET_DOCS,
+      bucket: env.UPLOAD_FOLDER_DOCS,
       prefix: `onboarding/`,
       contentType: req.file.mimetype || 'application/octet-stream',
     });
@@ -175,12 +186,12 @@ router.post(
   })
 );
 
-// Multer / Supabase error formatter — keeps API responses consistent.
+// Multer / storage error formatter — keeps API responses consistent.
 router.use((err, _req, res, next) => {
   if (err && (err instanceof multer.MulterError || err.message === 'Only image files are allowed')) {
     return res.status(400).json({ message: err.message });
   }
-  // Surface Supabase Storage errors with their original message.
+  // Surface storage errors with their original message.
   if (err && err.statusCode && err.message) {
     return res.status(Number(err.statusCode) || 500).json({ message: err.message });
   }

@@ -1,11 +1,11 @@
-﻿import 'dotenv/config';
+import 'dotenv/config';
 
-// Helper that throws a friendly error if a required Supabase env var is missing.
+// Helper that throws a friendly error if a required env var is missing.
 const required = (name) => {
   const v = process.env[name];
   if (!v) {
     throw new Error(
-      `[env] Missing ${name}. Copy server/.env.example to server/.env and fill in your Supabase credentials.`
+      `[env] Missing ${name}. Copy server/.env.example to server/.env and fill in your database credentials.`
     );
   }
   return v;
@@ -14,21 +14,27 @@ const required = (name) => {
 export const env = {
   PORT: parseInt(process.env.PORT || '5000', 10),
 
-  // ---- Postgres / Supabase --------------------------------------------------
-  // Full Postgres connection string from Supabase ⚙ Project Settings → Database
-  // → Connection string → URI. Looks like:
-  //   postgres://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres
-  // Use the *pooler* (port 6543) for serverless / nodemon dev — it's connection-safe.
+  // ---- PostgreSQL (Sequelize) ------------------------------------------------
+  // Any PostgreSQL 14+ connection string. Local dev: a local/Docker Postgres.
+  // Production (Coolify): the internal connection URL of the Coolify-managed
+  // PostgreSQL resource, e.g.
+  //   postgres://<user>:<password>@<resource-name>:5432/<db>
   DATABASE_URL: required('DATABASE_URL'),
-  DB_SSL: (process.env.DB_SSL || 'true').toLowerCase() !== 'false', // Supabase requires SSL
+  // false for local Postgres and Coolify-managed Postgres on the same private
+  // network. Set true only for cloud providers that require SSL.
+  DB_SSL: (process.env.DB_SSL || 'false').toLowerCase() === 'true',
 
-  // ---- Supabase JS client (used for Storage uploads) -----------------------
-  SUPABASE_URL: required('SUPABASE_URL'),
-  // Service-role key has full bucket access — keep it server-side only.
-  SUPABASE_SERVICE_ROLE_KEY: required('SUPABASE_SERVICE_ROLE_KEY'),
-  SUPABASE_BUCKET_PRODUCTS: process.env.SUPABASE_BUCKET_PRODUCTS || 'product-images',
-  SUPABASE_BUCKET_BANNERS:  process.env.SUPABASE_BUCKET_BANNERS  || 'banner-images',
-  SUPABASE_BUCKET_DOCS:     process.env.SUPABASE_BUCKET_DOCS     || 'onboarding-docs',
+  // ---- File storage (local disk) ----------------------------------------------
+  // Directory where uploaded images/documents are written. In production this
+  // MUST be a persistent volume (Coolify: mount a volume at /app/uploads).
+  UPLOADS_DIR: process.env.UPLOADS_DIR || './uploads',
+  // Public base URL of this API (no trailing slash). Used to build absolute
+  // URLs for uploaded files, e.g. https://api.yourdomain.com
+  PUBLIC_API_URL: process.env.PUBLIC_API_URL || `http://localhost:${process.env.PORT || 5000}`,
+  // Folder names under UPLOADS_DIR (historically Supabase bucket names).
+  UPLOAD_FOLDER_PRODUCTS: process.env.UPLOAD_FOLDER_PRODUCTS || 'product-images',
+  UPLOAD_FOLDER_BANNERS:  process.env.UPLOAD_FOLDER_BANNERS  || 'banner-images',
+  UPLOAD_FOLDER_DOCS:     process.env.UPLOAD_FOLDER_DOCS     || 'onboarding-docs',
 
   JWT_SECRET: process.env.JWT_SECRET || 'dev-secret-change-me',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',

@@ -1,4 +1,10 @@
-﻿# Supabase migration guide
+﻿> ⚠️ **OUTDATED / HISTORICAL** — WeyniShop no longer uses Supabase. Storage
+> moved back to local disk (`UPLOADS_DIR`, served at `/uploads` by the API)
+> and the database is a Coolify-managed PostgreSQL in production. See
+> `COOLIFY_DEPLOY.md` in the repo root. This document is kept only for
+> reference on how the old Supabase setup worked.
+
+# Supabase migration guide
 
 ## 1. Create the Supabase project
 

@@ -7,12 +7,12 @@ A full-stack platform (Node + React + MySQL) with 4 portals (Buyer, Seller, Deli
 - **Backend:** Node.js, Express, **PostgreSQL (Sequelize ORM)**, Socket.io, JWT
 - **Frontend:** React 18 (Vite), React Router, TailwindCSS, Zustand, Socket.io-client, @react-google-maps/api
 - **Auth:** JWT with role-based access (`buyer | seller | delivery | admin`)
-- **Storage:** Supabase Storage (product/banner/onboarding images)
+- **Storage:** Local disk (`/uploads` served by the API, persistent volume in production)
 
 ## Deployment
 
-- **Self-hosted on your own VPS (Coolify + Contabo):** see [`COOLIFY_DEPLOY.md`](./COOLIFY_DEPLOY.md) — Dockerfiles for the API (`platform/server/Dockerfile`) and web (`platform/client/Dockerfile`) are included and tested.
-- **Managed (Vercel + Render + Supabase):** see [`platform/DEPLOY.md`](./platform/DEPLOY.md).
+- **Self-hosted on your own VPS (Coolify + Contabo):** see [`COOLIFY_DEPLOY.md`](./COOLIFY_DEPLOY.md) — Dockerfiles for the API (`platform/server/Dockerfile`) and web (`platform/client/Dockerfile`) are included and tested. Fully self-hosted: Coolify-managed PostgreSQL + uploads on a persistent volume (no Supabase needed).
+- **Managed (Vercel + Render + Supabase):** see [`platform/DEPLOY.md`](./platform/DEPLOY.md) (legacy guide).
 
 ## Folder structure
 

@@ -6,26 +6,27 @@ Self-hosted deployment of the full platform on your own VPS using
 ## Architecture
 
 ```
-                        ┌─────────────────────────────────────────────┐
- Internet ──HTTPS──►    │  Contabo VPS (Coolify + Traefik proxy)      │
-                        │                                             │
-  www.yourdomain.com ──►│  web   : nginx + React build   (port 80)    │
-  api.yourdomain.com ──►│  api   : Node/Express+Socket.io(port 3000)  │
-                        └──────────────┬──────────────────────────────┘
-                                       │ DATABASE_URL (SSL)
-                                       ▼
-                        Supabase Postgres  +  Supabase Storage (images)
+                        ┌──────────────────────────────────────────────┐
+ Internet ──HTTPS──►    │  Contabo VPS (Coolify + Traefik proxy)       │
+                        │                                              │
+  www.yourdomain.com ──►│  web       : nginx + React build (port 80)   │
+  api.yourdomain.com ──►│  api       : Node/Express+Socket.io (3000)   │
+                        │              └── /app/uploads (volume)       │
+                        │                        │ private network     │
+                        │  postgres  : Coolify-managed PostgreSQL 16   │
+                        └──────────────────────────────────────────────┘
 ```
 
 | Piece | Where it runs | Notes |
 |---|---|---|
 | **web** (React/Vite) | Coolify app, nginx container | `platform/client/Dockerfile` |
 | **api** (Express + Socket.io) | Coolify app, Node 20 container | `platform/server/Dockerfile` |
-| **Database** | Supabase Postgres (existing) | No migration needed. Option B: Coolify-managed Postgres |
-| **Image storage** | Supabase Storage | Required — uploads go there, containers stay stateless |
+| **Database** | Coolify-managed PostgreSQL 16 | Private network, `DB_SSL=false` |
+| **Image storage** | Local disk in the api container | Persistent volume mounted at `/app/uploads` |
 
-Both containers are **stateless** (no volumes needed): images live in Supabase
-Storage and all data in Postgres, so Coolify can redeploy/replace them freely.
+Everything runs on your VPS — **no Supabase or any other external service is
+required**. The web container is stateless; the api container writes uploaded
+images/documents to a persistent volume, so redeploys never lose files.
 
 ---
 
@@ -43,12 +44,9 @@ Storage and all data in Postgres, so Coolify can redeploy/replace them freely.
    Contabo panel → your VPS → *Firewall* — make sure HTTP/HTTPS are open.
 4. **GitHub repo** — already done: `Jacko8024/weynishop` (must contain the
    Dockerfiles from this repo).
-5. **Supabase credentials** from your existing project:
-   - `DATABASE_URL` (Project Settings → Database → Connection string URI, pooler port 6543)
-   - `SUPABASE_URL` (`https://<ref>.supabase.co`)
-   - `SUPABASE_SERVICE_ROLE_KEY` (Project Settings → API → service_role secret)
-   - If Supabase → Settings → Database → **Network restrictions** is enabled,
-     add your VPS IP (or disable the restriction).
+
+No external services are needed: the database is a Coolify-managed PostgreSQL
+on the same VPS and uploaded images are stored on a persistent volume.
 
 ---
 
@@ -92,7 +90,27 @@ create your admin account (first user becomes root).
 
 ---
 
-## Step 4 — Create the API application
+## Step 4 — Create the database (Coolify-managed PostgreSQL)
+
+1. Project → **+ New Resource** → **Database** → **PostgreSQL 16**.
+2. Name it **`postgres`** (or keep the generated name) and start it.
+3. Once it's running, open the resource → **Connection** and copy the
+   **Internal connection URL**. It looks like:
+
+   ```
+   postgres://<user>:<password>@<resource-name>:5432/<dbname>
+   ```
+
+   Keep this handy — it becomes `DATABASE_URL` for the api app. The internal
+   URL is only reachable inside Coolify's private Docker network, which is
+   exactly what we want (the DB is never exposed to the internet).
+
+> Optional but recommended: resource → **Scheduled Backups** → add a daily
+> backup (to local disk, or S3-compatible storage if you have any).
+
+---
+
+## Step 5 — Create the API application
 
 1. Project → **+ New Resource** → **Application**.
 2. Choose your GitHub source → `Jacko8024/weynishop` → branch `main`.
@@ -103,21 +121,24 @@ create your admin account (first user becomes root).
    - **Dockerfile Location:** `Dockerfile`
    - **Ports Exposed:** `3000`
    - **Health Check:** method GET, path `/api/v1/health`, port `3000`
-5. **Domains** → add `https://api.yourdomain.com`
+5. **Persistent Storage** (app → **Storages** → **+ Add**):
+   - **Name:** `api-uploads`
+   - **Mount Path:** `/app/uploads`
+   - Type: *Volume* (Coolify creates a Docker volume). The Dockerfile
+     pre-creates `/app/uploads` owned by the non-root `node` user, so a fresh
+     volume inherits the correct ownership on first mount.
+   - ⚠️ Without this volume, uploaded images are lost on every redeploy.
+6. **Domains** → add `https://api.yourdomain.com`
    (Coolify's Traefik will issue a Let's Encrypt certificate automatically.
    DNS must already point at the VPS.)
-6. **Environment Variables** → add all of these (values from your local
-   `platform/server/.env` / Supabase):
+7. **Environment Variables** → add all of these:
 
 | Variable | Value |
 |---|---|
-| `DATABASE_URL` | Supabase pooler URI (`postgres://postgres.<ref>:<pw>@aws-0-….pooler.supabase.com:6543/postgres`) |
-| `DB_SSL` | `true` |
-| `SUPABASE_URL` | `https://<ref>.supabase.co` |
-| `SUPABASE_SERVICE_ROLE_KEY` | service-role JWT |
-| `SUPABASE_BUCKET_PRODUCTS` | `product-images` |
-| `SUPABASE_BUCKET_BANNERS` | `banner-images` |
-| `SUPABASE_BUCKET_DOCS` | `onboarding-docs` |
+| `DATABASE_URL` | the **internal** URL from Step 4 (`postgres://<user>:<pw>@<resource-name>:5432/<db>`) |
+| `DB_SSL` | `false` |
+| `UPLOADS_DIR` | `/app/uploads` |
+| `PUBLIC_API_URL` | `https://api.yourdomain.com` (used to build image URLs) |
 | `JWT_SECRET` | long random string (generate one!) |
 | `JWT_EXPIRES_IN` | `7d` |
 | `CLIENT_URL` | `https://www.yourdomain.com` (comma-separate more origins if needed) |
@@ -131,18 +152,18 @@ create your admin account (first user becomes root).
    > Don't set `PORT` manually — Coolify injects it (3000) automatically.
    > Mark secrets as **secret** (lock icon) so they're hidden in the UI.
 
-7. Click **Deploy**. Watch **Logs** until you see:
+8. Click **Deploy**. Watch **Logs** until you see:
 
 ```
-[db] connected: postgres://postgres.<ref>:***@aws-0-….pooler.supabase.com:6543/postgres
+[db] connected: postgres://<user>:***@<resource-name>:5432/<db>
 [api] listening on http://localhost:3000
 ```
 
-8. Verify: `https://api.yourdomain.com/api/v1/health` → `{"ok":true,...}`
+9. Verify: `https://api.yourdomain.com/api/v1/health` → `{"ok":true,...}`
 
 ---
 
-## Step 5 — Create the Web application
+## Step 6 — Create the Web application
 
 1. Project → **+ New Resource** → **Application** → same repo, branch `main`.
 2. Name it **`web`**.
@@ -160,7 +181,7 @@ create your admin account (first user becomes root).
 
 | Variable | Value | Build Variable |
 |---|---|---|
-| `VITE_API_URL` | `https://api.yourdomain.com` (your Step 4 URL, no trailing slash) | ✅ yes |
+| `VITE_API_URL` | `https://api.yourdomain.com` (your Step 5 URL, no trailing slash) | ✅ yes |
 | `VITE_GOOGLE_MAPS_API_KEY` | same Maps key | ✅ yes |
 | `VITE_STOREFRONT_URL` | `https://www.yourdomain.com` | ✅ yes |
 | `VITE_FIREBASE_*` | optional — defaults are baked into `src/lib/firebase.js` | ✅ yes if set |
@@ -172,7 +193,7 @@ create your admin account (first user becomes root).
 
 ---
 
-## Step 6 — Wire CORS (if you didn't already)
+## Step 7 — Wire CORS (if you didn't already)
 
 Back on the **api** app → Environment Variables → make sure:
 
@@ -185,31 +206,6 @@ Redeploy the api app. Without this, browser requests fail with CORS errors.
 
 ---
 
-## Step 7 — Database: choose your option
-
-### Option A (recommended): keep Supabase Postgres
-Nothing to do — you already pointed `DATABASE_URL` at Supabase in Step 4.
-Your existing data, images and schema all keep working. Just confirm the VPS
-IP is allowed in Supabase network restrictions.
-
-### Option B: Coolify-managed Postgres on the VPS (fully self-hosted DB)
-1. Project → **+ New Resource** → **Database** → **PostgreSQL 16**.
-2. After it starts, copy its **internal connection URL** (looks like
-   `postgres://user:pass@<container-id>:5432/dbname`).
-3. On the **api** app set:
-   - `DATABASE_URL` = that internal URL
-   - `DB_SSL` = `false`
-4. Migrate existing data from Supabase (from your PC):
-   ```bash
-   pg_dump "postgres://...supabase...:5432/postgres" -Fc -f weynishop.dump
-   # upload dump to VPS, then from the VPS (docker exec into the pg container):
-   pg_restore -d postgres://user:pass@localhost:<mapped-port>/dbname weynishop.dump
-   ```
-5. ⚠️ Supabase **Storage is still required** for image uploads
-   (`SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` stay set either way).
-
----
-
 ## Step 8 — Seed data (first deploy only, optional)
 
 The API auto-runs safe migrations/backfills on every boot. If you need the
@@ -218,7 +214,8 @@ demo seed (⚠️ `seed.js` uses `sync({force:true})` — it **drops all tables*
 1. Coolify → **api** app → **Terminal** (opens a shell in the container).
 2. Run: `node src/seed.js` (or `node src/seed-bulk.js` for the bulk catalog).
 
-Skip this entirely if your Supabase DB already has real data.
+On a fresh Coolify database the tables are created automatically on first
+boot — seeding demo accounts is entirely optional.
 
 ---
 
@@ -228,8 +225,31 @@ Skip this entirely if your Supabase DB already has real data.
   → **Authorized domains** → add `www.yourdomain.com` and `yourdomain.com`.
 - **Google Maps key**: if you restrict by HTTP referrer, add
   `https://www.yourdomain.com/*` and `https://yourdomain.com/*`.
-- **Supabase**: no change needed (Storage is accessed server-side with the
-  service-role key).
+
+That's it — the database and image storage are fully self-hosted on the VPS.
+
+---
+
+## Optional — Migrating existing data from Supabase
+
+If you already have real data in a Supabase project and want to bring it over:
+
+1. **Database** (from your PC):
+   ```bash
+   pg_dump "postgres://postgres.<ref>:<pw>@db.<ref>.supabase.co:5432/postgres" -Fc -f weynishop.dump
+   ```
+   Upload the dump to the VPS (`scp weynishop.dump root@VPS_IP:/tmp/`), then
+   restore it into the Coolify Postgres container:
+   ```bash
+   docker cp /tmp/weynishop.dump <pg-container>:/tmp/
+   docker exec <pg-container> pg_restore -U <user> -d <dbname> --clean /tmp/weynishop.dump
+   ```
+   (Find the container name with `docker ps` on the VPS.)
+2. **Images**: rows in the old DB reference absolute `https://<ref>.supabase.co/storage/...`
+   URLs. Those keep working as long as the Supabase project exists. To move
+   them fully, download the bucket contents and re-upload through the API
+   (or copy files into the `/app/uploads` volume and rewrite the URL columns).
+   For a fresh start, simply re-upload product images through the seller portal.
 
 ---
 
@@ -249,14 +269,17 @@ Manual trigger: app → **Deploy** button.
 | Shell in container | app → **Terminal** |
 | Restart / redeploy | app → **Deploy** / **Restart** |
 | SSL certs | automatic (Traefik + Let's Encrypt), app → **Domains** |
-| Backups | Coolify → **Backups** (for the DB resource); Supabase has its own |
+| Backups | Coolify → DB resource → **Scheduled Backups** (daily recommended) |
+| Uploaded files | live in the `api-uploads` volume — include them in your backup plan |
 | Server metrics | Coolify home page (CPU/RAM/disk of the VPS) |
 
 ## Troubleshooting
 
 | Symptom | Fix |
 |---|---|
-| api deploy fails healthcheck | Open Logs. Usually missing env var (`[env] Missing X` at boot) or Supabase IP-blocked (`ECONNREFUSED`/timeout). |
+| api deploy fails healthcheck | Open Logs. Usually a missing env var (`[env] Missing X` at boot) or a wrong `DATABASE_URL` (`ECONNREFUSED`). Make sure you used the **internal** Postgres URL and both resources are in the same project/network. |
+| Uploads fail with `EACCES` / permission denied | The volume isn't owned by the `node` user. One-time fix on the VPS: `docker exec -u root <api-container> chown -R node:node /app/uploads`, then redeploy. |
+| Uploaded images 404 | Check `PUBLIC_API_URL` matches the api domain exactly (no trailing slash) and the `/app/uploads` volume is attached. |
 | `CORS: origin … not allowed` in browser | Add the exact frontend origin to `CLIENT_URL` on the api app and redeploy. |
 | Page loads but API calls hit `localhost:5000` | `VITE_API_URL` wasn't a **Build Variable** when web was built. Fix flag → redeploy web. |
 | Real-time tracking not updating | Socket.io uses the same `VITE_API_URL` host; make sure it's the `https://api.…` domain. Traefik proxies WebSockets automatically. |

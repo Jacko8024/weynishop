@@ -3,15 +3,15 @@
  * creates products for Zeha Yetebeb Albasat and Frita.
  *
  * Usage:
- *   1. Ensure server .env has valid DATABASE_URL + Supabase credentials
+ *   1. Ensure server .env has a valid DATABASE_URL
  *   2. Run:  node src/seed-bulk.js
  *
- * The script uses the server's own models & Supabase client directly.
+ * The script uses the server's own models & local storage module directly.
  */
 import 'dotenv/config';
 import { sequelize, User, Product, Category } from './models/index.js';
 import { connectDB } from './config/db.js';
-import { uploadToBucket } from './lib/supabase.js';
+import { uploadToBucket } from './lib/storage.js';
 import { env } from './config/env.js';
 import fs from 'fs';
 import path from 'path';
@@ -58,7 +58,7 @@ const BRANDS = [
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-/** Upload a local image file to Supabase Storage, return public URL */
+/** Upload a local image file to storage, return public URL */
 const uploadImage = async (filePath, bucket, prefix) => {
   const buffer = fs.readFileSync(filePath);
   const ext = path.extname(filePath).toLowerCase();
@@ -149,7 +149,7 @@ const run = async () => {
       try {
         const url = await uploadImage(
           filePath,
-          env.SUPABASE_BUCKET_PRODUCTS,
+          env.UPLOAD_FOLDER_PRODUCTS,
           `seller-${seller.id}/`
         );
         console.log(`  ↑ Uploaded: ${fileName}`);
@@ -179,7 +179,7 @@ const run = async () => {
         console.error(`  ✗ Failed for ${fileName}: ${err.message}`);
       }
 
-      // Small delay to avoid Supabase rate limits
+      // Small delay between uploads
       await wait(200);
     }
 

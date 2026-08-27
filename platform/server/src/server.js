@@ -71,8 +71,10 @@ app.use(cors({ origin: corsOriginCheck, credentials: true }));
 app.use(express.json({ limit: '5mb' }));
 app.use(morgan('dev'));
 
-// Uploaded images now live in Supabase Storage — public bucket URLs are
-// returned directly by /api/v1/uploads/*. No local static-file serving needed.
+// Uploaded images/documents are stored on local disk (UPLOADS_DIR) and served
+// publicly here. In production UPLOADS_DIR is a persistent volume mounted at
+// /app/uploads (Coolify → Storages), so files survive redeploys.
+app.use('/uploads', express.static(env.UPLOADS_DIR, { maxAge: '7d', immutable: true }));
 
 app.get('/api/v1/health', (_req, res) => res.json({ ok: true, ts: Date.now() }));
 
