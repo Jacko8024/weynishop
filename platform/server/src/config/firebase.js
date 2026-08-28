@@ -1,7 +1,17 @@
 import admin from 'firebase-admin';
 import { env } from './env.js';
 
+// Tracks whether we've already attempted initialization. `adminReady` holds
+// the admin SDK once it's usable, or null when credentials are missing/invalid.
 let initialized = false;
+let adminReady = null;
+
+// A private key that is clearly a placeholder (contains "..." or lacks the PEM
+// header) means the service account hasn't really been configured yet.
+const looksLikePlaceholder = (key) =>
+  !key ||
+  key.includes('...') ||
+  !key.trim().startsWith('-----BEGIN PRIVATE KEY-----');
 
 /**
  * Lazily initialize the Firebase Admin SDK using env-var service-account
@@ -10,34 +20,59 @@ let initialized = false;
  * sign-in).
  */
 export const getFirebaseAdmin = () => {
-  if (initialized) return admin.apps.length ? admin : null;
+  if (initialized) return adminReady;
   initialized = true;
 
   const { FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY } = env;
-  if (!FIREBASE_PROJECT_ID || !FIREBASE_CLIENT_EMAIL || !FIREBASE_PRIVATE_KEY) {
+
+  if (
+    !FIREBASE_PROJECT_ID ||
+    !FIREBASE_CLIENT_EMAIL ||
+    looksLikePlaceholder(FIREBASE_PRIVATE_KEY)
+  ) {
     console.warn(
-      '[firebase] Admin SDK not initialized — set FIREBASE_PROJECT_ID, ' +
-        'FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY in .env to enable Google sign-in.'
+      '[firebase] Admin SDK NOT initialized — Google sign-in is disabled.\n' +
+        '  To enable it, set real values in server/.env:\n' +
+        '    FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY\n' +
+        '  Get them from: Firebase Console -> Project settings -> Service accounts\n' +
+        '  -> "Generate new private key" (downloads a JSON file with all three).'
     );
+    adminReady = null;
     return null;
   }
 
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: FIREBASE_PROJECT_ID,
-      clientEmail: FIREBASE_CLIENT_EMAIL,
-      privateKey: FIREBASE_PRIVATE_KEY,
-    }),
-  });
-  console.log('[firebase] Admin SDK initialized for project:', FIREBASE_PROJECT_ID);
-  return admin;
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: FIREBASE_PROJECT_ID,
+        clientEmail: FIREBASE_CLIENT_EMAIL,
+        privateKey: FIREBASE_PRIVATE_KEY,
+      }),
+    });
+    adminReady = admin;
+    console.log('[firebase] Admin SDK initialized for project:', FIREBASE_PROJECT_ID);
+  } catch (e) {
+    // Invalid/malformed credentials must not crash the server. Log once and
+    // fall back to "Google sign-in disabled" so other endpoints keep working.
+    console.error(
+      '[firebase] Admin SDK failed to initialize — check FIREBASE_PRIVATE_KEY and\n' +
+        '  FIREBASE_CLIENT_EMAIL in server/.env (regenerate the key in Firebase\n' +
+        '  Console -> Project settings -> Service accounts). Reason:',
+      e.message
+    );
+    adminReady = null;
+  }
+  return adminReady;
 };
 
 /** Verify a Firebase ID token. Throws on invalid/expired tokens. */
 export const verifyFirebaseIdToken = async (idToken) => {
   const fb = getFirebaseAdmin();
   if (!fb) {
-    const err = new Error('Google sign-in is not configured on the server');
+    const err = new Error(
+      'Google sign-in is not configured on the server. Add FIREBASE_PROJECT_ID, ' +
+        'FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY to server/.env, then restart.'
+    );
     err.statusCode = 503;
     throw err;
   }
