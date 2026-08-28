@@ -30,6 +30,10 @@ platform/client/android/capacitor-cordova-android-plugins/
 
 # Temp / audit files
 _audit_client_files.txt
+__*.ps1
+__*.mjs
+__*.txt
+weynishop_dump*.sql
 
 # Uploads / user content
 platform/server/uploads/
