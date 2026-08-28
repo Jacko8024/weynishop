@@ -141,7 +141,7 @@ create your admin account (first user becomes root).
 | `PUBLIC_API_URL` | `https://api.yourdomain.com` (used to build image URLs) |
 | `JWT_SECRET` | long random string (generate one!) |
 | `JWT_EXPIRES_IN` | `7d` |
-| `CLIENT_URL` | `https://www.yourdomain.com` (comma-separate more origins if needed) |
+| `CLIENT_URL` | `https://www.weynishop.com` (comma-separate more origins if needed) |
 | `STOREFRONT_URL` | `https://www.yourdomain.com` |
 | `GOOGLE_MAPS_API_KEY` | your Maps key |
 | `SURPRISE_OWNER_ID` / `SURPRISE_OWNER_EMAIL` | optional |
@@ -281,6 +281,7 @@ Manual trigger: app → **Deploy** button.
 | Uploads fail with `EACCES` / permission denied | The volume isn't owned by the `node` user. One-time fix on the VPS: `docker exec -u root <api-container> chown -R node:node /app/uploads`, then redeploy. |
 | Uploaded images 404 | Check `PUBLIC_API_URL` matches the api domain exactly (no trailing slash) and the `/app/uploads` volume is attached. |
 | `CORS: origin … not allowed` in browser | Add the exact frontend origin to `CLIENT_URL` on the api app and redeploy. |
+| Browser SSL error on `api.…`, API calls blocked, `Cannot GET /api/v1/…` | The VPS's front nginx has no vhost for the api domain, so its default site (a different app) answers with the wrong certificate. Follow [`deploy/API_SSL_FIX.md`](deploy/API_SSL_FIX.md): issue a certbot cert and install [`deploy/nginx/weynishop-api.conf`](deploy/nginx/weynishop-api.conf) as a sites-available vhost. |
 | Page loads but API calls hit `localhost:5000` | `VITE_API_URL` wasn't a **Build Variable** when web was built. Fix flag → redeploy web. |
 | Real-time tracking not updating | Socket.io uses the same `VITE_API_URL` host; make sure it's the `https://api.…` domain. Traefik proxies WebSockets automatically. |
 | 502 Bad Gateway | api container crashed or isn't listening on the injected `PORT`. Check Logs; don't hardcode `PORT`. |
