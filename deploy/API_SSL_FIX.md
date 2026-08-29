@@ -37,33 +37,29 @@ passes inside the VPS network) — only the public reverse-proxy entry is missin
 
 ## The fix — TWO PHASES (run on the VPS as root)
 
-The full nginx config is committed at
-[`deploy/nginx/weynishop-api.conf`](nginx/weynishop-api.conf). We can't install
-it in one shot because of a chicken-and-egg problem: the final vhost needs the
-certificate to exist, but certbot's webroot challenge needs a port-80 vhost
-for `api.weynishop.com` to exist first. So:
+Two config files are committed:
 
-- **Phase 1** — install a temporary port-80-only vhost (extracted from the
-  marked section of the config), then issue the certificate.
-- **Phase 2** — install the full config (TLS + proxy) and reload.
+- [`deploy/nginx/weynishop-api-phase1.conf`](nginx/weynishop-api-phase1.conf) —
+  temporary port-80-only vhost (needed **before** certbot)
+- [`deploy/nginx/weynishop-api.conf`](nginx/weynishop-api.conf) — the final
+  TLS + proxy vhost (install **after** the certificate exists)
 
-> If a `weynishop-api` symlink in `/etc/nginx/sites-enabled/` points at a
-> missing file from an earlier attempt, remove it first:
-> `rm -f /etc/nginx/sites-enabled/weynishop-api`
+Why two phases? Chicken-and-egg: the final vhost references the certificate
+files, and nginx refuses to load a server block whose `ssl_certificate` file
+doesn't exist — but certbot's webroot challenge needs a port-80 vhost for
+`api.weynishop.com` to already exist. Phase 1 breaks the loop.
 
-### 0. Get the config file onto the VPS
+### 0. Get both files onto the VPS
 
 On your PC (from the repo root):
 
 ```bash
-scp deploy/nginx/weynishop-api.conf root@169.58.219.232:/root/
+scp deploy/nginx/weynishop-api-phase1.conf deploy/nginx/weynishop-api.conf root@169.58.219.232:/root/
 ```
 
 (Or `git pull` the repo on the VPS if you have it cloned there.)
 
 ### 1. Confirm where the API is actually listening
-
-Coolify publishes each app on a host port. Find the WeyniShop API container:
 
 ```bash
 docker ps --format "table {{.Names}}\t{{.Ports}}" | grep -i api
@@ -77,32 +73,31 @@ from outside, so it's fine that the app port isn't public.)
 ### 2. PHASE 1 — port-80 vhost + certificate
 
 ```bash
-# Extract the temporary phase-1 vhost (port-80 only, marked section)
-sed -n '/# BEGIN PHASE-1 MARKER/,/# END PHASE-1 MARKER/p' \
-  /root/weynishop-api.conf > /etc/nginx/sites-available/weynishop-api
-
-# Also grab the upstream/map blocks that sit above the markers —
-# simplest: prepend everything before the BEGIN marker
-sed -n '1,/# BEGIN PHASE-1 MARKER/p' /root/weynishop-api.conf \
-  > /etc/nginx/sites-available/weynishop-api
-sed -n '/# BEGIN PHASE-1 MARKER/,/# END PHASE-1 MARKER/p' \
-  /root/weynishop-api.conf >> /etc/nginx/sites-available/weynishop-api
-
+cp /root/weynishop-api-phase1.conf /etc/nginx/sites-available/weynishop-api
 ln -sf /etc/nginx/sites-available/weynishop-api /etc/nginx/sites-enabled/weynishop-api
 mkdir -p /var/www/html
 nginx -t && systemctl reload nginx
 
-# Issue the certificate (retry in a few minutes if you get
-# "Service busy; retry later" — that's a transient Let's Encrypt error)
+# Verify the vhost answers (should be 503, NOT the Edl Games page):
+curl -s -o /dev/null -w "%{http_code}\n" -H "Host: api.weynishop.com" http://127.0.0.1/
+# → 503
+
+# Issue the certificate (retry in a few minutes on "Service busy; retry later")
 certbot certonly --webroot -w /var/www/html \
   -d api.weynishop.com \
   --email yaikobdereje@gmail.com \
   --agree-tos -n
 ```
 
-> **If certbot keeps failing with webroot**, switch to the nginx plugin,
-> which edits nothing permanently (we only need the cert files):
-> `certbot certonly --nginx -d api.weynishop.com --email yaikobdereje@gmail.com --agree-tos -n`
+> **If certbot keeps failing with webroot**, use the standalone authenticator
+> instead — it runs its own temporary webserver, but needs port 80 free for a
+> few seconds, so stop nginx first:
+> ```bash
+> systemctl stop nginx
+> certbot certonly --standalone -d api.weynishop.com \
+>   --email yaikobdereje@gmail.com --agree-tos -n
+> systemctl start nginx
+> ```
 
 ### 3. PHASE 2 — full TLS + proxy vhost
 
@@ -140,15 +135,18 @@ Redeploy the api app if you change these (CORS is compiled at boot).
 
 ---
 
-## Errors encountered on 2026-08-29 (and their causes)
+## Errors encountered along the way (and their causes)
 
 | Error | Cause / fix |
 |---|---|
-| `certbot ... Service busy; retry later` | Transient Let's Encrypt-side error. Retry after a few minutes. (It would also have failed because no port-80 vhost existed yet for the webroot challenge — Phase 1 fixes that.) |
+| `certbot ... Service busy; retry later` | Transient Let's Encrypt-side error. Retry after a few minutes. |
 | `cp: cannot stat '/root/weynishop-api.conf'` | The `scp` line was pasted as a comment, so the file was never uploaded. Run the `scp` from your PC first (Step 0). |
-| `nginx: [emerg] open() .../sites-enabled/weynishop-api failed` | The symlink pointed at a file that didn't exist. `rm -f /etc/nginx/sites-enabled/weynishop-api` and redo from Step 2. |
-| `nginx: [warn] protocol options redefined for [::]:443` in `sites-enabled/weynishop:23` | Pre-existing warning from another site on the server (duplicate `listen [::]:443` options between vhosts). Harmless, but you can deduplicate the flags on that line later. |
-| `http2 on;` causes `nginx: [emerg] unknown directive` | nginx 1.24.0 predates the `http2 on;` directive (added 1.25.1). The committed config now uses `listen 443 ssl http2;` instead. |
+| `nginx: [emerg] open() .../sites-enabled/weynishop-api failed` | Symlink pointed at a file that didn't exist. `rm -f /etc/nginx/sites-enabled/weynishop-api` and redo Phase 1. |
+| `certbot: unauthorized ... Invalid response ... 404` | `nginx -t` had failed on a config syntax error, so the phase-1 vhost was never actually loaded — the default site still answered port 80. The syntax error: `ssl_session_cache shared:SSL_API 10m` must be `shared:SSL_API:10m` (colon before size). Fixed in the committed config. |
+| `nginx: [emerg] invalid session cache "shared:SSL_API"` | Same as above — missing colon. Fixed: `ssl_session_cache shared:SSL_API:10m;` |
+| `nginx: [warn] protocol options redefined for 0.0.0.0:443 / [::]:443` | The `http2` listen flag duplicated protocol options across vhosts sharing the sockets. The committed config no longer uses the flag (HTTP/1.1 over TLS is what an API + WebSockets needs anyway). The remaining warning pointing at `sites-enabled/weynishop:23` is pre-existing from another site — harmless. |
+| `nginx: [emerg] unknown directive "http2"` | nginx 1.24.0 predates `http2 on;` (added 1.25.1). The committed config uses neither form. |
+| `nginx -t` fails ⇒ certbot 404 | **Golden rule:** only run certbot after `nginx -t` prints `syntax is ok` AND `systemctl reload nginx` succeeded. `&&` chaining already enforces this — don't run the certbot line separately if the reload failed. |
 
 ---
 
