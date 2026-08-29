@@ -1,0 +1,10 @@
+[Unit]
+Description=WeyniShop: sync nginx api.weynishop.com upstream with API container IP
+After=docker.service nginx.service
+Wants=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/weynishop-api-sync.sh
+# Never block boot/reload if docker is briefly unavailable
+TimeoutStartSec=30

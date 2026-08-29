@@ -39,18 +39,28 @@ command -v nginx  >/dev/null 2>&1 || fail "nginx not found"
 command -v certbot >/dev/null 2>&1 || fail "certbot not found (apt-get install -y certbot)"
 
 # --- 1. Find the API container's published port --------------------------------
+# NOTE (2026-08-29): two earlier bugs here caused the vhost to proxy to the
+# FRONTEND container instead of the API:
+#   * the grep only matched "0.0.0.0:PORT" mappings — Coolify publishes
+#     "127.0.0.1:PORT" too, so the match silently failed
+#   * the fallback probe accepted ANY HTTP 200 — the frontend's SPA fallback
+#     (try_files ... /index.html) also answers 200 (text/html) on
+#     /api/v1/health, so the probe happily picked the web container.
+# Fix: match all bind addresses, and require the JSON body {"ok":true} —
+# only the real API returns that.
 log "Detecting WeyniShop API container port"
 API_PORT=""
 for pat in weynishop-api weynishop_api weynishop-api-; do
     line="$(docker ps --filter "name=${pat}" --format '{{.Ports}}' | head -n1 || true)"
     [ -n "${line}" ] || continue
-    API_PORT="$(echo "${line}" | grep -oE '0\.0\.0\.0:[0-9]+' | head -n1 | cut -d: -f2 || true)"
+    API_PORT="$(echo "${line}" | grep -oE '(0\.0\.0\.0|127\.0\.0\.1|\[::\]):[0-9]+' | head -n1 | grep -oE '[0-9]+' || true)"
     [ -n "${API_PORT}" ] && break
 done
-# Fallback: any container whose port mapping serves our health endpoint
+# Fallback: probe candidate ports and demand the API's JSON health body.
 if [ -z "${API_PORT}" ]; then
     for p in 3000 3001 3002 8080; do
-        if curl -sf --max-time 3 "http://127.0.0.1:${p}/api/v1/health" >/dev/null 2>&1; then
+        body="$(curl -sf --max-time 3 "http://127.0.0.1:${p}/api/v1/health" 2>/dev/null || true)"
+        if printf '%s' "${body}" | grep -q '"ok"'; then
             API_PORT="${p}"; break
         fi
     done
@@ -178,11 +188,13 @@ ok "TLS vhost live"
 # --- 5. Verify -------------------------------------------------------------------
 log "Verifying"
 sleep 1
+body="$(curl -s --max-time 10 "https://${DOMAIN}/api/v1/health" || true)"
 code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "https://${DOMAIN}/api/v1/health" || true)"
-case "${code}" in
-    200) ok "https://${DOMAIN}/api/v1/health -> 200" ;;
-    *)   fail "healthcheck returned '${code}' — is the API container listening on 127.0.0.1:${API_PORT}? (docker ps | grep api)" ;;
-esac
+if [ "${code}" = "200" ] && printf '%s' "${body}" | grep -q '"ok"'; then
+    ok "https://${DOMAIN}/api/v1/health -> 200 JSON — proxying to the real API"
+else
+    fail "healthcheck returned '${code}' body '${body}' — if this is the SPA's index.html, the upstream points at the FRONTEND container. Check: docker ps --format 'table {{.Names}}\t{{.Ports}}' | grep -i weynishop, fix the port in ${SITES_AVAIL}, then nginx -t && systemctl reload nginx"
+fi
 
 printf '\n\033[1;32mDone.\033[0m https://%s is now serving the WeyniShop API with a valid cert.\n' "${DOMAIN}"
 printf 'Open https://weynishop.com — products should load. (Hard-refresh: Ctrl+Shift+R)\n'
