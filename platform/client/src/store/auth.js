@@ -3,6 +3,12 @@ import { api } from '../api/client.js';
 import { signInWithGoogle, signOutFirebase } from '../lib/firebase.js';
 import { registerPush, unregisterPush } from '../lib/push.js';
 
+// Mobile: after ANY successful sign-in, register this device for push
+// notifications (no-op on the web — registerPush bails out immediately).
+const registerDevicePush = () => {
+  registerPush().catch?.(() => { });
+};
+
 const stored = () => {
   try {
     const u = localStorage.getItem('user');
@@ -20,6 +26,7 @@ export const useAuth = create((set, get) => ({
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
     set({ user: data.user, token: data.token });
+    registerDevicePush();
     return data.user;
   },
 
@@ -30,6 +37,7 @@ export const useAuth = create((set, get) => ({
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
     set({ user: data.user, token: data.token });
+    registerDevicePush();
     return data.user;
   },
 
@@ -38,6 +46,7 @@ export const useAuth = create((set, get) => ({
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
     set({ user: data.user, token: data.token });
+    registerDevicePush();
     return data.user;
   },
   loginWithGoogle: async (role) => {
@@ -46,6 +55,7 @@ export const useAuth = create((set, get) => ({
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
     set({ user: data.user, token: data.token });
+    registerDevicePush();
     return data.user;
   },
 

@@ -7,6 +7,7 @@ import { Server as SocketServer } from 'socket.io';
 import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
 import { sequelize, Settings, CommissionLedger, DeliveryEarning, SellerEarning, OrderItem, User, Product, Banner, Category, ContactInquiry, SurpriseBooking, SurpriseService } from './models/index.js';
+import { DeviceToken } from './models/DeviceToken.js';
 import { errorHandler, notFound } from './middleware/error.js';
 import { backfillDeliveredCommissions } from './services/commission.service.js';
 import { backfillWalletsForDelivered } from './services/wallet.service.js';

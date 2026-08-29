@@ -119,6 +119,7 @@ export {
   SurpriseBooking,
   SURPRISE_STATUSES,
   SurpriseService,
+  DeviceToken,
   STAGES,
   STAGE_LABELS,
 };
