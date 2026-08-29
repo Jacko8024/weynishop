@@ -19,12 +19,11 @@ const fetchCategories = () => {
       // static list fall back to the generic grid icon.
       const byKey = Object.fromEntries(CATEGORIES.map((c) => [c.key, c]));
       const items = (data.items || [])
-        // Skip duplicate/legacy keys (e.g. 'children' merged into 'kids').
-        .filter((c) => byKey[c.key])
+        .filter((c) => c && c.key)
         .map((c) => ({
           key: c.key,
           label: c.label,
-          icon: byKey[c.key].icon,
+          icon: iconForCategory(c.key).icon,
           _id: c._id || String(c.id),
         }));
       // If the API returns nothing yet (fresh install), fall back to the
