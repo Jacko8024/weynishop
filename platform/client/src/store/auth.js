@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { api } from '../api/client.js';
 import { signInWithGoogle, signOutFirebase } from '../lib/firebase.js';
+import { registerPush, unregisterPush } from '../lib/push.js';
 
 const stored = () => {
   try {
@@ -49,11 +50,14 @@ export const useAuth = create((set, get) => ({
   },
 
   logout: () => {
+    // Mobile: detach this device's push token BEFORE clearing the JWT,
+    // otherwise the DELETE /devices call would be 401-rejected.
+    unregisterPush().catch?.(() => { });
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     set({ user: null, token: null });
     // Best-effort: clear Firebase session too (ignore errors when not signed-in).
-    signOutFirebase().catch(() => {});
+    signOutFirebase().catch(() => { });
   },
 
   refreshMe: async () => {

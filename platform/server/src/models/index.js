@@ -21,6 +21,11 @@ import { VendorProfile } from './VendorProfile.js';
 import { DeliveryProfile } from './DeliveryProfile.js';
 import { SurpriseBooking, SURPRISE_STATUSES } from './SurpriseBooking.js';
 import { SurpriseService } from './SurpriseService.js';
+import { DeviceToken } from './DeviceToken.js';
+
+// Push notifications (mobile app only)
+DeviceToken.belongsTo(User, { as: 'user', foreignKey: 'userId' });
+User.hasMany(DeviceToken, { foreignKey: 'userId' });
 
 // Core associations
 Product.belongsTo(User, { as: 'seller', foreignKey: 'sellerId' });

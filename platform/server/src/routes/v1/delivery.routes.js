@@ -4,6 +4,7 @@ import { Op, fn, col } from 'sequelize';
 import { Order, User, OrderItem, OrderStage, DeliveryAssignment, DeliveryEarning } from '../../models/index.js';
 import { protect, requireRole, requireActive } from '../../middleware/auth.js';
 import { broadcastStage } from '../../sockets/index.js';
+import { notifyAssigned } from '../../services/push.service.js';
 
 const router = Router();
 
@@ -51,6 +52,9 @@ router.post(
     io.to(`user:${order.buyerId}`).emit('notify', { type: 'delivery:assigned', orderId: String(order.id) });
     const stages = await OrderStage.findAll({ where: { orderId: order.id }, order: [['at', 'ASC']] });
     broadcastStage(io, order, stages);
+    // Mobile push: seller + buyer learn a courier took the order.
+    notifyAssigned(order, order.sellerId).catch(() => { });
+    notifyAssigned(order, order.buyerId).catch(() => { });
     res.json({ order });
   })
 );

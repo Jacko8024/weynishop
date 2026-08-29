@@ -5,6 +5,7 @@ import { sequelize, Order, OrderItem, OrderStage, Product, User, Settings, STAGE
 import { protect, requireRole } from '../../middleware/auth.js';
 import { broadcastStage } from '../../sockets/index.js';
 import { creditOnDelivered, reverseOnCancel } from '../../services/wallet.service.js';
+import { notifyOrderPlaced, notifyStage, notifyDelivered, notifyCancelled } from '../../services/push.service.js';
 
 const router = Router();
 
@@ -26,6 +27,11 @@ const orderIncludes = [
 
 const fetchOrder = (id) => Order.findByPk(id, { include: orderIncludes });
 
+// Push notifications are fire-and-forget: a failed FCM call must never
+// block or break an order flow. The service itself swallows errors; this
+// extra .catch is a belt-and-braces guard for unexpected throws.
+const safePush = (fn) => fn().catch((err) => console.error('[push] hook failed:', err?.message));
+
 const advanceStage = async (order, target, io) => {
   const idx = STAGES.indexOf(order.currentStage);
   const targetIdx = STAGES.indexOf(target);
@@ -39,6 +45,9 @@ const advanceStage = async (order, target, io) => {
   const stages = await OrderStage.findAll({ where: { orderId: order.id }, order: [['at', 'ASC']] });
   broadcastStage(io, order, stages);
 
+  // Mobile push: buyer gets an update at every stage transition.
+  safePush(() => notifyStage(order, target));
+
   // Centralized financial trigger: on delivered_paid, credit commission to
   // admin, net earnings to seller, delivery fee to courier. All idempotent.
   // Fire-and-forget — wallet failures must never block a stage transition.
@@ -46,6 +55,8 @@ const advanceStage = async (order, target, io) => {
     creditOnDelivered(order).catch((err) =>
       console.error('[wallet] failed to credit on delivered for order', order.id, err)
     );
+    // Mobile push: seller learns the order was delivered & paid.
+    safePush(() => notifyDelivered(order));
   }
   return order;
 };
@@ -162,6 +173,8 @@ router.post(
       fullOrders.push(full);
       io.to(`user:${o.sellerId}`).emit('notify', { type: 'order:new', orderId: String(o.id) });
       broadcastStage(io, full, full.stages);
+      // Mobile push: seller gets a "new order" notification.
+      safePush(() => notifyOrderPlaced(full));
     }
     res.status(201).json({ orders: fullOrders });
   })
@@ -331,6 +344,8 @@ router.post(
     const io = req.app.locals.io;
     io.to(`order:${order.id}`).emit('order:cancelled', { orderId: String(order.id) });
     io.to(`user:${order.sellerId}`).emit('notify', { type: 'order:cancelled', orderId: String(order.id) });
+    // Mobile push: seller learns the order was cancelled.
+    safePush(() => notifyCancelled(order));
     res.json({ order: await fetchOrder(order.id) });
   })
 );
