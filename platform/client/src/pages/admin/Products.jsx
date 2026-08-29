@@ -40,7 +40,7 @@ export default function AdminProducts() {
   useEffect(() => {
     api.get('/admin/users', { params: { role: 'seller' } })
       .then(({ data }) => setSellers(data.users || []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const save = async (e) => {
@@ -131,12 +131,12 @@ export default function AdminProducts() {
         <div className="relative flex-1 max-w-sm">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-muted)' }} />
           <input className="input pl-9" placeholder="Search products…"
-                 value={search} onChange={(e) => setSearch(e.target.value)}
-                 onKeyDown={(e) => { if (e.key === 'Enter') { setPage(1); load(1, search, filterCat); } }} />
+            value={search} onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { setPage(1); load(1, search, filterCat); } }} />
         </div>
         <select className="input w-auto" value={filterCat} onChange={(e) => { setFilterCat(e.target.value); setPage(1); load(1, search, e.target.value); }}>
           <option value="">All categories</option>
-          {CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.icon} {c.label}</option>)}
+          {CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
         </select>
       </div>
 
@@ -205,14 +205,14 @@ export default function AdminProducts() {
       {total > 50 && (
         <div className="flex justify-center gap-2">
           <button className="btn-secondary text-sm" disabled={page <= 1}
-                  onClick={() => { const np = page - 1; setPage(np); load(np, search, filterCat); }}>
+            onClick={() => { const np = page - 1; setPage(np); load(np, search, filterCat); }}>
             Prev
           </button>
           <span className="text-sm self-center px-3" style={{ color: 'var(--color-muted)' }}>
             Page {page} of {Math.ceil(total / 50)}
           </span>
           <button className="btn-secondary text-sm" disabled={page >= Math.ceil(total / 50)}
-                  onClick={() => { const np = page + 1; setPage(np); load(np, search, filterCat); }}>
+            onClick={() => { const np = page + 1; setPage(np); load(np, search, filterCat); }}>
             Next
           </button>
         </div>
@@ -221,7 +221,7 @@ export default function AdminProducts() {
       {editing && (
         <div className="fixed inset-0 bg-black/40 z-50 grid place-items-center p-4 overflow-y-auto" onClick={() => setEditing(null)}>
           <form onSubmit={save} onClick={(e) => e.stopPropagation()}
-                className="card p-6 w-full max-w-2xl space-y-4 my-8 max-h-[90vh] overflow-y-auto">
+            className="card p-6 w-full max-w-2xl space-y-4 my-8 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold">{editing._id ? 'Edit product' : 'New product'}</h2>
               <button type="button" onClick={() => setEditing(null)} className="btn-ghost"><X size={18} /></button>
@@ -239,7 +239,7 @@ export default function AdminProducts() {
               <div>
                 <label className="label">Category</label>
                 <select className="input" value={editing.category} onChange={(e) => setEditing({ ...editing, category: e.target.value })}>
-                  {CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.icon} {c.label}</option>)}
+                  {CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
                 </select>
               </div>
               {!editing._id && (
@@ -265,10 +265,10 @@ export default function AdminProducts() {
             <div>
               <label className="label">Images</label>
               <label htmlFor="admin-product-image-input"
-                     className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-6 cursor-pointer hover:bg-[var(--color-bg)] transition"
-                     style={{ borderColor: 'var(--color-border)' }}
-                     onDragOver={(e) => { e.preventDefault(); }}
-                     onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}>
+                className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-6 cursor-pointer hover:bg-[var(--color-bg)] transition"
+                style={{ borderColor: 'var(--color-border)' }}
+                onDragOver={(e) => { e.preventDefault(); }}
+                onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}>
                 {uploading ? (
                   <><Loader2 size={22} className="animate-spin" /><span className="text-sm">Uploading…</span></>
                 ) : (
@@ -279,14 +279,14 @@ export default function AdminProducts() {
                 )}
               </label>
               <input id="admin-product-image-input" type="file" accept="image/*" multiple className="hidden"
-                     onChange={(e) => { handleFiles(e.target.files); e.target.value = ''; }} />
+                onChange={(e) => { handleFiles(e.target.files); e.target.value = ''; }} />
               {editing.images.length > 0 && (
                 <div className="grid grid-cols-4 gap-2 mt-3">
                   {editing.images.map((src, i) => (
                     <div key={i} className="relative aspect-square rounded-lg overflow-hidden border" style={{ borderColor: 'var(--color-border)' }}>
                       <img src={src} alt={`Product image ${i + 1}`} className="w-full h-full object-cover" />
                       <button type="button" onClick={() => removeImg(i)}
-                              className="absolute top-1 right-1 w-6 h-6 grid place-items-center rounded-full bg-black/60 text-white hover:bg-black/80">
+                        className="absolute top-1 right-1 w-6 h-6 grid place-items-center rounded-full bg-black/60 text-white hover:bg-black/80">
                         <X size={12} />
                       </button>
                       {i === 0 && <span className="absolute bottom-1 left-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-white/90 text-black">Main</span>}
@@ -326,7 +326,7 @@ export default function AdminProducts() {
 
             <label className="flex items-center gap-2 text-sm cursor-pointer">
               <input type="checkbox" checked={editing.isActive !== false}
-                     onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })} />
+                onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })} />
               <span>Active (visible to buyers)</span>
             </label>
 

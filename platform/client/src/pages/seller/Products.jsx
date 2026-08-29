@@ -169,7 +169,7 @@ export default function SellerProducts() {
       {editing && (
         <div className="fixed inset-0 bg-black/40 z-50 grid place-items-center p-4 overflow-y-auto" onClick={() => setEditing(null)}>
           <form onSubmit={save} onClick={(e) => e.stopPropagation()}
-                className="card p-6 w-full max-w-2xl space-y-4 my-8 max-h-[90vh] overflow-y-auto">
+            className="card p-6 w-full max-w-2xl space-y-4 my-8 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold">{editing._id ? 'Edit product' : 'New product'}</h2>
               <button type="button" onClick={() => setEditing(null)} className="btn-ghost"><X size={18} /></button>
@@ -185,15 +185,15 @@ export default function SellerProducts() {
                 <div>
                   <label className="label">Product price (USD)</label>
                   <input className="input" type="number" min="0" step="0.01" required
-                         value={editing.price}
-                         onChange={(e) => setEditing({ ...editing, price: e.target.value })} />
+                    value={editing.price}
+                    onChange={(e) => setEditing({ ...editing, price: e.target.value })} />
                 </div>
                 <div>
                   <label className="label">Commission %</label>
                   <input className="input" type="number" readOnly tabIndex={-1}
-                         value={commissionPercent}
-                         title="Set by the platform admin"
-                         style={{ background: 'var(--color-surface)', cursor: 'not-allowed' }} />
+                    value={commissionPercent}
+                    title="Set by the platform admin"
+                    style={{ background: 'var(--color-surface)', cursor: 'not-allowed' }} />
                 </div>
               </div>
               <div className="text-sm flex flex-wrap gap-x-4 gap-y-1 pt-1">
@@ -217,7 +217,7 @@ export default function SellerProducts() {
               <div>
                 <label className="label">Category</label>
                 <select className="input" value={editing.category} onChange={(e) => setEditing({ ...editing, category: e.target.value })}>
-                  {CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.icon} {c.label}</option>)}
+                  {CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
                 </select>
               </div>
             </div>
@@ -264,8 +264,8 @@ export default function SellerProducts() {
                     <div key={i} className="relative aspect-square rounded-lg overflow-hidden border" style={{ borderColor: 'var(--color-border)' }}>
                       <img src={src} alt={`Product image ${i + 1}`} className="w-full h-full object-cover" />
                       <button type="button" onClick={() => removeImg(i)}
-                              className="absolute top-1 right-1 w-6 h-6 grid place-items-center rounded-full bg-black/60 text-white hover:bg-black/80"
-                              aria-label="Remove image">
+                        className="absolute top-1 right-1 w-6 h-6 grid place-items-center rounded-full bg-black/60 text-white hover:bg-black/80"
+                        aria-label="Remove image">
                         <X size={12} />
                       </button>
                       {i === 0 && (

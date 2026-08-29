@@ -1,6 +1,6 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import { api } from '../api/client.js';
-import { CATEGORIES as FALLBACK } from './format.js';
+import { CATEGORIES as FALLBACK, iconForCategory } from './format.js';
 
 // Lightweight global cache so multiple components share a single fetch.
 let categories = null;        // null = not loaded yet
@@ -14,10 +14,19 @@ const fetchCategories = () => {
   if (inflight) return inflight;
   inflight = api.get('/categories')
     .then(({ data }) => {
-      const items = (data.items || []).map((c) => ({
-        key: c.key, label: c.label, icon: c.emoji || '🎁',
-        _id: c._id || String(c.id),
-      }));
+      // Map the API rows onto our hard-coded list: lucide icon component
+      // (matched by key), server label, server id. Keys not present in the
+      // static list fall back to the generic grid icon.
+      const byKey = Object.fromEntries(CATEGORIES.map((c) => [c.key, c]));
+      const items = (data.items || [])
+        // Skip duplicate/legacy keys (e.g. 'children' merged into 'kids').
+        .filter((c) => byKey[c.key])
+        .map((c) => ({
+          key: c.key,
+          label: c.label,
+          icon: byKey[c.key].icon,
+          _id: c._id || String(c.id),
+        }));
       // If the API returns nothing yet (fresh install), fall back to the
       // hard-coded list so the storefront still renders something useful.
       categories = items.length ? items : FALLBACK;
@@ -49,4 +58,4 @@ export const refreshCategories = () => {
 
 /** Resolve a category key → { label, icon } using cached list (sync). */
 export const findCategory = (key) =>
-  (categories || FALLBACK).find((c) => c.key === key) || { key, label: key, icon: '🎁' };
+  (categories || FALLBACK).find((c) => c.key === key) || iconForCategory(key);

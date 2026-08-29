@@ -6,7 +6,26 @@ errors), so every API call fails → "no products". Login / Google sign-in /
 account pages also broken.
 
 **STATUS: FIXED (2026-08-29).** Full post-mortem below — three stacked problems
-were found and fixed:
+were found and fixed, plus one remaining action item that requires the
+Firebase project owner (see "Remaining manual step" below):
+
+> **Remaining manual step — add the production domains to Firebase's
+> Authorized Domains.** Querying
+> `https://identitytoolkit.googleapis.com/v1/projects?key=<web-apikey>`
+> shows the project currently allows only `localhost`,
+> `weynishop.firebaseapp.com`, `weynishop.web.app` and
+> `weynishop.vercel.app`. **`www.weynishop.com` / `weynishop.com` are NOT
+> listed**, so the Google sign-in popup fails with `auth/unauthorized-domain`
+> no matter what the server does. Fix (project owner only, ~1 minute):
+>
+> 1. https://console.firebase.google.com → project **weynishop**
+> 2. **Authentication → Settings → Authorized domains**
+> 3. **Add domain** → `www.weynishop.com` and `weynishop.com`
+> 4. While there, confirm **Authentication → Sign-in method → Google** is Enabled.
+>
+> Also confirm the browser error in DevTools console is indeed
+> `auth/unauthorized-domain` — the server side has been verified fixed
+> (Admin SDK initializes, token-verification endpoint returns proper JSON).
 
 | # | Problem | Fix |
 |---|---|---|

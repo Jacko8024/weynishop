@@ -31,6 +31,7 @@ export default function ProductPage() {
   const openGate = useLoginGate((s) => s.open);
 
   const [product, setProduct] = useState(null);
+  const [ProductCatIcon, setProductCatIcon] = useState(null);
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -67,6 +68,7 @@ export default function ProductPage() {
         ]);
         if (!on) return;
         setProduct(p.data.product);
+        setProductCatIcon(() => findCategory(p.data.product.category).icon);
         addRecentlyViewed(p.data.product); // local "recently viewed" history
         setRelated(rel.data.items || []);
         setReviews(rv.data.reviews || []);
@@ -157,9 +159,9 @@ export default function ProductPage() {
             <div className="flex gap-2 mt-3 overflow-x-auto no-scrollbar">
               {images.map((src, i) => (
                 <button key={i} onClick={() => setImgIdx(i)}
-                        className={`w-16 h-16 rounded-lg overflow-hidden shrink-0 border-2 transition
+                  className={`w-16 h-16 rounded-lg overflow-hidden shrink-0 border-2 transition
                                     ${i === imgIdx ? 'border-brand-500' : 'border-transparent'}`}
-                        style={{ background: 'var(--color-bg)' }}>
+                  style={{ background: 'var(--color-bg)' }}>
                   <img src={src} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
@@ -170,8 +172,8 @@ export default function ProductPage() {
         {/* Info */}
         <div className="space-y-4">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold font-localized">
-              <span className="mr-1.5" aria-hidden="true">{findCategory(product.category).icon}</span>
+            <h1 className="text-xl md:text-2xl font-bold font-localized inline-flex items-center gap-1.5">
+              <ProductCatIcon size={20} strokeWidth={1.75} aria-hidden="true" />
               {product.name}
             </h1>
             <div className="flex items-center gap-3 mt-2 text-sm">
@@ -219,7 +221,7 @@ export default function ProductPage() {
                   <div className="grid grid-cols-3 gap-2">
                     {rows.map((tier, i) => (
                       <div key={i} className="rounded-lg border p-2 text-center"
-                           style={{ borderColor: 'var(--color-border)' }}>
+                        style={{ borderColor: 'var(--color-border)' }}>
                         <div className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
                           {tier.minQty}+ pcs
                         </div>
@@ -241,8 +243,8 @@ export default function ProductPage() {
                   <Minus size={14} />
                 </button>
                 <input type="number" value={qty} min={1} max={product.stock || 1}
-                       onChange={(e) => setQty(Math.max(1, Math.min(product.stock || 1, Number(e.target.value) || 1)))}
-                       className="w-12 text-center bg-transparent outline-none price-num" />
+                  onChange={(e) => setQty(Math.max(1, Math.min(product.stock || 1, Number(e.target.value) || 1)))}
+                  className="w-12 text-center bg-transparent outline-none price-num" />
                 <button className="px-2.5 py-1.5 hover:bg-[var(--color-bg)]" onClick={() => setQty((q) => Math.min(product.stock || q + 1, q + 1))}>
                   <Plus size={14} />
                 </button>
@@ -254,23 +256,23 @@ export default function ProductPage() {
 
             <div className="flex flex-wrap gap-2">
               <button onClick={onBuyNow} disabled={product.stock === 0}
-                      className="btn-accent flex-1 min-w-[140px]">
+                className="btn-accent flex-1 min-w-[140px]">
                 {t('product.buyNow')}
               </button>
               <button onClick={onAddToCart} disabled={product.stock === 0}
-                      className="btn-primary flex-1 min-w-[140px]">
+                className="btn-primary flex-1 min-w-[140px]">
                 <ShoppingCart size={16} /> {t('product.addToCart')}
               </button>
               <button onClick={onWish}
-                      className="btn-secondary"
-                      aria-label="Wishlist">
+                className="btn-secondary"
+                aria-label="Wishlist">
                 <Heart size={18} className={wished ? 'fill-flash text-flash' : ''} />
               </button>
             </div>
 
             {product.freeShipping && (
               <div className="text-sm inline-flex items-center gap-1.5"
-                   style={{ color: 'var(--color-success)' }}>
+                style={{ color: 'var(--color-success)' }}>
                 <Truck size={14} /> {t('product.freeShipping')}
               </div>
             )}
@@ -279,9 +281,9 @@ export default function ProductPage() {
           {/* Seller card */}
           {product.seller && (
             <Link to={`/store/${product.seller._id || product.seller.id}`}
-                  className="card p-3 flex items-center gap-3 hover:shadow-md transition">
+              className="card p-3 flex items-center gap-3 hover:shadow-md transition">
               <div className="w-12 h-12 rounded-xl grid place-items-center text-white font-bold"
-                   style={{ background: 'var(--color-brand)' }}>
+                style={{ background: 'var(--color-brand)' }}>
                 {(product.seller.shopName || product.seller.name)?.[0]?.toUpperCase() || 'S'}
               </div>
               <div className="flex-1 min-w-0">
@@ -333,18 +335,18 @@ export default function ProductPage() {
 
         {/* Submit review */}
         <form onSubmit={submitReview} className="mt-5 space-y-2 border-t pt-4"
-              style={{ borderColor: 'var(--color-border)' }}>
+          style={{ borderColor: 'var(--color-border)' }}>
           <div className="font-semibold text-sm">{t('product.writeReview')}</div>
           <div className="flex items-center gap-2">
             {[1, 2, 3, 4, 5].map((n) => (
               <button key={n} type="button" onClick={() => setReviewForm((f) => ({ ...f, rating: n }))}
-                      className={`text-2xl ${n <= reviewForm.rating ? 'text-accent-500' : 'text-gray-300'}`}>
+                className={`text-2xl ${n <= reviewForm.rating ? 'text-accent-500' : 'text-gray-300'}`}>
                 ★
               </button>
             ))}
           </div>
           <textarea value={reviewForm.text} onChange={(e) => setReviewForm((f) => ({ ...f, text: e.target.value }))}
-                    placeholder="Share your experience..." rows={3} className="input" />
+            placeholder="Share your experience..." rows={3} className="input" />
           <button type="submit" className="btn-primary text-sm">
             <Send size={14} /> {t('product.writeReview')}
           </button>
@@ -379,7 +381,7 @@ export default function ProductPage() {
         </h2>
         <form onSubmit={submitQuestion} className="flex gap-2 mb-4">
           <input value={questionText} onChange={(e) => setQuestionText(e.target.value)}
-                 placeholder={t('product.askQuestion')} className="input flex-1" />
+            placeholder={t('product.askQuestion')} className="input flex-1" />
           <button type="submit" className="btn-primary text-sm">
             <Send size={14} />
           </button>

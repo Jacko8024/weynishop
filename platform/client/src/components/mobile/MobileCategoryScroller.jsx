@@ -18,10 +18,10 @@ export default function MobileCategoryScroller() {
           aria-label={c.label}
         >
           <span
-            className="w-14 h-14 grid place-items-center rounded-full text-2xl"
+            className="w-14 h-14 grid place-items-center rounded-full"
             style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
           >
-            {c.icon}
+            <c.icon size={24} strokeWidth={1.75} />
           </span>
           <span className="text-[11px] leading-tight text-center line-clamp-1 w-full" style={{ color: 'var(--color-text)' }}>
             {c.label}

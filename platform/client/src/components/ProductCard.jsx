@@ -17,6 +17,7 @@ export default function ProductCard({ product, compact = false }) {
   const wished = useWishlist((s) => s.ids.has(String(product._id)));
   const toggleWish = useWishlist((s) => s.toggle);
   const openGate = useLoginGate((s) => s.open);
+  const CatIcon = findCategory(product.category).icon;
 
   const [imgIdx, setImgIdx] = useState(0);
   const [popping, setPopping] = useState(false);
@@ -112,7 +113,7 @@ export default function ProductCard({ product, compact = false }) {
       {/* Body */}
       <div className="p-2.5 flex flex-col gap-1 flex-1">
         <div className="text-sm font-medium line-clamp-2 leading-snug min-h-[2.5em] font-localized">
-          <span className="mr-1" aria-hidden="true">{findCategory(product.category).icon}</span>
+          <CatIcon className="inline-block mr-1 align-[-2px]" size={14} strokeWidth={1.75} aria-hidden="true" />
           {product.name}
         </div>
 

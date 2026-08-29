@@ -101,14 +101,16 @@ export default function SearchPage() {
         <div className="space-y-1.5">
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="radio" name="category" checked={!filters.category}
-                   onChange={() => update({ category: '' })} />
+              onChange={() => update({ category: '' })} />
             <span>{t('filters.all')}</span>
           </label>
           {CATEGORIES.map((c) => (
             <label key={c.key} className="flex items-center gap-2 cursor-pointer">
               <input type="radio" name="category" checked={filters.category === c.key}
-                     onChange={() => update({ category: c.key })} />
-              <span>{c.icon} {c.label}</span>
+                onChange={() => update({ category: c.key })} />
+              <span className="inline-flex items-center gap-1.5">
+                <c.icon size={16} strokeWidth={1.75} /> {c.label}
+              </span>
             </label>
           ))}
         </div>
@@ -119,12 +121,12 @@ export default function SearchPage() {
         <div className="font-semibold mb-2">{t('filters.priceRange')}</div>
         <div className="flex items-center gap-2">
           <input type="number" placeholder="0" className="input h-9 text-sm"
-                 value={filters.minPrice}
-                 onChange={(e) => update({ minPrice: e.target.value })} />
+            value={filters.minPrice}
+            onChange={(e) => update({ minPrice: e.target.value })} />
           <span style={{ color: 'var(--color-muted)' }}>–</span>
           <input type="number" placeholder="∞" className="input h-9 text-sm"
-                 value={filters.maxPrice}
-                 onChange={(e) => update({ maxPrice: e.target.value })} />
+            value={filters.maxPrice}
+            onChange={(e) => update({ maxPrice: e.target.value })} />
         </div>
       </div>
 
@@ -135,13 +137,13 @@ export default function SearchPage() {
           {[4, 3, 2, 1].map((r) => (
             <label key={r} className="flex items-center gap-2 cursor-pointer">
               <input type="radio" name="minRating" checked={filters.minRating === String(r)}
-                     onChange={() => update({ minRating: r })} />
+                onChange={() => update({ minRating: r })} />
               <span>{'★'.repeat(r)}{'☆'.repeat(5 - r)} {t('filters.andUp')}</span>
             </label>
           ))}
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="radio" name="minRating" checked={!filters.minRating}
-                   onChange={() => update({ minRating: '' })} />
+              onChange={() => update({ minRating: '' })} />
             <span>{t('filters.all')}</span>
           </label>
         </div>
@@ -151,12 +153,12 @@ export default function SearchPage() {
       <div className="space-y-2">
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={filters.freeShipping}
-                 onChange={(e) => update({ freeShipping: e.target.checked })} />
+            onChange={(e) => update({ freeShipping: e.target.checked })} />
           <span>{t('filters.freeShipping')}</span>
         </label>
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={filters.verifiedSeller}
-                 onChange={(e) => update({ verifiedSeller: e.target.checked })} />
+            onChange={(e) => update({ verifiedSeller: e.target.checked })} />
           <span>{t('filters.verifiedSeller')}</span>
         </label>
       </div>
@@ -184,7 +186,7 @@ export default function SearchPage() {
             />
             {inputQ && (
               <button type="button" onClick={() => setInputQ('')} aria-label="Clear"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 grid place-items-center rounded-full btn-ghost">
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 grid place-items-center rounded-full btn-ghost">
                 <X size={15} />
               </button>
             )}
@@ -200,15 +202,15 @@ export default function SearchPage() {
               <Clock size={12} /> {t('mobile.recentSearches')}
             </span>
             <button onClick={() => { clearRecentSearches(); setRecent([]); }}
-                    className="w-8 h-8 grid place-items-center rounded-full btn-ghost" aria-label={t('filters.clear')}>
+              className="w-8 h-8 grid place-items-center rounded-full btn-ghost" aria-label={t('filters.clear')}>
               <Trash2 size={14} />
             </button>
           </div>
           <div className="flex flex-wrap gap-2">
             {recent.map((term) => (
               <button key={term} onClick={() => { addRecentSearch(term); setRecent(getRecentSearches()); update({ q: term }); }}
-                      className="badge press text-xs px-3 py-1.5"
-                      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}>
+                className="badge press text-xs px-3 py-1.5"
+                style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}>
                 {term}
               </button>
             ))}
@@ -218,10 +220,10 @@ export default function SearchPage() {
 
       {/* Top bar */}
       <div className={`flex items-center justify-between gap-3 mb-3 ${isMobile ? 'sticky z-30 py-2 -mx-3 px-3 nav-blur' : ''}`}
-           style={isMobile ? { top: 'calc(48px + env(safe-area-inset-top, 0px))', borderBottom: '1px solid var(--color-border)' } : undefined}>
+        style={isMobile ? { top: 'calc(48px + env(safe-area-inset-top, 0px))', borderBottom: '1px solid var(--color-border)' } : undefined}>
         <div className="text-sm">
           {filters.q && <span className="font-semibold">{filters.q} · </span>}
-          <span style={{ color: 'var(--color-muted)' }}>{items.length} {t('product.reviews').replace('reviews','results') /* fallback */}</span>
+          <span style={{ color: 'var(--color-muted)' }}>{items.length} {t('product.reviews').replace('reviews', 'results') /* fallback */}</span>
         </div>
         <div className="flex items-center gap-2">
           <select
@@ -242,7 +244,7 @@ export default function SearchPage() {
         <div className="flex flex-wrap gap-2 mb-3">
           {chips.map((c) => (
             <button key={c.key} onClick={() => removeChip(c.key)}
-                    className="badge bg-brand-50 text-brand-700 inline-flex items-center gap-1 hover:bg-brand-100">
+              className="badge bg-brand-50 text-brand-700 inline-flex items-center gap-1 hover:bg-brand-100">
               {c.label} <X size={12} />
             </button>
           ))}
@@ -270,10 +272,10 @@ export default function SearchPage() {
       {/* Mobile drawer */}
       {drawerOpen && (
         <div className="md:hidden fixed inset-0 z-50 bg-black/50 animate-fadeIn"
-             onClick={() => setDrawerOpen(false)}>
+          onClick={() => setDrawerOpen(false)}>
           <div className="absolute bottom-0 inset-x-0 rounded-t-2xl p-4 max-h-[85vh] overflow-y-auto"
-               onClick={(e) => e.stopPropagation()}
-               style={{ background: 'var(--color-surface)' }}>
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: 'var(--color-surface)' }}>
             <div className="flex items-center justify-between mb-3">
               <div className="font-bold text-base">{t('filters.title')}</div>
               <button onClick={() => setDrawerOpen(false)} className="btn-ghost p-1.5"><X size={18} /></button>

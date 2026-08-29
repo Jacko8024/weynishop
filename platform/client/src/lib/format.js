@@ -1,3 +1,8 @@
+import {
+  ShoppingCart, Shirt, Smartphone, Home, Sparkles, Trophy, Baby,
+  Gift, Sofa, Palette, LayoutGrid,
+} from 'lucide-react';
+
 /** Format a number as USD price, comma-grouped. */
 export const fmtPrice = (n) => {
   const v = Number(n) || 0;
@@ -23,16 +28,31 @@ export const effectivePrice = (product, qty = 1) => {
 };
 
 export const CATEGORIES = [
-  { key: 'grocery', label: 'Grocery', icon: '🛒' },
-  { key: 'fashion', label: 'Fashion', icon: '👗' },
-  { key: 'electronics', label: 'Electronics', icon: '📱' },
-  { key: 'home', label: 'Home', icon: '🏠' },
-  { key: 'beauty', label: 'Beauty', icon: '💄' },
-  { key: 'sports', label: 'Sports', icon: '⚽' },
-  { key: 'kids', label: 'Kids', icon: '🧸' },
-  { key: 'children', label: 'Children', icon: '👶' },
-  { key: 'gifts', label: 'Gifts', icon: '🎀' },
-  { key: 'furniture', label: 'Furniture', icon: '🛋️' },
-  { key: 'crafts', label: 'Crafts', icon: '🎨' },
-  { key: 'general', label: 'Other', icon: '🎁' },
+  { key: 'grocery', label: 'Grocery', icon: ShoppingCart },
+  { key: 'fashion', label: 'Fashion', icon: Shirt },
+  { key: 'electronics', label: 'Electronics', icon: Smartphone },
+  { key: 'home', label: 'Home', icon: Home },
+  { key: 'beauty', label: 'Beauty', icon: Sparkles },
+  { key: 'sports', label: 'Sports', icon: Trophy },
+  { key: 'kids', label: 'Kids', icon: Baby },
+  { key: 'gifts', label: 'Gifts', icon: Gift },
+  { key: 'furniture', label: 'Furniture', icon: Sofa },
+  { key: 'crafts', label: 'Crafts', icon: Palette },
+  { key: 'general', label: 'Other', icon: LayoutGrid },
 ];
+
+// Legacy keys from earlier seeds that were merged into 'kids'.
+const LEGACY_KEYS = { children: 'kids' };
+
+/**
+ * Resolve a category key (including legacy/duplicate ones like 'children')
+ * to { key, label, icon } with a lucide icon component. Used by findCategory
+ * and anywhere a static mapping is needed.
+ */
+export const iconForCategory = (key) => {
+  const resolved = LEGACY_KEYS[key] || key;
+  return (
+    CATEGORIES.find((c) => c.key === resolved) ||
+    { key, label: key, icon: LayoutGrid }
+  );
+};

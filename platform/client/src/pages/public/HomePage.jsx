@@ -47,7 +47,7 @@ export default function HomePage() {
     let on = true;
     api.get('/banners')
       .then(({ data }) => { if (on && data.items?.length) setBanners(data.items); })
-      .catch(() => {});
+      .catch(() => { });
     return () => { on = false; };
   }, []);
 
@@ -78,14 +78,14 @@ export default function HomePage() {
               reqs.push(
                 api.get('/products', { params: { category: fk, sort: 'mostSold', limit: 8 } })
                   .then(({ data }) => { if (on) { setFood(data.items || []); setFoodKey(fk); } })
-                  .catch(() => {})
+                  .catch(() => { })
               );
             }
             if (gk) {
               reqs.push(
                 api.get('/products', { params: { category: gk, sort: 'mostSold', limit: 8 } })
                   .then(({ data }) => { if (on) { setGroceries(data.items || []); setGroceryKey(gk); } })
-                  .catch(() => {})
+                  .catch(() => { })
               );
             }
             await Promise.all(reqs);
@@ -126,22 +126,25 @@ export default function HomePage() {
       <HeroSlider slides={banners} />
 
 
-      {/* Categories strip — admin-managed via /admin/categories (emoji + label) */}
+      {/* Categories strip — admin-managed via /admin/categories (label + lucide icon) */}
       <section>
         <div className="flex gap-3 md:gap-6 overflow-x-auto no-scrollbar pb-1">
-          {categories.map((c) => (
-            <Link
-              key={c.key}
-              to={`/search?category=${c.key}`}
-              className="flex-shrink-0 flex flex-col items-center gap-1.5 group"
-            >
-              <span className="w-14 h-14 md:w-16 md:h-16 grid place-items-center rounded-2xl text-2xl md:text-3xl transition group-hover:scale-105"
-                    style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
-                {c.icon}
-              </span>
-              <span className="text-xs font-medium" style={{ color: 'var(--color-text)' }}>{c.label}</span>
-            </Link>
-          ))}
+          {categories.map((c) => {
+            const Icon = c.icon;
+            return (
+              <Link
+                key={c.key}
+                to={`/search?category=${c.key}`}
+                className="flex-shrink-0 flex flex-col items-center gap-1.5 group"
+              >
+                <span className="w-14 h-14 md:w-16 md:h-16 grid place-items-center rounded-2xl transition group-hover:scale-105"
+                  style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                  <Icon size={28} strokeWidth={1.75} className="md:w-8 md:h-8" />
+                </span>
+                <span className="text-xs font-medium" style={{ color: 'var(--color-text)' }}>{c.label}</span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
@@ -151,7 +154,7 @@ export default function HomePage() {
           <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl grid place-items-center text-white"
-                   style={{ background: 'linear-gradient(135deg,#EB5824,#C7461A)' }}>
+                style={{ background: 'linear-gradient(135deg,#EB5824,#C7461A)' }}>
                 <Zap size={20} className="fill-white" />
               </div>
               <div>

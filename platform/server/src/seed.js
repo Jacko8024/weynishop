@@ -131,19 +131,20 @@ const run = async () => {
   const settings = await Settings.create({ commissionPercent: 10 });
 
   console.log('Creating default categories...');
+  // NOTE: icons are lucide components on the client (see client/src/lib/format.js);
+  // 'emoji' here is only a server-side hint/fallback for the admin editor.
   const DEFAULT_CATEGORIES = [
-    { key: 'grocery',     label: 'Grocery',     emoji: '🛒', displayOrder: 1 },
-    { key: 'fashion',     label: 'Fashion',     emoji: '👗', displayOrder: 2 },
+    { key: 'grocery', label: 'Grocery', emoji: '🛒', displayOrder: 1 },
+    { key: 'fashion', label: 'Fashion', emoji: '👗', displayOrder: 2 },
     { key: 'electronics', label: 'Electronics', emoji: '📱', displayOrder: 3 },
-    { key: 'home',        label: 'Home',        emoji: '🏠', displayOrder: 4 },
-    { key: 'beauty',      label: 'Beauty',      emoji: '💄', displayOrder: 5 },
-    { key: 'sports',      label: 'Sports',      emoji: '⚽', displayOrder: 6 },
-    { key: 'kids',        label: 'Kids',        emoji: '🧸', displayOrder: 7 },
-    { key: 'children',    label: 'Children',    emoji: '👶', displayOrder: 8 },
-    { key: 'gifts',       label: 'Gifts',       emoji: '🎀', displayOrder: 9 },
-    { key: 'furniture',   label: 'Furniture',   emoji: '🛋️', displayOrder: 10 },
-    { key: 'crafts',      label: 'Crafts',      emoji: '🎨', displayOrder: 11 },
-    { key: 'general',     label: 'Other',       emoji: '🎁', displayOrder: 99 },
+    { key: 'home', label: 'Home', emoji: '🏠', displayOrder: 4 },
+    { key: 'beauty', label: 'Beauty', emoji: '💄', displayOrder: 5 },
+    { key: 'sports', label: 'Sports', emoji: '⚽', displayOrder: 6 },
+    { key: 'kids', label: 'Kids', emoji: '🧸', displayOrder: 7 },
+    { key: 'gifts', label: 'Gifts', emoji: '🎀', displayOrder: 8 },
+    { key: 'furniture', label: 'Furniture', emoji: '🛋️', displayOrder: 9 },
+    { key: 'crafts', label: 'Crafts', emoji: '🎨', displayOrder: 10 },
+    { key: 'general', label: 'Other', emoji: '🎁', displayOrder: 99 },
   ];
   for (const c of DEFAULT_CATEGORIES) await Category.create(c);
 
