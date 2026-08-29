@@ -33,6 +33,7 @@ import uploadRoutes from './routes/v1/upload.routes.js';
 import contactRoutes from './routes/v1/contact.routes.js';
 import sitemapRoutes from './routes/v1/sitemap.routes.js';
 import surpriseRoutes from './routes/v1/surprise.routes.js';
+import notificationRoutes from './routes/v1/notification.routes.js';
 
 import { registerSocketHandlers } from './sockets/index.js';
 
@@ -42,6 +43,20 @@ const server = http.createServer(app);
 // CLIENT_URL may be a single origin or a comma-separated list (e.g.
 // "https://www.weynishop.com,http://localhost:5173"). Vercel preview
 // deploys also need to be allow-listed via PREVIEW pattern.
+//
+// Capacitor mobile apps (the WeyniShop Android/iOS app) do NOT load from
+// CLIENT_URL — the WebView serves the bundle from a fixed virtual origin:
+//   Android:  https://localhost      (default scheme)
+//   iOS:      capacitor://localhost  (or ionic://localhost on Ionic)
+// If those origins are not admitted, every API call from the APK/IPA fails
+// CORS and the mobile app shows no products. A website cannot spoof its
+// Origin header, so allow-listing these is safe.
+const MOBILE_ORIGINS = new Set([
+  'http://localhost', // Capacitor < 5 on Android
+  'https://localhost', // Capacitor 5+ on Android
+  'capacitor://localhost', // Capacitor on iOS
+  'ionic://localhost', // Ionic-portaled builds
+]);
 const allowedOrigins = (env.CLIENT_URL || '')
   .split(',')
   .map((s) => s.trim())
@@ -69,6 +84,8 @@ for (const o of allowedOrigins) {
 const corsOriginCheck = (origin, cb) => {
   // Same-origin / curl / server-to-server requests have no Origin header.
   if (!origin) return cb(null, true);
+  // Capacitor hybrid app WebViews (mobile app) — always allowed.
+  if (MOBILE_ORIGINS.has(origin)) return cb(null, true);
   if (originVariants.has(origin)) return cb(null, true);
   // Allow any *.vercel.app preview when CLIENT_URL contains a vercel domain,
   // so PR previews don't 401 on every push.
@@ -115,6 +132,7 @@ app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/uploads', uploadRoutes);
 app.use('/api/v1/contact', contactRoutes);
 app.use('/api/v1/surprise', surpriseRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 app.use(sitemapRoutes);
 
 app.use(notFound);
@@ -151,6 +169,7 @@ const start = async () => {
   await safeAlter('DeliveryProfile', DeliveryProfile);
   await safeAlter('SurpriseBooking', SurpriseBooking);
   await safeAlter('SurpriseService', SurpriseService);
+  await safeAlter('DeviceToken', DeviceToken);     // push notifications (device_tokens)
 
   // One-time backfill: any pre-existing product rows have basePrice = 0 from
   // the column default. Initialise them to the current price so seller

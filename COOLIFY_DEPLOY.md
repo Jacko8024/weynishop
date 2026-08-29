@@ -141,7 +141,7 @@ create your admin account (first user becomes root).
 | `PUBLIC_API_URL` | `https://api.yourdomain.com` (used to build image URLs) |
 | `JWT_SECRET` | long random string (generate one!) |
 | `JWT_EXPIRES_IN` | `7d` |
-| `CLIENT_URL` | `https://www.weynishop.com` (comma-separate more origins if needed) |
+| `CLIENT_URL` | `https://www.weynishop.com` (comma-separate more origins if needed). Capacitor mobile origins (`https://localhost`, `capacitor://localhost`) are allow-listed in code — do NOT add them here. |
 | `STOREFRONT_URL` | `https://www.yourdomain.com` |
 | `GOOGLE_MAPS_API_KEY` | your Maps key |
 | `SURPRISE_OWNER_ID` / `SURPRISE_OWNER_EMAIL` | optional |
