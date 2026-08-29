@@ -35,11 +35,31 @@ passes inside the VPS network) — only the public reverse-proxy entry is missin
 
 ---
 
-## The fix (run on the VPS as root)
+## The fix — TWO PHASES (run on the VPS as root)
 
-The finished nginx config is committed at
-[`deploy/nginx/weynishop-api.conf`](../deploy/nginx/weynishop-api.conf) —
-TLS termination + proxy to the API container + Socket.io WebSocket support.
+The full nginx config is committed at
+[`deploy/nginx/weynishop-api.conf`](nginx/weynishop-api.conf). We can't install
+it in one shot because of a chicken-and-egg problem: the final vhost needs the
+certificate to exist, but certbot's webroot challenge needs a port-80 vhost
+for `api.weynishop.com` to exist first. So:
+
+- **Phase 1** — install a temporary port-80-only vhost (extracted from the
+  marked section of the config), then issue the certificate.
+- **Phase 2** — install the full config (TLS + proxy) and reload.
+
+> If a `weynishop-api` symlink in `/etc/nginx/sites-enabled/` points at a
+> missing file from an earlier attempt, remove it first:
+> `rm -f /etc/nginx/sites-enabled/weynishop-api`
+
+### 0. Get the config file onto the VPS
+
+On your PC (from the repo root):
+
+```bash
+scp deploy/nginx/weynishop-api.conf root@169.58.219.232:/root/
+```
+
+(Or `git pull` the repo on the VPS if you have it cloned there.)
 
 ### 1. Confirm where the API is actually listening
 
@@ -50,42 +70,51 @@ docker ps --format "table {{.Names}}\t{{.Ports}}" | grep -i api
 ```
 
 Expected: something like `0.0.0.0:3000->3000/tcp`. If your port differs,
-edit the `upstream weynishop_api { server 127.0.0.1:3000; }` line in the
-config file to match. (All ports except 80/443 are firewalled from outside,
-so it's fine that the app port isn't public.)
+edit the `upstream weynishop_api { server 127.0.0.1:3000; }` line in
+`/root/weynishop-api.conf` to match. (All ports except 80/443 are firewalled
+from outside, so it's fine that the app port isn't public.)
 
-### 2. Install certbot and get the certificate
+### 2. PHASE 1 — port-80 vhost + certificate
 
 ```bash
-apt update && apt install -y certbot python3-certbot-nginx
+# Extract the temporary phase-1 vhost (port-80 only, marked section)
+sed -n '/# BEGIN PHASE-1 MARKER/,/# END PHASE-1 MARKER/p' \
+  /root/weynishop-api.conf > /etc/nginx/sites-available/weynishop-api
 
-# Issue the cert for the API subdomain
+# Also grab the upstream/map blocks that sit above the markers —
+# simplest: prepend everything before the BEGIN marker
+sed -n '1,/# BEGIN PHASE-1 MARKER/p' /root/weynishop-api.conf \
+  > /etc/nginx/sites-available/weynishop-api
+sed -n '/# BEGIN PHASE-1 MARKER/,/# END PHASE-1 MARKER/p' \
+  /root/weynishop-api.conf >> /etc/nginx/sites-available/weynishop-api
+
+ln -sf /etc/nginx/sites-available/weynishop-api /etc/nginx/sites-enabled/weynishop-api
+mkdir -p /var/www/html
+nginx -t && systemctl reload nginx
+
+# Issue the certificate (retry in a few minutes if you get
+# "Service busy; retry later" — that's a transient Let's Encrypt error)
 certbot certonly --webroot -w /var/www/html \
   -d api.weynishop.com \
-  --email your-email@example.com \
+  --email yaikobdereje@gmail.com \
   --agree-tos -n
 ```
 
-> If `/var/www/html` doesn't exist: `mkdir -p /var/www/html` first, or use
-> `certbot certonly --nginx -d api.weynishop.com ...` instead.
-> Renewals are automatic (`certbot` installs a systemd timer) — the nginx
-> config below reloads nginx gracefully on renewal via the deploy hook if
-> you add one.
+> **If certbot keeps failing with webroot**, switch to the nginx plugin,
+> which edits nothing permanently (we only need the cert files):
+> `certbot certonly --nginx -d api.weynishop.com --email yaikobdereje@gmail.com --agree-tos -n`
 
-### 3. Install the nginx vhost
+### 3. PHASE 2 — full TLS + proxy vhost
 
 ```bash
-# Upload the file from your PC:
-#   scp deploy/nginx/weynishop-api.conf root@169.58.219.232:/root/
-# Then on the VPS:
 cp /root/weynishop-api.conf /etc/nginx/sites-available/weynishop-api
-ln -sf /etc/nginx/sites-available/weynishop-api /etc/nginx/sites-enabled/weynishop-api
-
-# Sanity check + apply
 nginx -t && systemctl reload nginx
 ```
 
-### 4. Verify from outside
+> `nginx -t` must print `syntax is ok` before you reload. If it fails,
+> **nothing changes for your live sites** — fix the reported line and retest.
+
+### 4. Verify from outside (back on your PC)
 
 ```bash
 curl https://api.weynishop.com/api/v1/health
@@ -93,10 +122,10 @@ curl https://api.weynishop.com/api/v1/health
 
 curl "https://api.weynishop.com/api/v1/products?page=1&limit=2"
 # → JSON with the seeded products
-
-# No certificate warnings, and the browser at https://weynishop.com now
-# loads products. Socket.io tracking works (wss://api.weynishop.com).
 ```
+
+No certificate warnings, and the browser at `https://weynishop.com` now loads
+products. Socket.io tracking works (`wss://api.weynishop.com`).
 
 ### 5. Make sure the API's env allows the frontend origin
 
@@ -108,6 +137,18 @@ PUBLIC_API_URL=https://api.weynishop.com
 ```
 
 Redeploy the api app if you change these (CORS is compiled at boot).
+
+---
+
+## Errors encountered on 2026-08-29 (and their causes)
+
+| Error | Cause / fix |
+|---|---|
+| `certbot ... Service busy; retry later` | Transient Let's Encrypt-side error. Retry after a few minutes. (It would also have failed because no port-80 vhost existed yet for the webroot challenge — Phase 1 fixes that.) |
+| `cp: cannot stat '/root/weynishop-api.conf'` | The `scp` line was pasted as a comment, so the file was never uploaded. Run the `scp` from your PC first (Step 0). |
+| `nginx: [emerg] open() .../sites-enabled/weynishop-api failed` | The symlink pointed at a file that didn't exist. `rm -f /etc/nginx/sites-enabled/weynishop-api` and redo from Step 2. |
+| `nginx: [warn] protocol options redefined for [::]:443` in `sites-enabled/weynishop:23` | Pre-existing warning from another site on the server (duplicate `listen [::]:443` options between vhosts). Harmless, but you can deduplicate the flags on that line later. |
+| `http2 on;` causes `nginx: [emerg] unknown directive` | nginx 1.24.0 predates the `http2 on;` directive (added 1.25.1). The committed config now uses `listen 443 ssl http2;` instead. |
 
 ---
 
@@ -138,7 +179,7 @@ nginx setup.
 - [x] DNS for `api.weynishop.com` → VPS IP (already correct)
 - [x] `VITE_API_URL` baked into the frontend bundle (already correct)
 - [x] API container healthy, DB seeded (already correct)
-- [ ] certbot cert issued for `api.weynishop.com`
-- [ ] nginx vhost installed + reloaded
+- [ ] Phase 1: port-80 vhost installed, certbot cert issued
+- [ ] Phase 2: full vhost installed + reloaded
 - [ ] `https://api.weynishop.com/api/v1/health` returns `{"ok":true}`
 - [ ] Products visible on `https://weynishop.com`
