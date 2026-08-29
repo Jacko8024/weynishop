@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
-import { DeviceToken } from '../models/DeviceToken.js';
-import { protect } from '../middleware/auth.js';
+import { DeviceToken } from '../../models/DeviceToken.js';
+import { protect } from '../../middleware/auth.js';
 
 // Device-token registry for PUSH NOTIFICATIONS (mobile app only).
 // The web client never calls these — the Capacitor app registers its FCM
