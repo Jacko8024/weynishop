@@ -35,6 +35,28 @@ passes inside the VPS network) — only the public reverse-proxy entry is missin
 
 ---
 
+## Fast path — the one-shot script
+
+All the steps below are automated in
+[`deploy/apply-api-ssl-fix.sh`](apply-api-ssl-fix.sh). On the VPS as root:
+
+```bash
+ssh root@169.58.219.232
+bash <(curl -fsSL https://raw.githubusercontent.com/Jacko8024/weynishop/main/deploy/apply-api-ssl-fix.sh)
+```
+
+It is **idempotent** — safe to re-run. It auto-detects the API container's
+published port, installs the phase-1 vhost, issues the cert (webroot with
+standalone fallback), installs the final TLS vhost, and verifies
+`/api/v1/health` returns 200. Only fall back to the manual steps below if
+something in the script fails or you prefer to run each step by hand.
+
+> If the repo ever becomes private, `curl` from `raw.githubusercontent.com`
+> stops working — instead upload and run it:
+> `scp deploy/apply-api-ssl-fix.sh root@169.58.219.232:/root/ && ssh root@169.58.219.232 'bash /root/apply-api-ssl-fix.sh'`
+
+---
+
 ## The fix — TWO PHASES (run on the VPS as root)
 
 Two config files are committed:
