@@ -40,17 +40,36 @@ const app = express();
 const server = http.createServer(app);
 
 // CLIENT_URL may be a single origin or a comma-separated list (e.g.
-// "https://www.weynishoping.com,http://localhost:5173"). Vercel preview
+// "https://www.weynishop.com,http://localhost:5173"). Vercel preview
 // deploys also need to be allow-listed via PREVIEW pattern.
 const allowedOrigins = (env.CLIENT_URL || '')
   .split(',')
   .map((s) => s.trim())
   .filter(Boolean);
 
+// Auto-accept the www <-> apex variant of every allow-listed origin, so
+// "https://www.weynishop.com" also admits "https://weynishop.com" (and vice
+// versa). Prevents the classic CORS outage where the site is served on both
+// hostnames but CLIENT_URL lists only one of them.
+const originVariants = new Set(allowedOrigins);
+for (const o of allowedOrigins) {
+  try {
+    const u = new URL(o);
+    if (u.hostname.startsWith('www.')) {
+      u.hostname = u.hostname.slice(4); // www.example.com -> example.com
+    } else {
+      u.hostname = `www.${u.hostname}`; // example.com -> www.example.com
+    }
+    originVariants.add(u.origin);
+  } catch {
+    // not a parseable absolute URL — skip variant generation
+  }
+}
+
 const corsOriginCheck = (origin, cb) => {
   // Same-origin / curl / server-to-server requests have no Origin header.
   if (!origin) return cb(null, true);
-  if (allowedOrigins.includes(origin)) return cb(null, true);
+  if (originVariants.has(origin)) return cb(null, true);
   // Allow any *.vercel.app preview when CLIENT_URL contains a vercel domain,
   // so PR previews don't 401 on every push.
   const allowVercelPreviews = allowedOrigins.some((o) => o.includes('vercel.app'));
@@ -118,20 +137,20 @@ const start = async () => {
     try { await model.sync({ alter: true }); }
     catch (e) { console.warn(`[migrate] ${label} alter skipped:`, e.message); }
   };
-  await safeAlter('User',             User);            // adds firebaseUid + photoUrl
-  await safeAlter('Settings',         Settings);
+  await safeAlter('User', User);            // adds firebaseUid + photoUrl
+  await safeAlter('Settings', Settings);
   await safeAlter('CommissionLedger', CommissionLedger);
-  await safeAlter('Product',          Product);         // adds basePrice + commissionPercent
-  await safeAlter('OrderItem',        OrderItem);       // adds basePriceSnapshot + commissionPercentSnapshot + commissionAmountSnapshot
-  await safeAlter('DeliveryEarning',  DeliveryEarning); // courier wallet
-  await safeAlter('SellerEarning',    SellerEarning);   // seller wallet
-  await safeAlter('Banner',           Banner);
-  await safeAlter('Category',         Category);
-  await safeAlter('ContactInquiry',   ContactInquiry);
-  await safeAlter('VendorProfile',    VendorProfile);
-  await safeAlter('DeliveryProfile',  DeliveryProfile);
-  await safeAlter('SurpriseBooking',  SurpriseBooking);
-  await safeAlter('SurpriseService',  SurpriseService);
+  await safeAlter('Product', Product);         // adds basePrice + commissionPercent
+  await safeAlter('OrderItem', OrderItem);       // adds basePriceSnapshot + commissionPercentSnapshot + commissionAmountSnapshot
+  await safeAlter('DeliveryEarning', DeliveryEarning); // courier wallet
+  await safeAlter('SellerEarning', SellerEarning);   // seller wallet
+  await safeAlter('Banner', Banner);
+  await safeAlter('Category', Category);
+  await safeAlter('ContactInquiry', ContactInquiry);
+  await safeAlter('VendorProfile', VendorProfile);
+  await safeAlter('DeliveryProfile', DeliveryProfile);
+  await safeAlter('SurpriseBooking', SurpriseBooking);
+  await safeAlter('SurpriseService', SurpriseService);
 
   // One-time backfill: any pre-existing product rows have basePrice = 0 from
   // the column default. Initialise them to the current price so seller
