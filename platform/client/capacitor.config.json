@@ -1,5 +1,13 @@
 {
   "appId": "com.weynishop.app",
   "appName": "WeyniShop",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {}
 }

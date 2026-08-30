@@ -1,5 +1,11 @@
 ﻿{
-  "lang": { "en": "English", "am": "አማርኛ", "or": "Afaan Oromoo", "ti": "ትግርኛ", "so": "Af Soomaali" },
+  "lang": {
+    "en": "English",
+    "am": "አማርኛ",
+    "or": "Afaan Oromoo",
+    "ti": "ትግርኛ",
+    "so": "Af Soomaali"
+  },
   "brand": {
     "name": "WeyniShop",
     "rights": "Mirgii hundaa eegameera",
@@ -77,12 +83,29 @@
     "emailOptional": "Imeelii (dirqama miti)",
     "useEmail": "Imeelii fayyadami",
     "usePhone": "Lakkoofsa bilbilaa fayyadami",
-    "invalidPhone": "Lakkoofsa bilbilaa Itoophiyaa sirrii galchi",
+    "invalidPhone": "Lakkoofsa bilbilaa sirrii galchi",
     "loggingIn": "Seenua…",
+    "continueWithGoogle": "Google waliin seenua",
+    "googleWorking": "Seensa xumuraa jira…",
+    "googleFailed": "Google'n seensa kufeedha. Irra deebi'ii yaaladhu.",
+    "googleCancelled": "Seensi Google dhaabameera.",
+    "chooseCountry": "Biyya filadhu",
     "noAccount": "Herrega hin qabduu?",
     "buyerDesc": "Oomishaalee bitadhaa, gara mana keessaniitti geejjibsiifadhaa.",
     "sellerDesc": "Oomishaalee keessan galmeessaa, maamiltoota hedduu qaqqabaa.",
     "deliveryDesc": "Ajajawwan fuudhaa, geejjibaan galii argadhaa."
+  },
+  "geo": {
+    "useMyLocation": "Bakka ammaa jiru fayyadami",
+    "locating": "Bakka barbaadaa jira…",
+    "captured": "Bakki cafameera",
+    "denied": "Hayyamni bakka dhorkameera. Maaloo hayyadhu.",
+    "deniedPermanent": "Bakki appii kanaaf cufameera. Settings keessaa bani ykn teessoo kee harkaan barreessi.",
+    "unavailable": "Bakki kee hin argamu. Banaa tokko ykn seena caalaa waliin irra deebi'ii yaali.",
+    "timeout": "Barbaaddi bakka yeroo dabaleera. Irra deebi'ii yaali.",
+    "unsupported": "Bakki qalabka kana irratti hin deeggaru.",
+    "error": "Bakka kee argachuu hin dandeenye. Irra deebi'ii yaali.",
+    "openSettings": "Qindaa'ina bani"
   },
   "filters": {
     "title": "Calaltuu",
@@ -129,7 +152,40 @@
     "cashOnDelivery": "Geejjiba Irratti Kaffaltii",
     "cashNotice": "Yeroo ajajni kee dhufu, geejjibsiisaaf maallaqa qabataman ni kaffalta.",
     "place": "Ajaja Kaa'i",
-    "placing": "Ajaja kaa'aa jira…"
+    "placing": "Ajaja kaa'aa jira…",
+    "addressTitle": "Eessatti geejjibna?",
+    "addressSubtitle": "Itti fufuuf teessoo geejjibaa kee godhi",
+    "locateHint": "Bakka GPS kee fayyadna — hayyamni kan gaafatamu yeroo kana qofa",
+    "reviewCta": "Ajajaa ilaali",
+    "confirmTitle": "Ajaja kee mirkaneessi",
+    "deliverTo": "Geejjibamu",
+    "orderSummary": "Cuunfaa Ajajaa",
+    "itemsWord": "waamicha",
+    "subtotal": "Walduraa dukkanaa",
+    "codTitle": "Geejjiba Irratti Kaffaltii",
+    "codBody": "Yeroo ajajni kee dhufu, geejjibsiisaaf maallaqa qabataman ni kaffalta. Kaardii ykn kaffaltii onlainii hin jiru.",
+    "confirmPlace": "Mirkaneessi Ajaja Kaa'i",
+    "placed": "Ajajni kaa'ameera!",
+    "pinTitle": "Kaartaa irratti piinii"
+  },
+  "addr": {
+    "title": "Teessoo geejjibaa",
+    "default": "Durtii",
+    "saved": "Olkaa'ameera",
+    "edit": "Gulaali",
+    "addNew": "Teessoo geejjibaa dabalisi",
+    "noSavedHint": "Kaffaltii saffisaafiif teessoo geejjibaa durtii olkaa'i",
+    "searchTitle": "Teessoo barbaadi",
+    "searchPh": "Teessoo kee barbaadi…",
+    "needAddress": "Maaloo teessoo geejjibaa kee filadhu ykn barreessi",
+    "save": "Teessoo olkaa'i",
+    "saving": "Olkaa'aa jira…",
+    "savedOk": "Teessonni olkaa'ameera"
+  },
+  "notif": {
+    "title": "Beeksisa",
+    "markAllRead": "Hunda dubbisaman taasi",
+    "empty": "Beeksiisa hin jiru"
   },
   "flashSale": {
     "title": "Gatii Hir'isaa Ariifachiisaa",
@@ -140,6 +196,7 @@
     "loading": "Fe'aa jira…",
     "error": "Wanti tokko hin milkoofne",
     "retry": "Irra deebi'i yaali",
+    "back": "Deebi'i",
     "close": "Cufi",
     "save": "Kaa'i",
     "cancel": "Dhaabi",
@@ -234,17 +291,32 @@
     "giftPackages": [
       {
         "name": "Guyyaa Yaadannoo (Anniversary)",
-        "features": ["Kan nuun qopheessinu", "Iddeettuu daraaraa", "Kaardii jaalalaa", "Keekii"],
+        "features": [
+          "Kan nuun qopheessinu",
+          "Iddeettuu daraaraa",
+          "Kaardii jaalalaa",
+          "Keekii"
+        ],
         "price": 50
       },
       {
         "name": "Gaaffii Fuudhaa (Proposal)",
-        "features": ["Kan nuun qopheessinu", "Iddeettuu daraaraa", "Kaardii jaalalaa", "Keekii"],
+        "features": [
+          "Kan nuun qopheessinu",
+          "Iddeettuu daraaraa",
+          "Kaardii jaalalaa",
+          "Keekii"
+        ],
         "price": 50
       },
       {
         "name": "Surpriizii",
-        "features": ["Kan nuun qopheessinu", "Iddeettuu daraaraa", "Kaardii jaalalaa", "Keekii"],
+        "features": [
+          "Kan nuun qopheessinu",
+          "Iddeettuu daraaraa",
+          "Kaardii jaalalaa",
+          "Keekii"
+        ],
         "price": 50
       }
     ],
@@ -254,9 +326,18 @@
       "story": "Addummaa fi kophaa gidduu Itiyoophiyaa fi Libaanoon (Baayroot) jiru jaalalaa fi yaadannoodhaan jijjiirra. Ilma/obboleettii keessan Baayroot jirtu guyyaa dhaloota isheetiif bakka keessaniin “Handhuuraa dhalatte!” jechuuf, yookaan firii keessan Baayroot yommuu fuudhu, yommuu gaddatu, yookiin yommuu dhukkubsatu cinaacha isaa argamee waan barbaachisu hojjechuuf {{brand}} Tiixaaniin waliin yeroo hunda qophaa'ee dha.",
       "pillTitle": "Tajaajila keenya damee gurguddoo saditti qopheessinee jirra:",
       "pillars": {
-        "birthday": { "title": "Guyyaa Dhalootaa fi Ayyaanaa", "text": "Kennaa surpriizii fi daraaraa hin dagatamne." },
-        "hardship": { "title": "Yeroo Rakkoo, Gaddaa fi Fuudhaa", "text": "Bakka keessaniin argamee dhukkubsataa gaafachuu fi gaddattis cinaacha isaanii ta'uu dandeessina." },
-        "love": { "title": "Jaalalaaf fi Fuudhaaf", "text": "Jaalallee Baayroot jiraatuuf gaaffii fuudhaa (proposal) dhiheessuu fi guyyaa fuudhaa bareechaan yaadachuu fi kabajuu." }
+        "birthday": {
+          "title": "Guyyaa Dhalootaa fi Ayyaanaa",
+          "text": "Kennaa surpriizii fi daraaraa hin dagatamne."
+        },
+        "hardship": {
+          "title": "Yeroo Rakkoo, Gaddaa fi Fuudhaa",
+          "text": "Bakka keessaniin argamee dhukkubsataa gaafachuu fi gaddattis cinaacha isaanii ta'uu dandeessina."
+        },
+        "love": {
+          "title": "Jaalalaaf fi Fuudhaaf",
+          "text": "Jaalallee Baayroot jiraatuuf gaaffii fuudhaa (proposal) dhiheessuu fi guyyaa fuudhaa bareechaan yaadachuu fi kabajuu."
+        }
       },
       "promise": "Eessattuu taatanillee, fedhii qalbii keessanii bakka isaa akka ga'u amanamummaadhaan hojjanna!",
       "final": "Akkuma shaamaa baqee maatii ishee jiraachiftee, dubartii gootummaa kanaaf kuni dhugumatti hojii galata isheef malu dha!!"
@@ -268,16 +349,82 @@
     "builtBy": "Itiyoophiyaadhaan ijaarame, biyya Arabaa keessa jiraataniif",
     "whatTitle": "Maal ajajachuu dandeessu",
     "what": [
-      { "title": "Nyaata Itiyoophiyaa Dhiyeessuu", "items": ["Injera", "Wot", "Shiro", "Kitfo", "Tibs", "Firfir", "Nyaata vegetarian", "Buna fi dhugaatii"] },
-      { "title": "Galmee Baltinaa", "items": ["Berbere", "Mitmita", "Daakuu shiro", "Daakuu teff", "Buna magariisa", "Damma Itiyoophiyaa", "Mi'eesa", "Galmee aadaa"] },
-      { "title": "Faashinii fi Uffata", "items": ["Faashinii dubaraa", "Faashinii dhiiraa", "Uffata ijoollee", "Cophee", "Boorsaa", "Uffata aadaa Itiyoophiyaa"] },
-      { "title": "Rifeensa fi Babbareessituu", "items": ["Zayitii rifeensaa", "Weave fi wig", "Shamboofi kandishinara", "Eegumsa gogaa", "Kosmetiksii"] }
+      {
+        "title": "Nyaata Itiyoophiyaa Dhiyeessuu",
+        "items": [
+          "Injera",
+          "Wot",
+          "Shiro",
+          "Kitfo",
+          "Tibs",
+          "Firfir",
+          "Nyaata vegetarian",
+          "Buna fi dhugaatii"
+        ]
+      },
+      {
+        "title": "Galmee Baltinaa",
+        "items": [
+          "Berbere",
+          "Mitmita",
+          "Daakuu shiro",
+          "Daakuu teff",
+          "Buna magariisa",
+          "Damma Itiyoophiyaa",
+          "Mi'eesa",
+          "Galmee aadaa"
+        ]
+      },
+      {
+        "title": "Faashinii fi Uffata",
+        "items": [
+          "Faashinii dubaraa",
+          "Faashinii dhiiraa",
+          "Uffata ijoollee",
+          "Cophee",
+          "Boorsaa",
+          "Uffata aadaa Itiyoophiyaa"
+        ]
+      },
+      {
+        "title": "Rifeensa fi Babbareessituu",
+        "items": [
+          "Zayitii rifeensaa",
+          "Weave fi wig",
+          "Shamboofi kandishinara",
+          "Eegumsa gogaa",
+          "Kosmetiksii"
+        ]
+      }
     ],
     "howTitle": "{{name}} akkamitti hojjata",
     "how": [
-      { "role": "Maamilootaaf", "steps": ["Meeshaalee daldaltoota Itiyoophiyaa irraa ilaali", "Ajaja kee bilbila kee irraa kenni", "Dhiyeessa mana filadhu", "Ajaja kee balbala keetti fudhadhu"] },
-      { "role": "Daldaltootaaf", "steps": ["Suuqa online kee uumi", "Meeshaalee kee fe'i", "Ajaja maamila fudhadhu", "Bittaa kee guddisi"] },
-      { "role": "Hiriyoota dhiyeessaaf", "steps": ["Gaaffii dhiyeessaa fudhadhu", "Meeshaalee nagaadhaan dhiyeessi", "Ummata kee tajaajiluudhaan galii argadhu"] }
+      {
+        "role": "Maamilootaaf",
+        "steps": [
+          "Meeshaalee daldaltoota Itiyoophiyaa irraa ilaali",
+          "Ajaja kee bilbila kee irraa kenni",
+          "Dhiyeessa mana filadhu",
+          "Ajaja kee balbala keetti fudhadhu"
+        ]
+      },
+      {
+        "role": "Daldaltootaaf",
+        "steps": [
+          "Suuqa online kee uumi",
+          "Meeshaalee kee fe'i",
+          "Ajaja maamila fudhadhu",
+          "Bittaa kee guddisi"
+        ]
+      },
+      {
+        "role": "Hiriyoota dhiyeessaaf",
+        "steps": [
+          "Gaaffii dhiyeessaa fudhadhu",
+          "Meeshaalee nagaadhaan dhiyeessi",
+          "Ummata kee tajaajiluudhaan galii argadhu"
+        ]
+      }
     ],
     "missionTitle": "Kaayyoo keenya",
     "missionP1": "Gabaasa amanamtuu tokko irratti maamila, daldaltoota fi hiriyoota dhiyeessaa walitti fiduudhaan bittaa Itiyoophiyaa biyya Arabaa keessa jiraatuuf salphisuudha.",
@@ -302,6 +449,7 @@
     "language": "Afaan",
     "help": "Gargaarsa & Gaaffilee",
     "aboutWeyni": "Waa'ee WeyniShop",
+    "myAccount": "Herrega koo",
     "greeting": "Baga nagaan dhuftan!",
     "signInToShop": "Bituuf seeni",
     "food": "Nyaata",

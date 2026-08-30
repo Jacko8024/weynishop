@@ -1,5 +1,6 @@
 import { getFirebaseAdmin } from '../config/firebase.js';
 import { DeviceToken } from '../models/DeviceToken.js';
+import { Notification } from '../models/Notification.js';
 
 /**
  * Push notification service (mobile app only).
@@ -34,11 +35,17 @@ const pruneInvalid = (results) => {
 
 
 /**
- * Push a notification to every device of one user.
+ * Push a notification to every device of one user AND store it as an
+ * in-app notification row (Account ▸ Notifications shows real dispatched
+ * events only — no fake data).
  * @param {number} userId
  * @param {{title:string, body:string, data?:object}} payload
  */
 export const pushToUser = async (userId, { title, body, data = {} }) => {
+    // Persist first so the in-app list exists even when FCM is not
+    // configured (e.g. dev without service-account credentials).
+    persistNotification(userId, { title, body, data });
+
     const admin = getFirebaseAdmin();
     if (!admin) return log('skipped (admin SDK not configured) —', title);
 
@@ -81,6 +88,25 @@ export const pushToUser = async (userId, { title, body, data = {} }) => {
     } catch (err) {
         log('send failed:', err.message);
     }
+};
+
+/** Store the notification row (link drives the in-app deep link on tap). */
+const LINK_BY_TYPE = {
+    'order:new': (d) => `/seller/orders?order=${d.orderId}`,
+    'order:stage': (d) => `/buyer/orders/${d.orderId}`,
+    'delivery:assigned': (d) => `/delivery/active?order=${d.orderId}`,
+    'order:delivered': (d) => `/seller/orders?order=${d.orderId}`,
+    'order:cancelled': (d) => `/seller/orders?order=${d.orderId}`,
+};
+const persistNotification = (userId, { title, body, data = {} }) => {
+    const link = LINK_BY_TYPE[data.type]?.(data) || '';
+    Notification.create({
+        userId,
+        type: String(data.type || 'general'),
+        title: String(title).slice(0, 160),
+        body: String(body).slice(0, 500),
+        link,
+    }).catch((e) => log('persist failed:', e.message));
 };
 
 /* ------------------------------------------------------------------ */

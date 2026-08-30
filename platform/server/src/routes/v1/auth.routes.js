@@ -7,17 +7,34 @@ import { verifyFirebaseIdToken } from '../../config/firebase.js';
 
 const router = Router();
 
-// Normalize an Ethiopian phone number to E.164 (+251XXXXXXXXX).
-// Accepts 09…, 9…, +251…, 251…, 00251… with any separators.
-// Returns '' when the input has no digits.
-const normalizeEthPhone = (raw) => {
+// Normalize a phone number to E.164 for the supported countries:
+//   Ethiopia +251 (mobiles start 9/7, 9 digits) and Saudi Arabia +966
+//   (mobiles start 5, 9 digits).
+// Accepts E.164 (+251…/+966…), 00-prefixed, country-code-prefixed or bare
+// local (09…/9…, 05…/5…) with any separators. Returns '' when no digits.
+// A country code is only stripped when the total length is exactly CC + 9
+// local digits, so an Ethiopian local number starting "966…" is never
+// mistaken for a +966 number. Bare local numbers are disambiguated by
+// their leading digit: 5XXXXXXXX → +966, 7/9XXXXXXXX → +251. The legacy
+// fallback keeps the old +251 behaviour for malformed input so existing
+// Ethiopian accounts never stop matching.
+const DIAL_BY_CC = { 251: '+251', 966: '+966' };
+const normalizePhone = (raw) => {
   let d = String(raw || '').replace(/\D/g, '');
   if (!d) return '';
   if (d.startsWith('00')) d = d.slice(2);
-  if (d.startsWith('251')) d = d.slice(3);
+  for (const cc of Object.keys(DIAL_BY_CC)) {
+    if (d.startsWith(cc) && d.length === cc.length + 9) {
+      return `${DIAL_BY_CC[cc]}${d.slice(cc.length)}`;
+    }
+  }
   if (d.startsWith('0')) d = d.slice(1);
-  return `+251${d}`;
+  if (/^5\d{8}$/.test(d)) return `+966${d}`;    // Saudi mobile
+  if (/^[79]\d{8}$/.test(d)) return `+251${d}`; // Ethiopian mobile
+  return `+251${d}`;                             // legacy fallback
 };
+// Back-compat alias — existing call sites below keep working unchanged.
+const normalizeEthPhone = normalizePhone;
 
 // Trim a User instance down to the safe fields we expose to the frontend.
 const userPayload = (u) => ({

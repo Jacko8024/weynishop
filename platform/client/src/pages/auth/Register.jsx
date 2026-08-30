@@ -11,6 +11,8 @@ import { api } from '../../api/client.js';
 import GoogleSignInButton from '../../components/GoogleSignInButton.jsx';
 import AnimatedCharacters from '../../components/AnimatedCharacters.jsx';
 import Logo from '../../components/Logo.jsx';
+import PhoneInput from '../../components/PhoneInput.jsx';
+import { DEFAULT_COUNTRY, isValidLocalPhone, toE164 } from '../../lib/countries.js';
 
 const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -99,7 +101,7 @@ export default function Register() {
   useEffect(() => {
     api.get('/categories').then(({ data }) => {
       setShopCategories(data.items || []);
-    }).catch(() => {});
+    }).catch(() => { });
   }, []);
 
   const [form, setForm] = useState({
@@ -114,6 +116,8 @@ export default function Register() {
     fullName: '', profilePhotoUrl: '', vehicleType: 'cycle',
     plateNumber: '', licenseOrIdUrl: '',
     guarantorName: '', guarantorPhone: '', guarantorAddress: '',
+    // Country selectors for the phone inputs (Phase 2 — no hard-coded dial codes)
+    phoneCountry: DEFAULT_COUNTRY, phoneNumberCountry: DEFAULT_COUNTRY, guarantorCountry: DEFAULT_COUNTRY,
   });
   const [touched, setTouched] = useState({});
   const [showPassword, setShowPassword] = useState(false);
@@ -135,7 +139,7 @@ export default function Register() {
     if (!form.name.trim()) e.name = 'Required';
     if (!form.email) e.email = 'Required';
     else if (!emailRx.test(form.email)) e.email = 'Invalid email address';
-    if (form.phone && !/^[+\d\s()-]{6,}$/.test(form.phone)) e.phone = 'Invalid phone';
+    if (form.phone && !isValidLocalPhone(form.phone, form.phoneCountry)) e.phone = 'Invalid phone';
     if (!form.password) e.password = 'Required';
     else if (strength.score < 2) e.password = 'Password is too weak';
     if (form.password !== form.confirmPassword) e.confirmPassword = "Passwords don't match";
@@ -145,12 +149,15 @@ export default function Register() {
       if (!form.ownerName.trim()) e.ownerName = 'Owner name is required';
       if (!form.shopCategory) e.shopCategory = 'Select a category';
       if (!form.phoneNumber.trim()) e.phoneNumber = 'Phone number is required';
+      else if (!isValidLocalPhone(form.phoneNumber, form.phoneNumberCountry)) e.phoneNumber = 'Invalid phone number';
     }
     if (isDelivery) {
       if (!form.fullName.trim()) e.fullName = 'Full name is required';
       if (!form.phoneNumber.trim()) e.phoneNumber = 'Phone number is required';
+      else if (!isValidLocalPhone(form.phoneNumber, form.phoneNumberCountry)) e.phoneNumber = 'Invalid phone number';
       if (!form.guarantorName.trim()) e.guarantorName = 'Guarantor name is required';
       if (!form.guarantorPhone.trim()) e.guarantorPhone = 'Guarantor phone is required';
+      else if (!isValidLocalPhone(form.guarantorPhone, form.guarantorCountry)) e.guarantorPhone = 'Invalid phone number';
       if (needsPlate && !form.plateNumber.trim()) e.plateNumber = 'Plate number is required for motor/car';
       if (needsPlate && !form.licenseOrIdUrl) e.licenseOrIdUrl = "Driver's license is required";
       if (!needsPlate && !form.licenseOrIdUrl) e.licenseOrIdUrl = 'National ID is required';
@@ -196,9 +203,9 @@ export default function Register() {
       if (isVendor) {
         const { data } = await api.post('/auth/vendor-register', {
           name: form.name.trim(), email: form.email.trim(), password: form.password,
-          phone: form.phone.trim(), ownerName: form.ownerName.trim(),
+          phone: toE164(form.phone, form.phoneCountry), ownerName: form.ownerName.trim(),
           shopName: form.shopName.trim(), shopCategory: form.shopCategory,
-          phoneNumber: form.phoneNumber.trim(),
+          phoneNumber: toE164(form.phoneNumber, form.phoneNumberCountry),
           tinOrLicenseUrl: form.tinOrLicenseUrl || '',
           shopPhotoUrl: form.shopPhotoUrl || '',
           latitude: form.latitude ? parseFloat(form.latitude) : null,
@@ -212,15 +219,15 @@ export default function Register() {
       } else if (isDelivery) {
         const { data } = await api.post('/auth/delivery-register', {
           name: form.name.trim(), email: form.email.trim(), password: form.password,
-          phone: form.phone.trim(), fullName: form.fullName.trim(),
+          phone: toE164(form.phone, form.phoneCountry), fullName: form.fullName.trim(),
           profilePhotoUrl: form.profilePhotoUrl || '',
           vehicleType: form.vehicleType,
           plateNumber: form.plateNumber.trim() || '',
           licenseOrIdUrl: form.licenseOrIdUrl || '',
           guarantorName: form.guarantorName.trim(),
-          guarantorPhone: form.guarantorPhone.trim(),
+          guarantorPhone: toE164(form.guarantorPhone, form.guarantorCountry),
           guarantorAddress: form.guarantorAddress.trim(),
-          phoneNumber: form.phoneNumber.trim(),
+          phoneNumber: toE164(form.phoneNumber, form.phoneNumberCountry),
           agreedToTerms: true,
         });
         localStorage.setItem('token', data.token);
@@ -230,7 +237,7 @@ export default function Register() {
         // Buyer: use existing register endpoint
         const { data } = await api.post('/auth/register', {
           name: form.name.trim(), email: form.email.trim(),
-          phone: form.phone.trim(), role: 'buyer',
+          phone: toE164(form.phone, form.phoneCountry), role: 'buyer',
           password: form.password, photoUrl: form.photoUrl || undefined,
         });
         localStorage.setItem('token', data.token);
@@ -284,9 +291,8 @@ export default function Register() {
                   const active = form.role === r.value;
                   return (
                     <button key={r.value} type="button" onClick={() => set({ role: r.value })}
-                      className={`relative text-left rounded-xl border p-3 transition-all ${
-                        active ? 'border-brand-500 bg-brand-50/60 ring-2 ring-brand-200 shadow-sm' : 'border-slate-200 hover:border-slate-300'
-                      }`}>
+                      className={`relative text-left rounded-xl border p-3 transition-all ${active ? 'border-brand-500 bg-brand-50/60 ring-2 ring-brand-200 shadow-sm' : 'border-slate-200 hover:border-slate-300'
+                        }`}>
                       <div className={`size-8 rounded-lg flex items-center justify-center mb-2 ${active ? 'bg-brand-500 text-white' : 'bg-slate-100 text-slate-600'}`}>
                         <Icon size={16} />
                       </div>
@@ -350,17 +356,25 @@ export default function Register() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="label">Shop category <span className="text-red-500"> *</span></label>
-                      <select className={`input h-12 ${touched.shopCategory && errors.shopCategory ? 'border-red-300' : ''}`}
-                        value={form.shopCategory} onChange={(e) => set({ shopCategory: e.target.value })}
-                        onBlur={() => touch('shopCategory')}>
-                        <option value="">Select…</option>
-                        {shopCategories.map((c) => <option key={c.key} value={c.key}>{c.emoji} {c.label}</option>)}
-                      </select>
+                    <select className={`input h-12 ${touched.shopCategory && errors.shopCategory ? 'border-red-300' : ''}`}
+                      value={form.shopCategory} onChange={(e) => set({ shopCategory: e.target.value })}
+                      onBlur={() => touch('shopCategory')}>
+                      <option value="">Select…</option>
+                      {shopCategories.map((c) => <option key={c.key} value={c.key}>{c.emoji} {c.label}</option>)}
+                    </select>
                     {touched.shopCategory && errors.shopCategory && <p className="text-xs text-red-500 mt-1">{errors.shopCategory}</p>}
                   </div>
-                  <Field label="Phone number" type="tel" value={form.phoneNumber} onChange={(v) => set({ phoneNumber: v })}
-                    onBlur={() => touch('phoneNumber')} error={touched.phoneNumber && errors.phoneNumber}
-                    placeholder="+251…" required />
+                  <div>
+                    <label className="label">Phone number <span className="text-red-500"> *</span></label>
+                    <PhoneInput
+                      value={form.phoneNumber}
+                      country={form.phoneNumberCountry}
+                      error={touched.phoneNumber && errors.phoneNumber}
+                      onChange={({ country, local }) => set({ phoneNumber: local, phoneNumberCountry: country })}
+                      onBlur={() => touch('phoneNumber')}
+                    />
+                    {touched.phoneNumber && errors.phoneNumber && <p className="text-xs text-red-500 mt-1">{errors.phoneNumber}</p>}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -405,9 +419,17 @@ export default function Register() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Field label="Full name" value={form.fullName} onChange={(v) => set({ fullName: v })}
                     onBlur={() => touch('fullName')} error={touched.fullName && errors.fullName} required />
-                  <Field label="Phone number" type="tel" value={form.phoneNumber} onChange={(v) => set({ phoneNumber: v })}
-                    onBlur={() => touch('phoneNumber')} error={touched.phoneNumber && errors.phoneNumber}
-                    placeholder="+251…" required />
+                  <div>
+                    <label className="label">Phone number <span className="text-red-500"> *</span></label>
+                    <PhoneInput
+                      value={form.phoneNumber}
+                      country={form.phoneNumberCountry}
+                      error={touched.phoneNumber && errors.phoneNumber}
+                      onChange={({ country, local }) => set({ phoneNumber: local, phoneNumberCountry: country })}
+                      onBlur={() => touch('phoneNumber')}
+                    />
+                    {touched.phoneNumber && errors.phoneNumber && <p className="text-xs text-red-500 mt-1">{errors.phoneNumber}</p>}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -417,9 +439,8 @@ export default function Register() {
                     <div className="flex gap-2 mt-1">
                       {['cycle', 'motor', 'car'].map((v) => (
                         <button key={v} type="button" onClick={() => { set({ vehicleType: v, plateNumber: v === 'cycle' ? '' : form.plateNumber }); }}
-                          className={`flex-1 h-12 rounded-lg border text-sm font-medium capitalize ${
-                            form.vehicleType === v ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'
-                          }`}>
+                          className={`flex-1 h-12 rounded-lg border text-sm font-medium capitalize ${form.vehicleType === v ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                            }`}>
                           {v}
                         </button>
                       ))}
@@ -444,9 +465,17 @@ export default function Register() {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <Field label="Full name" value={form.guarantorName} onChange={(v) => set({ guarantorName: v })}
                       onBlur={() => touch('guarantorName')} error={touched.guarantorName && errors.guarantorName} required />
-                    <Field label="Phone number" type="tel" value={form.guarantorPhone} onChange={(v) => set({ guarantorPhone: v })}
-                      onBlur={() => touch('guarantorPhone')} error={touched.guarantorPhone && errors.guarantorPhone}
-                      placeholder="+251…" required />
+                    <div>
+                      <label className="label">Phone number <span className="text-red-500"> *</span></label>
+                      <PhoneInput
+                        value={form.guarantorPhone}
+                        country={form.guarantorCountry}
+                        error={touched.guarantorPhone && errors.guarantorPhone}
+                        onChange={({ country, local }) => set({ guarantorPhone: local, guarantorCountry: country })}
+                        onBlur={() => touch('guarantorPhone')}
+                      />
+                      {touched.guarantorPhone && errors.guarantorPhone && <p className="text-xs text-red-500 mt-1">{errors.guarantorPhone}</p>}
+                    </div>
                     <Field label="Home address" value={form.guarantorAddress} onChange={(v) => set({ guarantorAddress: v })} />
                   </div>
                 </div>
@@ -459,9 +488,18 @@ export default function Register() {
                 onBlur={() => touch('email')} error={touched.email && errors.email}
                 autoComplete="email" placeholder="you@example.com" required />
               {(isVendor || isDelivery) ? null : (
-                <Field label="Phone" type="tel" value={form.phone} onChange={(v) => set({ phone: v })}
-                  onBlur={() => touch('phone')} error={touched.phone && errors.phone}
-                  autoComplete="tel" placeholder="+251…" />
+                <div>
+                  <label className="label">Phone</label>
+                  <PhoneInput
+                    id="phone"
+                    value={form.phone}
+                    country={form.phoneCountry}
+                    error={touched.phone && errors.phone}
+                    onChange={({ country, local }) => set({ phone: local, phoneCountry: country })}
+                    onBlur={() => touch('phone')}
+                  />
+                  {touched.phone && errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
+                </div>
               )}
             </div>
 

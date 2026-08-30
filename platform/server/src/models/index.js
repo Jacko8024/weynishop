@@ -22,10 +22,13 @@ import { DeliveryProfile } from './DeliveryProfile.js';
 import { SurpriseBooking, SURPRISE_STATUSES } from './SurpriseBooking.js';
 import { SurpriseService } from './SurpriseService.js';
 import { DeviceToken } from './DeviceToken.js';
+import { Notification } from './Notification.js';
 
-// Push notifications (mobile app only)
+// Notifications: FCM device tokens (mobile push) + stored in-app rows
 DeviceToken.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 User.hasMany(DeviceToken, { foreignKey: 'userId' });
+Notification.belongsTo(User, { as: 'user', foreignKey: 'userId' });
+User.hasMany(Notification, { foreignKey: 'userId' });
 
 // Core associations
 Product.belongsTo(User, { as: 'seller', foreignKey: 'sellerId' });
@@ -120,6 +123,7 @@ export {
   SURPRISE_STATUSES,
   SurpriseService,
   DeviceToken,
+  Notification,
   STAGES,
   STAGE_LABELS,
 };

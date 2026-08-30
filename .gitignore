@@ -47,5 +47,11 @@ platform/server/uploads/
 .DS_Store
 Thumbs.db
 
+# Release binaries (APKs built locally — not source)
+releases/
+
+# Stray local artifact
+/{
+
 # Misc
 skills.log

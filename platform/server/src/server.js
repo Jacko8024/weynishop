@@ -8,6 +8,7 @@ import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
 import { sequelize, Settings, CommissionLedger, DeliveryEarning, SellerEarning, OrderItem, User, Product, Banner, Category, ContactInquiry, SurpriseBooking, SurpriseService } from './models/index.js';
 import { DeviceToken } from './models/DeviceToken.js';
+import { Notification } from './models/Notification.js';
 import { errorHandler, notFound } from './middleware/error.js';
 import { backfillDeliveredCommissions } from './services/commission.service.js';
 import { backfillWalletsForDelivered } from './services/wallet.service.js';
@@ -171,6 +172,7 @@ const start = async () => {
   await safeAlter('SurpriseBooking', SurpriseBooking);
   await safeAlter('SurpriseService', SurpriseService);
   await safeAlter('DeviceToken', DeviceToken);     // push notifications (device_tokens)
+  await safeAlter('Notification', Notification);   // in-app notifications (notifications)
 
   // One-time backfill: any pre-existing product rows have basePrice = 0 from
   // the column default. Initialise them to the current price so seller

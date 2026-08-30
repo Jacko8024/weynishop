@@ -7,21 +7,28 @@ import { formatMoney } from '../../lib/helpers.js';
 import MapView, { AddressPicker } from '../../components/MapView.jsx';
 import GeolocationButton from '../../components/GeolocationButton.jsx';
 import useDocumentTitle from '../../lib/useDocumentTitle.js';
+import useIsMobile from '../../lib/useIsMobile.js';
+import MobileCheckout from '../../components/mobile/MobileCheckout.jsx';
 
 export default function Checkout() {
+  // Phase 4 — phones get the rebuilt mobile delivery-address flow;
+  // desktop keeps the existing 2-column layout untouched.
+  const isMobile = useIsMobile();
   const { cart, clearCart, user } = useAuth();
   const nav = useNavigate();
   const [addr, setAddr] = useState(
     user?.defaultAddress?.coordinates
       ? {
-          lat: user.defaultAddress.coordinates[1],
-          lng: user.defaultAddress.coordinates[0],
-          address: user.defaultAddress.address,
-        }
+        lat: user.defaultAddress.coordinates[1],
+        lng: user.defaultAddress.coordinates[0],
+        address: user.defaultAddress.address,
+      }
       : null
   );
   const [placing, setPlacing] = useState(false);
   useDocumentTitle('Checkout', 'Review your order and pay on delivery.');
+
+  if (isMobile) return <MobileCheckout />;
 
   const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
 

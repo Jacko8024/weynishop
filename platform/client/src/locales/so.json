@@ -1,5 +1,11 @@
 ﻿{
-  "lang": { "en": "English", "am": "አማርኛ", "or": "Afaan Oromoo", "ti": "ትግርኛ", "so": "Af Soomaali" },
+  "lang": {
+    "en": "English",
+    "am": "አማርኛ",
+    "or": "Afaan Oromoo",
+    "ti": "ትግርኛ",
+    "so": "Af Soomaali"
+  },
   "brand": {
     "name": "WeyniShop",
     "rights": "Xaqiisa waa la dhawray",
@@ -77,12 +83,29 @@
     "emailOptional": "Email (ikhtiyaari)",
     "useEmail": "Email isticmaal",
     "usePhone": "Lambarka taleefanka isticmaal",
-    "invalidPhone": "Geli lambarka taleefanka Itoobiya ee saxda ah",
+    "invalidPhone": "Geli lambarka taleefanka saxda ah",
     "loggingIn": "Soo galaya…",
+    "continueWithGoogle": "Sii wad Google",
+    "googleWorking": "Dhammaystiraya gelitaanka…",
+    "googleFailed": "Galitaanka Google wuu fashilmay. Fadlan mar kale isku day.",
+    "googleCancelled": "Galitaanka Google waa la joojiyay.",
+    "chooseCountry": "Dooro waddan",
     "noAccount": "Akoon ma leedahay?",
     "buyerDesc": "Alaab iibso, gaarsiin guri dalbo.",
     "sellerDesc": "Alaabtaada soo dhig, macaamiil badan gaadh.",
     "deliveryDesc": "Dalabyada qaado, gaarsiin kasta lacag ka hel."
+  },
+  "geo": {
+    "useMyLocation": "Isticmaal goobtaada hadda",
+    "locating": "Goobta raadinaya…",
+    "captured": "Goobta la helay",
+    "denied": "Ogolaanshaha goobta waa la diiday. Fadlan u ogolow.",
+    "deniedPermanent": "Goobta app-kan waa la xiray. Settings ka fur ama cinwaanka gacanta ku qor.",
+    "unavailable": "Goobtaada ma helin. Bannaanka ama calaamad wanaagsan ku mar kale isku day.",
+    "timeout": "Raadinta goobta wakti ayay dhacday. Mar kale isku day.",
+    "unsupported": "Goobta qalabkan lama isticmaali karo.",
+    "error": "Goobtaada laguma heli karo. Mar kale isku day.",
+    "openSettings": "Fur Settings"
   },
   "filters": {
     "title": "Shaandhada",
@@ -129,7 +152,40 @@
     "cashOnDelivery": "Lacag Caddaan ah Marka la keeno",
     "cashNotice": "Waxaad ku bixin doontaa lacag caddaan ah gaadiyaha marka dalbashadaadu timaado.",
     "place": "Dalbasho samee",
-    "placing": "Dalbashada waa la samaynayaa…"
+    "placing": "Dalbashada waa la samaynayaa…",
+    "addressTitle": "Halkee ayaan ku geeynaa?",
+    "addressSubtitle": "Si aad u sii wadato, cinwaankaaga gaadiidka geli",
+    "locateHint": "Waxaanu isticmaali doonaa goostaada GPS — ogolaanshaha hadda oo keliya ayaa la weyddiinayaa",
+    "reviewCta": "Dalbashada eeg",
+    "confirmTitle": "Dalbashadaada xaqiiji",
+    "deliverTo": "La geeynayo",
+    "orderSummary": "Soo koobida dalbashada",
+    "itemsWord": "qeybood",
+    "subtotal": "Wadar hoose",
+    "codTitle": "Lacag Caddaan ah Marka la keeno",
+    "codBody": "Marka dalbashadaadu timaado, waxaad ku bixin doontaa gaadiyaha lacag caddaan ah. Kabad ama bixin online ma jirto.",
+    "confirmPlace": "Xaqiiji Dalbashada",
+    "placed": "Dalbashada waa la sameeyay!",
+    "pinTitle": "Calaamadda khariidadda"
+  },
+  "addr": {
+    "title": "Cinwaanka gaadiidka",
+    "default": "Caadada ah",
+    "saved": "La kaydiyay",
+    "edit": "Wax ka beddel",
+    "addNew": "Kudar cinwaan gaadiid",
+    "noSavedHint": "Kaydi cinwaankaaga gaadiidka si bixinta u dhaqeyso",
+    "searchTitle": "Cinwaan raadi",
+    "searchPh": "Cinwaankaada raadi…",
+    "needAddress": "Fadlan dooro ama geli cinwaankaaga gaadiidka",
+    "save": "Kaydi cinwaanka",
+    "saving": "Kaydinaya…",
+    "savedOk": "Cinwaanka waa la kaydiyay"
+  },
+  "notif": {
+    "title": "Ogeysiis",
+    "markAllRead": "Dhammaan calaamadee akhri",
+    "empty": "Ogeysiis ma jirto"
   },
   "flashSale": {
     "title": "Iibka Degdegga ah",
@@ -140,6 +196,7 @@
     "loading": "Soo dejinta…",
     "error": "Wax baa khaldamay",
     "retry": "Mar kale isku day",
+    "back": "Ku noqo",
     "close": "Xidh",
     "save": "Kaydi",
     "cancel": "Jooji",
@@ -234,17 +291,32 @@
     "giftPackages": [
       {
         "name": "Sanad-guurada (Anniversary)",
-        "features": ["Kuwa aan diyaarinno", "Ubax xidhmaysan", "Kaarad jacayl", "Keeg"],
+        "features": [
+          "Kuwa aan diyaarinno",
+          "Ubax xidhmaysan",
+          "Kaarad jacayl",
+          "Keeg"
+        ],
         "price": 50
       },
       {
         "name": "Soo-jeedin Guur (Proposal)",
-        "features": ["Kuwa aan diyaarinno", "Ubax xidhmaysan", "Kaarad jacayl", "Keeg"],
+        "features": [
+          "Kuwa aan diyaarinno",
+          "Ubax xidhmaysan",
+          "Kaarad jacayl",
+          "Keeg"
+        ],
         "price": 50
       },
       {
         "name": "Surpriis",
-        "features": ["Kuwa aan diyaarinno", "Ubax xidhmaysan", "Kaarad jacayl", "Keeg"],
+        "features": [
+          "Kuwa aan diyaarinno",
+          "Ubax xidhmaysan",
+          "Kaarad jacayl",
+          "Keeg"
+        ],
         "price": 50
       }
     ],
@@ -254,9 +326,18 @@
       "story": "Fogaanshaha iyo kalinimada u dhaxaysa Itoobiya iyo Lubnaan (Beirut) waxaan u beddelnaa jacayl iyo xusuus. Inaan gabadhaada qaaliga ah ee Beirut ku nool maalinta dhalashadeeda “Waxaad ku dhalatay!” kuugu sheegno magacaaga, ama qaraabadaada Beirut markay guursato, markay murugaysan tahay, ama markay bukto cidhifkeeda joogno oo aan u qabanno waxa loo baahan yahay — {{brand}} oo Tihun la jira ayaa had iyo jeer diyaar u ah.",
       "pillTitle": "Adeeggeenna waxaan u diyaarinay saddex qaybood oo waaweyn:",
       "pillars": {
-        "birthday": { "title": "Dhalashada iyo Maalmaha Xuska", "text": "Hadiyado surpriis ah iyo ubax aan la ilaawi karin." },
-        "hardship": { "title": "Waqtiyada Dhibka, Murugada iyo Arooska", "text": "Waxaan kaa wakiilnaa booqashada bukaanka iyo cidhifka ku sugnaanshaha murugada." },
-        "love": { "title": "Jacaylka iyo Guurka", "text": "In jacaylka Beirut ku nool loo soo jeediyo guur (proposal) iyo in sannad-guurada guurka si qurux badan loo xuso oo loo dabaaldego." }
+        "birthday": {
+          "title": "Dhalashada iyo Maalmaha Xuska",
+          "text": "Hadiyado surpriis ah iyo ubax aan la ilaawi karin."
+        },
+        "hardship": {
+          "title": "Waqtiyada Dhibka, Murugada iyo Arooska",
+          "text": "Waxaan kaa wakiilnaa booqashada bukaanka iyo cidhifka ku sugnaanshaha murugada."
+        },
+        "love": {
+          "title": "Jacaylka iyo Guurka",
+          "text": "In jacaylka Beirut ku nool loo soo jeediyo guur (proposal) iyo in sannad-guurada guurka si qurux badan loo xuso oo loo dabaaldego."
+        }
       },
       "promise": "Meeshaad joogto iyadoo ay tahay, waxaan si daacad ah u shaqeynaa si doonista qalbigaaga ay meesheeda u gaarto!",
       "final": "Sida shaamacda gubata oo qoyskeeda noolaysa — naagta geesinimada leh, tani runtii waa fal mahadnaq oo ay mutayso!!"
@@ -268,16 +349,82 @@
     "builtBy": "Waxaa dhisay Itoobiyanku, Itoobiyanka wadamada Carabta ku nool",
     "whatTitle": "Maxaad dalban kartaa",
     "what": [
-      { "title": "Gaarsiinta Cuntada Itoobiya", "items": ["Injera", "Wot", "Shiro", "Kitfo", "Tibs", "Firfir", "Cunto khudrad", "Bun iyo cabitaan"] },
-      { "title": "Alaabta Baltina", "items": ["Berbere", "Mitmita", "Budo Shiro", "Budo Teff", "Bun cagaaran", "Malab Itoobiya", "Udug", "Alaab dhaqameed"] },
-      { "title": "Fashion iyo Dharka", "items": ["Fashion dumarka", "Fashion ragga", "Dharka carruurta", "Kab", "Boorso", "Dharka dhaqanka Itoobiya"] },
-      { "title": "Timo iyo Qurux", "items": ["Saliidaha timaha", "Weave iyo wig", "Shampoo iyo conditioner", "Daryeelka maqaarka", "Qurxinta"] }
+      {
+        "title": "Gaarsiinta Cuntada Itoobiya",
+        "items": [
+          "Injera",
+          "Wot",
+          "Shiro",
+          "Kitfo",
+          "Tibs",
+          "Firfir",
+          "Cunto khudrad",
+          "Bun iyo cabitaan"
+        ]
+      },
+      {
+        "title": "Alaabta Baltina",
+        "items": [
+          "Berbere",
+          "Mitmita",
+          "Budo Shiro",
+          "Budo Teff",
+          "Bun cagaaran",
+          "Malab Itoobiya",
+          "Udug",
+          "Alaab dhaqameed"
+        ]
+      },
+      {
+        "title": "Fashion iyo Dharka",
+        "items": [
+          "Fashion dumarka",
+          "Fashion ragga",
+          "Dharka carruurta",
+          "Kab",
+          "Boorso",
+          "Dharka dhaqanka Itoobiya"
+        ]
+      },
+      {
+        "title": "Timo iyo Qurux",
+        "items": [
+          "Saliidaha timaha",
+          "Weave iyo wig",
+          "Shampoo iyo conditioner",
+          "Daryeelka maqaarka",
+          "Qurxinta"
+        ]
+      }
     ],
     "howTitle": "Sida {{name}} u shaqeeyo",
     "how": [
-      { "role": "Macmiisha", "steps": ["Daawo alaabta ganacsiyada Itoobiya", "Dalbo dalabkaaga taleefankaaga", "Xulo gaarsiinta guriga", "Qaado dalabkaaga albaabkaaga"] },
-      { "role": "Ganacsatada", "steps": ["Abuur dukaankaaga online", "Soo geli alaabtaada", "Qaado dalabyada macmiisha", "Kori ganacsigaaga"] },
-      { "role": "Ganacsiga gaarsiinta", "steps": ["Qaado codsiyada gaarsiinta", "Gaarsii alaabta si ammaan ah", "Hel dakhli adoo u adeegaya bulshadaada"] }
+      {
+        "role": "Macmiisha",
+        "steps": [
+          "Daawo alaabta ganacsiyada Itoobiya",
+          "Dalbo dalabkaaga taleefankaaga",
+          "Xulo gaarsiinta guriga",
+          "Qaado dalabkaaga albaabkaaga"
+        ]
+      },
+      {
+        "role": "Ganacsatada",
+        "steps": [
+          "Abuur dukaankaaga online",
+          "Soo geli alaabtaada",
+          "Qaado dalabyada macmiisha",
+          "Kori ganacsigaaga"
+        ]
+      },
+      {
+        "role": "Ganacsiga gaarsiinta",
+        "steps": [
+          "Qaado codsiyada gaarsiinta",
+          "Gaarsii alaabta si ammaan ah",
+          "Hel dakhli adoo u adeegaya bulshadaada"
+        ]
+      }
     ],
     "missionTitle": "Hadafkeena",
     "missionP1": "In la fududeeyo iibsiga Itoobiyanka wadamada Carabta ku nool iyadoo la isku xiro macmiil, ganacsato iyo gaarsiin hal suuq lagu kalsoon yahay.",
@@ -302,6 +449,7 @@
     "language": "Luqadda",
     "help": "Caawimo & Su'aalo",
     "aboutWeyni": "Ku saabsan WeyniShop",
+    "myAccount": "Akoonkayga",
     "greeting": "Soo dhawoow!",
     "signInToShop": "Gal si aad u iibsato",
     "food": "Cunto",

@@ -1,5 +1,11 @@
 ﻿{
-  "lang": { "en": "English", "am": "አማርኛ", "or": "Afaan Oromoo", "ti": "ትግርኛ", "so": "Af Soomaali" },
+  "lang": {
+    "en": "English",
+    "am": "አማርኛ",
+    "or": "Afaan Oromoo",
+    "ti": "ትግርኛ",
+    "so": "Af Soomaali"
+  },
   "brand": {
     "name": "WeyniShop",
     "rights": "All rights reserved.",
@@ -77,12 +83,29 @@
     "emailOptional": "Email (optional)",
     "useEmail": "Use email instead",
     "usePhone": "Use phone number instead",
-    "invalidPhone": "Enter a valid Ethiopian phone number",
+    "invalidPhone": "Enter a valid phone number",
     "loggingIn": "Logging in…",
+    "continueWithGoogle": "Continue with Google",
+    "googleWorking": "Completing sign-in…",
+    "googleFailed": "Google sign-in failed. Please try again.",
+    "googleCancelled": "Google sign-in cancelled.",
+    "chooseCountry": "Choose country",
     "noAccount": "Don't have an account?",
     "buyerDesc": "Shop products and order home delivery.",
     "sellerDesc": "List products and reach more customers.",
     "deliveryDesc": "Pick up orders and earn on every delivery."
+  },
+  "geo": {
+    "useMyLocation": "Use my current location",
+    "locating": "Locating…",
+    "captured": "Location captured",
+    "denied": "Location permission denied. Please allow it to find your address.",
+    "deniedPermanent": "Location is blocked for this app. Enable it in Settings, or type your address manually.",
+    "unavailable": "Your location is unavailable. Try again outdoors or with better signal.",
+    "timeout": "Locating timed out. Please try again.",
+    "unsupported": "Location is not supported on this device.",
+    "error": "Could not get your location. Please try again.",
+    "openSettings": "Open Settings"
   },
   "filters": {
     "title": "Filters",
@@ -129,7 +152,40 @@
     "cashOnDelivery": "Cash on Delivery",
     "cashNotice": "You'll pay the delivery rider in cash when your order arrives.",
     "place": "Place order",
-    "placing": "Placing order…"
+    "placing": "Placing order…",
+    "addressTitle": "Where should we deliver?",
+    "addressSubtitle": "Set your delivery address to continue",
+    "locateHint": "We'll use your GPS location — permission is asked only now",
+    "reviewCta": "Review order",
+    "confirmTitle": "Confirm your order",
+    "deliverTo": "Deliver to",
+    "orderSummary": "Order summary",
+    "itemsWord": "items",
+    "subtotal": "Subtotal",
+    "codTitle": "Cash on Delivery",
+    "codBody": "Pay the rider in cash when your order arrives. No cards or online payment.",
+    "confirmPlace": "Confirm & Place order",
+    "placed": "Order placed!",
+    "pinTitle": "Pin on map"
+  },
+  "addr": {
+    "title": "Delivery address",
+    "default": "Default",
+    "saved": "Saved",
+    "edit": "Edit",
+    "addNew": "Add delivery address",
+    "noSavedHint": "Save your default delivery address for faster checkout",
+    "searchTitle": "Search address",
+    "searchPh": "Search your address…",
+    "needAddress": "Please pick or enter your delivery address",
+    "save": "Save address",
+    "saving": "Saving…",
+    "savedOk": "Address saved"
+  },
+  "notif": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "empty": "No notifications yet"
   },
   "flashSale": {
     "title": "Flash Sale",
@@ -140,6 +196,7 @@
     "loading": "Loading…",
     "error": "Something went wrong",
     "retry": "Try again",
+    "back": "Back",
     "close": "Close",
     "save": "Save",
     "cancel": "Cancel",
@@ -262,17 +319,32 @@
     "giftPackages": [
       {
         "name": "Anniversary",
-        "features": ["Prepared by us", "Flower bouquet", "Romantic message card", "Cake"],
+        "features": [
+          "Prepared by us",
+          "Flower bouquet",
+          "Romantic message card",
+          "Cake"
+        ],
         "price": 50
       },
       {
         "name": "Will You Marry Me — Proposal",
-        "features": ["Prepared by us", "Flower bouquet", "Romantic message card", "Cake"],
+        "features": [
+          "Prepared by us",
+          "Flower bouquet",
+          "Romantic message card",
+          "Cake"
+        ],
         "price": 50
       },
       {
         "name": "Surprise",
-        "features": ["Prepared by us", "Flower bouquet", "Romantic message card", "Cake"],
+        "features": [
+          "Prepared by us",
+          "Flower bouquet",
+          "Romantic message card",
+          "Cake"
+        ],
         "price": 50
       }
     ],
@@ -282,9 +354,18 @@
       "story": "We turn the distance and the loneliness between Ethiopia and Lebanon (Beirut) into love and memory. To tell the dear daughter in Beirut \"Happy Birthday!\" on your behalf, to stand beside a relative in Beirut when they get married, when they mourn, or when they fall sick, and give them what they need — {{brand}} together with Tihun is always ready.",
       "pillTitle": "Our service is arranged into three main branches:",
       "pillars": {
-        "birthday": { "title": "For Birthdays & Celebration Days", "text": "Unforgettable surprise gifts and flowers." },
-        "hardship": { "title": "For Hardship, Mourning & Wedding Times", "text": "To visit the sick and stand beside someone during mourning, representing you." },
-        "love": { "title": "For Love & Marriage", "text": "To help a loved one propose and celebrate an anniversary beautifully in Beirut." }
+        "birthday": {
+          "title": "For Birthdays & Celebration Days",
+          "text": "Unforgettable surprise gifts and flowers."
+        },
+        "hardship": {
+          "title": "For Hardship, Mourning & Wedding Times",
+          "text": "To visit the sick and stand beside someone during mourning, representing you."
+        },
+        "love": {
+          "title": "For Love & Marriage",
+          "text": "To help a loved one propose and celebrate an anniversary beautifully in Beirut."
+        }
       },
       "promise": "Wherever you are, the longing of your heart reaches its place — we work faithfully!",
       "final": "For the girl who melts like a candle to keep her family — this is, truly, an act of gratitude she deserves!!"
@@ -296,16 +377,82 @@
     "builtBy": "Built by Ethiopians, for Ethiopians Living in Arab Countries",
     "whatTitle": "What You Can Order",
     "what": [
-      { "title": "Ethiopian Food Delivery", "items": ["Injera", "Doro Wat", "Shiro", "Kitfo", "Tibs", "Firfir", "Vegetarian dishes", "Coffee and beverages"] },
-      { "title": "Baltina Groceries", "items": ["Berbere", "Mitmita", "Shiro powder", "Teff flour", "Green coffee beans", "Ethiopian honey", "Spices", "Traditional groceries"] },
-      { "title": "Fashion & Clothing", "items": ["Women's fashion", "Men's fashion", "Children's clothing", "Shoes", "Bags", "Traditional Ethiopian clothing"] },
-      { "title": "Hair & Beauty", "items": ["Hair oils", "Weaves & wigs", "Shampoo & conditioner", "Skin care", "Cosmetics"] }
+      {
+        "title": "Ethiopian Food Delivery",
+        "items": [
+          "Injera",
+          "Doro Wat",
+          "Shiro",
+          "Kitfo",
+          "Tibs",
+          "Firfir",
+          "Vegetarian dishes",
+          "Coffee and beverages"
+        ]
+      },
+      {
+        "title": "Baltina Groceries",
+        "items": [
+          "Berbere",
+          "Mitmita",
+          "Shiro powder",
+          "Teff flour",
+          "Green coffee beans",
+          "Ethiopian honey",
+          "Spices",
+          "Traditional groceries"
+        ]
+      },
+      {
+        "title": "Fashion & Clothing",
+        "items": [
+          "Women's fashion",
+          "Men's fashion",
+          "Children's clothing",
+          "Shoes",
+          "Bags",
+          "Traditional Ethiopian clothing"
+        ]
+      },
+      {
+        "title": "Hair & Beauty",
+        "items": [
+          "Hair oils",
+          "Weaves & wigs",
+          "Shampoo & conditioner",
+          "Skin care",
+          "Cosmetics"
+        ]
+      }
     ],
     "howTitle": "How {{name}} Works",
     "how": [
-      { "role": "For Customers", "steps": ["Browse products from Ethiopian businesses", "Place your order from your phone", "Choose home delivery", "Receive your order at your doorstep"] },
-      { "role": "For Merchants", "steps": ["Create your online shop", "Upload your products", "Receive orders from customers", "Grow your business"] },
-      { "role": "For Delivery Partners", "steps": ["Accept delivery requests", "Deliver products safely", "Earn while serving your community"] }
+      {
+        "role": "For Customers",
+        "steps": [
+          "Browse products from Ethiopian businesses",
+          "Place your order from your phone",
+          "Choose home delivery",
+          "Receive your order at your doorstep"
+        ]
+      },
+      {
+        "role": "For Merchants",
+        "steps": [
+          "Create your online shop",
+          "Upload your products",
+          "Receive orders from customers",
+          "Grow your business"
+        ]
+      },
+      {
+        "role": "For Delivery Partners",
+        "steps": [
+          "Accept delivery requests",
+          "Deliver products safely",
+          "Earn while serving your community"
+        ]
+      }
     ],
     "missionTitle": "Our Mission",
     "missionP1": "To make shopping easier for every Ethiopian living in Arab countries by connecting customers, merchants and delivery partners on one trusted marketplace.",
@@ -330,6 +477,7 @@
     "language": "Language",
     "help": "Help & FAQ",
     "aboutWeyni": "About WeyniShop",
+    "myAccount": "My account",
     "greeting": "Welcome!",
     "signInToShop": "Sign in to start shopping",
     "food": "Food",

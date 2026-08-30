@@ -1,13 +1,18 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
+import { Op } from 'sequelize';
 import { DeviceToken } from '../../models/DeviceToken.js';
+import { Notification } from '../../models/Notification.js';
 import { protect } from '../../middleware/auth.js';
 
-// Device-token registry for PUSH NOTIFICATIONS (mobile app only).
-// The web client never calls these — the Capacitor app registers its FCM
-// token after login so the server can push order updates to the phone.
+// Device-token registry for PUSH NOTIFICATIONS (mobile app only) +
+// stored in-app notifications (Phase 7 — real dispatched events only).
 
 const router = Router();
+
+/* ------------------------------------------------------------------ */
+/* Device tokens (FCM)                                                 */
+/* ------------------------------------------------------------------ */
 
 // Register (or refresh) this device's FCM token for the logged-in user.
 // Called by the mobile app on startup and whenever FCM rotates the token.
@@ -57,6 +62,74 @@ router.get(
             order: [['createdAt', 'DESC']],
         });
         res.json({ devices });
+    })
+);
+
+/* ------------------------------------------------------------------ */
+/* Stored in-app notifications (Account ▸ Notifications)               */
+/* ------------------------------------------------------------------ */
+
+// Paginated list — newest first. `?unread=1` filters to unread only.
+router.get(
+    '/',
+    protect,
+    asyncHandler(async (req, res) => {
+        const limit = Math.min(parseInt(req.query.limit, 10) || 30, 50);
+        const beforeId = parseInt(req.query.before, 10) || null;
+        const where = { userId: req.user.id };
+        if (req.query.unread === '1') where.readAt = null;
+        if (beforeId) where.id = { [Op.lt]: beforeId };
+
+        const notifications = await Notification.findAll({
+            where,
+            order: [['id', 'DESC']],
+            limit,
+        });
+        const unreadCount = await Notification.count({
+            where: { userId: req.user.id, readAt: null },
+        });
+        res.json({ notifications, unreadCount });
+    })
+);
+
+// Unread badge count (cheap poll for the Account screen).
+router.get(
+    '/unread-count',
+    protect,
+    asyncHandler(async (req, res) => {
+        const unreadCount = await Notification.count({
+            where: { userId: req.user.id, readAt: null },
+        });
+        res.json({ unreadCount });
+    })
+);
+
+// Mark one notification read.
+router.put(
+    '/:id/read',
+    protect,
+    asyncHandler(async (req, res) => {
+        const n = await Notification.findOne({
+            where: { id: req.params.id, userId: req.user.id },
+        });
+        if (n && !n.readAt) {
+            n.readAt = new Date();
+            await n.save();
+        }
+        res.json({ ok: true, notification: n });
+    })
+);
+
+// Mark everything read.
+router.put(
+    '/read-all',
+    protect,
+    asyncHandler(async (req, res) => {
+        await Notification.update(
+            { readAt: new Date() },
+            { where: { userId: req.user.id, readAt: null } }
+        );
+        res.json({ ok: true });
     })
 );
 

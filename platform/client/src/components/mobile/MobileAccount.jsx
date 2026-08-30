@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   ChevronRight, ClipboardList, Heart, Globe, CircleHelp, Info,
-  LogOut, LogIn, UserPlus, Store, Package, LayoutGrid,
+  LogOut, LogIn, UserPlus, Store, Package, LayoutGrid, Bell, MapPin,
 } from 'lucide-react';
+import { api } from '../../api/client.js';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../store/auth.js';
 import { useWishlist } from '../../store/wishlist.js';
@@ -45,6 +46,17 @@ export default function MobileAccount() {
   const { user, logout, cart } = useAuth();
   const clearWish = useWishlist((s) => s.clear);
   const [langOpen, setLangOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
+
+  // Real unread badge (Phase 7) — server count only, no local fakes.
+  useEffect(() => {
+    if (!user) return setUnread(0);
+    let alive = true;
+    api.get('/notifications/unread-count')
+      .then(({ data }) => { if (alive) setUnread(data.unreadCount || 0); })
+      .catch(() => { });
+    return () => { alive = false; };
+  }, [user]);
 
   const onLogout = () => {
     logout();
@@ -60,12 +72,12 @@ export default function MobileAccount() {
     <div className="pb-6">
       {/* ── Profile header ── */}
       <div className="px-4 pt-5 pb-5 flex items-center gap-3.5"
-           style={{ background: 'linear-gradient(135deg, rgba(236,92,44,0.10), rgba(245,166,35,0.08))' }}>
+        style={{ background: 'linear-gradient(135deg, rgba(236,92,44,0.10), rgba(245,166,35,0.08))' }}>
         {user ? (
           <>
             <div className="w-14 h-14 rounded-full grid place-items-center text-xl font-extrabold text-white shrink-0"
-                 style={{ background: 'linear-gradient(135deg,#EB5824,#C7461A)' }}
-                 aria-hidden="true">
+              style={{ background: 'linear-gradient(135deg,#EB5824,#C7461A)' }}
+              aria-hidden="true">
               {(user.name || '?').charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
@@ -117,6 +129,18 @@ export default function MobileAccount() {
         )}
       </div>
 
+      {/* ── My account list (Phase 5) — Orders/Wishlist/Cart above stay as
+             quick links; account-level destinations live HERE only ── */}
+      {user && (
+        <div className="mt-3 mx-3 card px-4">
+          <div className="pt-3 pb-1 text-[11px] font-bold uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
+            {t('mobile.myAccount')}
+          </div>
+          <Row to="/account/notifications" icon={Bell} label={t('notif.title')} value={unread > 0 ? String(unread) : ''} />
+          <Row to="/account/addresses" icon={MapPin} label={t('addr.title')} value={user?.defaultAddress ? t('addr.saved') : ''} />
+        </div>
+      )}
+
       {/* ── Settings list ── */}
       <div className="mt-3 mx-3 card px-4">
         <Row onClick={() => setLangOpen(true)} icon={Globe} label={t('mobile.language')} value={activeLang} />
@@ -128,8 +152,8 @@ export default function MobileAccount() {
       {user && (
         <div className="mt-4 px-3">
           <button onClick={onLogout}
-                  className="btn-secondary w-full h-11 rounded-full font-semibold text-danger-500"
-                  style={{ borderColor: 'var(--color-border)' }}>
+            className="btn-secondary w-full h-11 rounded-full font-semibold text-danger-500"
+            style={{ borderColor: 'var(--color-border)' }}>
             <LogOut size={17} /> {t('nav.logout')}
           </button>
         </div>

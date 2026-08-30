@@ -1,7 +1,9 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from './store/auth.js';
 import LoginGateModal from './components/LoginGateModal.jsx';
 import PublicShell from './components/PublicShell.jsx';
+import { setDeepLinkRouter } from './lib/deeplink.js';
 
 import Login from './pages/auth/Login.jsx';
 import Register from './pages/auth/Register.jsx';
@@ -24,6 +26,8 @@ import NotFoundPage from './pages/public/NotFoundPage.jsx';
 import SurprisePage from './pages/public/SurprisePage.jsx';
 import AccountPage from './pages/public/AccountPage.jsx';
 import CategoriesPage from './pages/public/CategoriesPage.jsx';
+import MobileNotifications from './components/mobile/MobileNotifications.jsx';
+import MobileAddresses from './components/mobile/MobileAddresses.jsx';
 
 // Buyer-protected (cart/checkout/orders only)
 import BuyerLayout from './pages/buyer/Layout.jsx';
@@ -76,79 +80,89 @@ const Protected = ({ role, children }) => {
 };
 
 export default function App() {
+  // Expose the real router navigate to the deep-link handler (Case C —
+  // completing Google login after a cold relaunch without a page reload).
+  const navigate = useNavigate();
+  useEffect(() => {
+    setDeepLinkRouter({ navigate });
+  }, [navigate]);
 
   return (
     <>
-    <LoginGateModal />
-    <Routes>
-      {/* Public storefront */}
-      <Route element={<PublicShell />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/product/:id" element={<ProductPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/store/:sellerId" element={<StorePage />} />
-        <Route path="/deals" element={<DealsPage />} />
-        <Route path="/wishlist" element={<WishlistPage />} />
-        <Route path="/account" element={<AccountPage />} />
-        <Route path="/categories" element={<CategoriesPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/blog" element={<BlogPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/faq" element={<FAQPage />} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
-        <Route path="/surprise" element={<SurprisePage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Route>
+      <LoginGateModal />
+      <Routes>
+        {/* Public storefront */}
+        <Route element={<PublicShell />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/product/:id" element={<ProductPage />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/store/:sellerId" element={<StorePage />} />
+          <Route path="/deals" element={<DealsPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/account" element={<AccountPage />} />
+          {/* Account sub-screens (mobile app experience; desktop gets the
+              same components — they're responsive card layouts). */}
+          <Route path="/account/notifications" element={<MobileNotifications />} />
+          <Route path="/account/addresses" element={<MobileAddresses />} />
+          <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/faq" element={<FAQPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/surprise" element={<SurprisePage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
 
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/pending-approval" element={<PendingApproval />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/pending-approval" element={<PendingApproval />} />
 
-      {/* BUYER — cart/checkout/orders only */}
-      <Route path="/buyer" element={<Protected role="buyer"><BuyerLayout /></Protected>}>
-        <Route index element={<Navigate to="/" replace />} />
-        <Route path="cart" element={<Cart />} />
-        <Route path="checkout" element={<Checkout />} />
-        <Route path="orders" element={<BuyerOrders />} />
-        <Route path="orders/:id" element={<OrderTracking />} />
-      </Route>
+        {/* BUYER — cart/checkout/orders only */}
+        <Route path="/buyer" element={<Protected role="buyer"><BuyerLayout /></Protected>}>
+          <Route index element={<Navigate to="/" replace />} />
+          <Route path="cart" element={<Cart />} />
+          <Route path="checkout" element={<Checkout />} />
+          <Route path="orders" element={<BuyerOrders />} />
+          <Route path="orders/:id" element={<OrderTracking />} />
+        </Route>
 
-      {/* SELLER */}
-      <Route path="/seller" element={<Protected role="seller"><SellerLayout /></Protected>}>
-        <Route index element={<SellerDashboard />} />
-        <Route path="products" element={<SellerProducts />} />
-        <Route path="orders" element={<SellerOrders />} />
-        <Route path="profile" element={<SellerProfile />} />
-        <Route path="commission" element={<SellerCommission />} />
-        <Route path="surprise" element={<SellerSurprise />} />
-      </Route>
+        {/* SELLER */}
+        <Route path="/seller" element={<Protected role="seller"><SellerLayout /></Protected>}>
+          <Route index element={<SellerDashboard />} />
+          <Route path="products" element={<SellerProducts />} />
+          <Route path="orders" element={<SellerOrders />} />
+          <Route path="profile" element={<SellerProfile />} />
+          <Route path="commission" element={<SellerCommission />} />
+          <Route path="surprise" element={<SellerSurprise />} />
+        </Route>
 
-      {/* DELIVERY */}
-      <Route path="/delivery" element={<Protected role="delivery"><DeliveryLayout /></Protected>}>
-        <Route index element={<DeliveryAvailable />} />
-        <Route path="active" element={<DeliveryActive />} />
-        <Route path="history" element={<DeliveryHistory />} />
-        <Route path="earnings" element={<DeliveryEarnings />} />
-      </Route>
+        {/* DELIVERY */}
+        <Route path="/delivery" element={<Protected role="delivery"><DeliveryLayout /></Protected>}>
+          <Route index element={<DeliveryAvailable />} />
+          <Route path="active" element={<DeliveryActive />} />
+          <Route path="history" element={<DeliveryHistory />} />
+          <Route path="earnings" element={<DeliveryEarnings />} />
+        </Route>
 
-      {/* ADMIN */}
-      <Route path="/admin" element={<Protected role="admin"><AdminLayout /></Protected>}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="users" element={<AdminUsers />} />
-        <Route path="live" element={<AdminLiveMap />} />
-        <Route path="disputes" element={<AdminDisputes />} />
-        <Route path="settings" element={<AdminSettings />} />
-        <Route path="commission" element={<AdminCommission />} />
-        <Route path="banners" element={<AdminBanners />} />
-        <Route path="categories" element={<AdminCategories />} />
-        <Route path="pending" element={<AdminPendingRequests />} />
-        <Route path="products" element={<AdminProducts />} />
-        <Route path="surprise" element={<SurpriseBookings />} />
-        <Route path="surprise/services" element={<SurpriseServices />} />
-      </Route>
+        {/* ADMIN */}
+        <Route path="/admin" element={<Protected role="admin"><AdminLayout /></Protected>}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="live" element={<AdminLiveMap />} />
+          <Route path="disputes" element={<AdminDisputes />} />
+          <Route path="settings" element={<AdminSettings />} />
+          <Route path="commission" element={<AdminCommission />} />
+          <Route path="banners" element={<AdminBanners />} />
+          <Route path="categories" element={<AdminCategories />} />
+          <Route path="pending" element={<AdminPendingRequests />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="surprise" element={<SurpriseBookings />} />
+          <Route path="surprise/services" element={<SurpriseServices />} />
+        </Route>
 
-    </Routes>
+      </Routes>
     </>
   );
 }

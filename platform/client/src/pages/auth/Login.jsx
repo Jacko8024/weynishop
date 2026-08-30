@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../store/auth.js';
-import { isValidEthPhone, toE164EthPhone, formatEthPhoneLocal, ETH_DIAL_CODE } from '../../lib/phone.js';
+import { DEFAULT_COUNTRY, isValidLocalPhone, toE164 } from '../../lib/countries.js';
+import PhoneInput from '../../components/PhoneInput.jsx';
 import GoogleSignInButton from '../../components/GoogleSignInButton.jsx';
 import AnimatedCharacters from '../../components/AnimatedCharacters.jsx';
 import Logo from '../../components/Logo.jsx';
@@ -23,7 +24,12 @@ export default function Login() {
   const redirect = new URLSearchParams(location.search).get('redirect') || '';
   const afterLogin = redirect.startsWith('/') ? redirect : null;
   const [mode, setMode] = useState('phone'); // 'phone' | 'email'
-  const [form, setForm] = useState({ phone: '', email: '', password: '' });
+  const [form, setForm] = useState({
+    phone: '',              // local digits (no dial code)
+    phoneCountry: DEFAULT_COUNTRY, // ET by default; user can switch to SA
+    email: '',
+    password: '',
+  });
   const [phoneError, setPhoneError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -34,16 +40,25 @@ export default function Login() {
     return afterLogin || `/${user.role}`;
   };
 
+  // Remember the intended destination before the app loses focus during the
+  // Google redirect flow (native). The deep-link completion reads this to
+  // land the user on the right screen even after a cold relaunch (Case C).
+  useEffect(() => {
+    if (afterLogin) {
+      try { localStorage.setItem('weynshop:loginRedirect', afterLogin); } catch { /* ignore */ }
+    }
+  }, [afterLogin]);
+
   const submit = async (e) => {
     e.preventDefault();
-    if (mode === 'phone' && !isValidEthPhone(form.phone)) {
+    if (mode === 'phone' && !isValidLocalPhone(form.phone, form.phoneCountry)) {
       setPhoneError(t('auth.invalidPhone'));
       return;
     }
     setLoading(true);
     try {
       const user = mode === 'phone'
-        ? await loginWithPhone(toE164EthPhone(form.phone), form.password)
+        ? await loginWithPhone(toE164(form.phone, form.phoneCountry), form.password)
         : await login(form.email, form.password);
       if (user.status === 'rejected') {
         toast.error('Your account was rejected. Contact support for details.');
@@ -68,7 +83,7 @@ export default function Login() {
     <div className="min-h-screen grid lg:grid-cols-2 bg-white">
       {/* Left — animated characters (desktop only) */}
       <div className="relative hidden lg:flex flex-col justify-between p-10 overflow-hidden text-white"
-           style={{ background: 'linear-gradient(135deg, #FF8A4C 0%, #EC5C2C 50%, #B83E1A 100%)' }}>
+        style={{ background: 'linear-gradient(135deg, #FF8A4C 0%, #EC5C2C 50%, #B83E1A 100%)' }}>
         <Link to="/" className="relative z-20 inline-flex items-center gap-2" aria-label="WeyniShopping home">
           <Logo inverse height={40} />
         </Link>
@@ -111,37 +126,20 @@ export default function Login() {
             {mode === 'phone' ? (
               <div>
                 <label className="label" htmlFor="phone">{t('auth.phoneLabel')}</label>
-                {/* Ethiopian phone input — fixed +251 prefix, numeric keyboard */}
-                <div
-                  className={`flex items-stretch overflow-hidden rounded-lg focus-within:ring-2 ${phoneError ? 'border-red-300' : ''}`}
-                  style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)', '--tw-ring-color': 'var(--color-brand)' }}
-                >
-                  <span
-                    className="flex items-center gap-1.5 px-3 text-sm font-semibold select-none shrink-0"
-                    style={{ borderRight: '1px solid var(--color-border)', background: 'var(--color-bg)' }}
-                    aria-hidden="true"
-                  >
-                    🇪🇹 {ETH_DIAL_CODE}
-                  </span>
-                  <input
-                    id="phone"
-                    className="flex-1 min-w-0 h-12 px-3 text-base tracking-wide focus:outline-none"
-                    style={{ background: 'transparent', color: 'var(--color-text)' }}
-                    type="tel"
-                    inputMode="tel"
-                    autoComplete="tel-national"
-                    placeholder="9XX XXX XXX"
-                    value={formatEthPhoneLocal(form.phone)}
-                    onChange={(e) => {
-                      // digits only — the +251 prefix is fixed, so it can
-                      // never be typed twice
-                      setForm({ ...form, phone: e.target.value.replace(/\D/g, '').slice(0, 12) });
-                      setPhoneError('');
-                    }}
-                    onFocus={() => setTyping(true)}
-                    onBlur={() => setTyping(false)}
-                  />
-                </div>
+                {/* Country-aware phone input — ET (+251) / SA (+966) selector,
+                    numeric keyboard, dial code can never be typed twice.
+                    Config lives in lib/countries.js (single source). */}
+                <PhoneInput
+                  value={form.phone}
+                  country={form.phoneCountry}
+                  error={phoneError}
+                  onChange={({ country, local }) => {
+                    setForm((f) => ({ ...f, phone: local, phoneCountry: country }));
+                    setPhoneError('');
+                  }}
+                  onFocus={() => setTyping(true)}
+                  onBlur={() => setTyping(false)}
+                />
                 {phoneError && <p className="text-xs text-red-500 mt-1">{phoneError}</p>}
               </div>
             ) : (

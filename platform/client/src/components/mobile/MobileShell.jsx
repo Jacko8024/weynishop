@@ -28,6 +28,20 @@ export default function MobileShell() {
     return <MobileOnboarding onDone={() => setOnboarded(true)} />;
   }
 
+  // Pushed full-screen pages (Account ▸ Notifications / Addresses) render
+  // their own header — hide the shell chrome so nothing overlaps (Phase 8).
+  const immersive =
+    pathname.startsWith('/account/notifications') || pathname.startsWith('/account/addresses');
+  if (immersive) {
+    return (
+      <div className="min-h-screen flex flex-col" style={{ background: 'var(--color-bg)' }}>
+        <main className="flex-1">
+          <Outlet />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--color-bg)' }}>
       <MobileHeader />
