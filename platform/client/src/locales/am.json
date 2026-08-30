@@ -470,6 +470,7 @@
     ]
   },
   "mobile": {
+    "searchPlaceholder": "እቃዎችን፣ ብራንዶችን ይፈልጉ…",
     "popular": "ታዋቂ እቃዎች",
     "moreForYou": "ተጨማሪ ለእርስዎ",
     "buyNow": "አሁን ይግዙ",

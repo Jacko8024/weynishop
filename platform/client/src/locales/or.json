@@ -442,6 +442,7 @@
     ]
   },
   "mobile": {
+    "searchPlaceholder": "Wantoo, maqaa dhiyeessaa…",
     "popular": "Wantoota beekamoo",
     "moreForYou": "Siif dabalata",
     "buyNow": "Amma biti",

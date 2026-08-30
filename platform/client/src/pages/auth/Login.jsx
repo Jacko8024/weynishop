@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ShoppingBag, Store, Truck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../store/auth.js';
 import { DEFAULT_COUNTRY, isValidLocalPhone, toE164 } from '../../lib/countries.js';
@@ -24,6 +24,7 @@ export default function Login() {
   const redirect = new URLSearchParams(location.search).get('redirect') || '';
   const afterLogin = redirect.startsWith('/') ? redirect : null;
   const [mode, setMode] = useState('phone'); // 'phone' | 'email'
+  const [role, setRole] = useState('buyer'); // role for NEW Google users
   const [form, setForm] = useState({
     phone: '',              // local digits (no dial code)
     phoneCountry: DEFAULT_COUNTRY, // ET by default; user can switch to SA
@@ -211,11 +212,47 @@ export default function Login() {
           </div>
 
           <GoogleSignInButton
+            role={role}
             onSuccess={(user) => {
               toast.success(`${t('auth.welcomeBack')} ${user.name}`);
               nav(next(user), { replace: true });
             }}
           />
+
+          {/* Role for NEW Google accounts (existing accounts keep their
+              role server-side — the backend ignores this when the user
+              already exists). Three simple buttons, no multi-step UI. */}
+          <div className="mt-6">
+            <p className="text-xs text-center mb-2.5 font-medium" style={{ color: 'var(--color-muted)' }}>
+              {t('auth.iAmA')}
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { value: 'buyer', icon: ShoppingBag, key: 'auth.buyer' },
+                { value: 'seller', icon: Store, key: 'auth.seller' },
+                { value: 'delivery', icon: Truck, key: 'auth.delivery' },
+              ].map(({ value, icon: Icon, key }) => {
+                const active = role === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setRole(value)}
+                    aria-pressed={active}
+                    className="flex flex-col items-center gap-1.5 rounded-xl py-3 px-1 text-xs font-semibold transition-colors"
+                    style={{
+                      background: active ? 'rgba(236,92,44,0.08)' : 'var(--color-surface)',
+                      border: `1.5px solid ${active ? 'var(--color-brand)' : 'var(--color-border)'}`,
+                      color: active ? 'var(--color-brand)' : 'var(--color-text)',
+                    }}
+                  >
+                    <Icon size={20} strokeWidth={active ? 2.4 : 1.8} />
+                    {t(key)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           <div className="text-center text-sm mt-8" style={{ color: 'var(--color-muted)' }}>
             {t('auth.noAccount')}{' '}

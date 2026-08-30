@@ -4,6 +4,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signInWithRedirect,
+  signInWithCredential,
   getRedirectResult,
   signOut as firebaseSignOut,
 } from 'firebase/auth';
@@ -54,6 +55,36 @@ firebaseAuth.useDeviceLanguage();
 // No Firebase Console / Google Cloud Console changes are required, and the
 // desktop website keeps its unchanged popup flow.
 const isNative = Capacitor.isNativePlatform();
+
+// ---------------------------------------------------------------------------
+// Native Google Sign-In bridge (Android Credential Manager)
+// ---------------------------------------------------------------------------
+// Implemented by GoogleAuthPlugin.java (registered in MainActivity). The
+// plugin shows Google's OFFICIAL account chooser with every Google account
+// on the device + "Add another account" — no browser involved.
+// Resolved via Capacitor.registerPlugin so the web bundle never hard-imports
+// a native module; on web/dev the proxy rejects and we fall back cleanly.
+const GoogleAuth = Capacitor.registerPlugin('GoogleAuth', {
+  web: {
+    signIn: () => Promise.reject(new Error('GoogleAuth is native-only')),
+    signOut: () => Promise.resolve(),
+  },
+});
+
+/**
+ * Native path: Google's account chooser → Google ID token (minted for the
+ * project's public web OAuth client) → exchanged into a Firebase credential
+ * via signInWithCredential → same Firebase user/UID as the website flow →
+ * fresh Firebase ID token for POST /auth/google.
+ * Rejects with code CANCELLED when the user dismisses the chooser.
+ */
+const nativeGoogleSignIn = async () => {
+  const res = await GoogleAuth.signIn(); // { idToken, displayName?, photoUrl? }
+  const credential = GoogleAuthProvider.credential(res.idToken);
+  const cred = await signInWithCredential(firebaseAuth, credential);
+  const idToken = await cred.user.getIdToken(/* forceRefresh */ true);
+  return { idToken, firebaseUser: cred.user };
+};
 
 // Role chosen on the Login screen (buyer/seller/delivery) must survive the
 // full-page redirect round-trip so first-time users register with it.
@@ -112,11 +143,15 @@ export const hasPendingGoogleSignIn = () => !!pendingNative;
  * Start Google sign-in.
  *
  * - Web/desktop browser → popup (existing behaviour, unchanged).
- * - Native app → redirect INSIDE the WebView using the real authDomain.
- *   The WebView navigates away to accounts.google.com, so this promise
- *   usually never resolves in this page — finishBootGoogleRedirect()
- *   completes the login when the app reloads on return. If the flow
- *   completes without a navigation, the promise resolves here instead.
+ * - Native app → PRIMARY: Google's native account chooser (Credential
+ *   Manager, GoogleAuthPlugin.java) — returns an idToken directly, no
+ *   browser involved. FALLBACK: only when the native plugin is missing
+ *   (dev server in a plain browser) do we use the in-WebView redirect
+ *   described below.
+ *
+ *   Redirect fallback: the WebView navigates to accounts.google.com; the
+ *   SPA reboots and finishBootGoogleRedirect() completes the login. If the
+ *   flow completes without a navigation, the promise resolves here instead.
  *   `role` is stashed so registration keeps the user's chosen role.
  */
 export const signInWithGoogle = (role) => {
@@ -129,6 +164,27 @@ export const signInWithGoogle = (role) => {
     (async () => {
       try {
         stashGoogleRole(role);
+
+        // ── PRIMARY — native account chooser (no browser) ──
+        try {
+          const result = await nativeGoogleSignIn();
+          resolvePendingGoogleSignIn(result);
+          return;
+        } catch (err) {
+          const code = err?.code || '';
+          // User dismissed the chooser → quiet cancel, same as the web
+          // popup-closed behaviour. Never fall back to the browser here.
+          if (code === 'CANCELLED' || code === 'NO_CREDENTIALS') {
+            rejectPendingGoogleSignIn(err);
+            return;
+          }
+          // Plugin genuinely unavailable (dev web preview) → redirect
+          // fallback below. Any other native error also falls back so a
+          // transient Play-services hiccup doesn't block login.
+          console.warn('[google-auth] native chooser unavailable, falling back to WebView redirect:', err);
+        }
+
+        // ── FALLBACK — in-WebView redirect (dev preview / no plugin) ──
         // NOTE: keep the default browserLocalPersistence — the redirect
         // flow needs storage that survives the full-page navigation
         // (inMemoryPersistence breaks signInWithRedirect round-trips).
@@ -182,6 +238,9 @@ export const finishGoogleSignIn = async () => {
 /** Sign out of Firebase (does not clear our app's JWT — call useAuth.logout for that). */
 export const signOutFirebase = async () => {
   const tasks = [firebaseSignOut(firebaseAuth).catch(() => { })];
+  // Native: clear Credential Manager state so the next sign-in shows the
+  // full account chooser again (account switching after logout works).
+  if (isNative) tasks.push(GoogleAuth.signOut().catch(() => { }));
   await Promise.all(tasks);
 };
 

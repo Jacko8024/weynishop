@@ -442,6 +442,7 @@
     ]
   },
   "mobile": {
+    "searchPlaceholder": "Raadi alaabta, summadaha…",
     "popular": "Alaabta caanka ah",
     "moreForYou": "Waxyaabo kale si kuu ah",
     "buyNow": "Iibso hadda",

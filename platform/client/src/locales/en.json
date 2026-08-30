@@ -470,6 +470,7 @@
     ]
   },
   "mobile": {
+    "searchPlaceholder": "Search products, brands…",
     "popular": "Popular",
     "moreForYou": "More for you",
     "buyNow": "Buy Now",

@@ -46,7 +46,9 @@ export default function GoogleSignInButton({ role, onSuccess, label }) {
         code === 'auth/popup-closed-by-user' ||
         code === 'auth/cancelled-popup-request' ||
         code === 'access_denied' ||
-        code === 'auth/user-cancelled'
+        code === 'auth/user-cancelled' ||
+        code === 'CANCELLED' ||        // native chooser dismissed (Credential Manager)
+        code === 'NO_CREDENTIALS'      // no Google account on the device + user backed out
       ) {
         // User dismissed / cancelled — quiet return to the login screen.
         return;
