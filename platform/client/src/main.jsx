@@ -6,6 +6,7 @@ import App from './App.jsx';
 import './index.css';
 import './lib/i18n.js';
 import { useAuth } from './store/auth.js';
+import { useCurrency } from './store/currency.js';
 import {
   installDeepLinkHandler,
   setDeepLinkRouter,
@@ -30,6 +31,10 @@ setDeepLinkNotifier((kind, payload) => {
   }
 });
 finishBootGoogleRedirect();
+
+// Load the admin-controlled currency rate table once at boot (spec §17).
+// Falls back to base ETB silently if the API is unreachable (spec §22).
+useCurrency.getState().loadRates();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

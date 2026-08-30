@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useAuth } from '../../store/auth.js';
 import useIsMobile from '../../lib/useIsMobile.js';
-import { formatMoney } from '../../lib/helpers.js';
+import { usePrice } from '../../store/currency.js';
 
 /**
  * Mobile-first cart: stacked item cards with touch steppers and a
@@ -11,6 +11,7 @@ import { formatMoney } from '../../lib/helpers.js';
  */
 export default function Cart() {
   const { cart, setCartQty, removeFromCart } = useAuth();
+  const price = usePrice();
   const isMobile = useIsMobile();
   const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
 
@@ -36,26 +37,26 @@ export default function Cart() {
           {/* Info */}
           <div className="flex-1 min-w-0">
             <Link to={`/product/${c.product}`} className="font-medium line-clamp-2 text-sm leading-snug">{c.name}</Link>
-            <div className="price-num font-bold text-brand-600 mt-1">{formatMoney(c.price)}</div>
+            <div className="price-num font-bold text-brand-600 mt-1">{price.fmt(c.price)}</div>
 
             {/* Touch stepper + delete */}
             <div className="flex items-center justify-between mt-2">
               <div className="inline-flex items-center rounded-full overflow-hidden" style={{ border: '1px solid var(--color-border)' }}>
                 <button onClick={() => setCartQty(c.product, c.qty - 1)} disabled={c.qty <= 1}
-                        className="w-9 h-9 grid place-items-center disabled:opacity-40 active:bg-slate-100"
-                        aria-label="Decrease quantity">
+                  className="w-9 h-9 grid place-items-center disabled:opacity-40 active:bg-slate-100"
+                  aria-label="Decrease quantity">
                   <Minus size={15} />
                 </button>
                 <span className="w-9 text-center text-sm font-semibold price-num" aria-live="polite">{c.qty}</span>
                 <button onClick={() => setCartQty(c.product, c.qty + 1)}
-                        className="w-9 h-9 grid place-items-center active:bg-slate-100"
-                        aria-label="Increase quantity">
+                  className="w-9 h-9 grid place-items-center active:bg-slate-100"
+                  aria-label="Increase quantity">
                   <Plus size={15} />
                 </button>
               </div>
               <button onClick={() => removeFromCart(c.product)}
-                      className="w-10 h-10 grid place-items-center rounded-full btn-ghost text-danger-500"
-                      aria-label={`Remove ${c.name} from cart`}>
+                className="w-10 h-10 grid place-items-center rounded-full btn-ghost text-danger-500"
+                aria-label={`Remove ${c.name} from cart`}>
                 <Trash2 size={17} />
               </button>
             </div>
@@ -82,7 +83,7 @@ export default function Cart() {
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm" style={{ color: 'var(--color-muted)' }}>Total</span>
             <span className="price-num text-lg font-extrabold" style={{ color: 'var(--color-brand)' }}>
-              {formatMoney(subtotal)}
+              {price.fmt(subtotal)}
             </span>
           </div>
           <Link to="/buyer/checkout" className="btn-primary w-full h-11 rounded-full font-semibold">
@@ -99,7 +100,7 @@ export default function Cart() {
       <div className="md:col-span-2">{items}</div>
       <div className="card p-5 h-fit">
         <div className="flex justify-between py-1">
-          <span>Subtotal</span><span className="price-num font-semibold">{formatMoney(subtotal)}</span>
+          <span>Subtotal</span><span className="price-num font-semibold">{price.fmt(subtotal)}</span>
         </div>
         <div className="text-xs text-slate-500 my-3">Delivery fee calculated at checkout.</div>
         <Link to="/buyer/checkout" className="btn-primary w-full">Proceed to checkout</Link>

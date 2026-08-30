@@ -60,6 +60,7 @@ import AdminLiveMap from './pages/admin/LiveMap.jsx';
 import AdminDisputes from './pages/admin/Disputes.jsx';
 import AdminCommission from './pages/admin/Commission.jsx';
 import AdminSettings from './pages/admin/Settings.jsx';
+import AdminCurrency from './pages/admin/Currency.jsx';
 import AdminBanners from './pages/admin/Banners.jsx';
 import AdminCategories from './pages/admin/Categories.jsx';
 import AdminPendingRequests from './pages/admin/PendingRequests.jsx';
@@ -150,6 +151,7 @@ export default function App() {
         <Route path="/admin" element={<Protected role="admin"><AdminLayout /></Protected>}>
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
+          <Route path="currency" element={<AdminCurrency />} />
           <Route path="live" element={<AdminLiveMap />} />
           <Route path="disputes" element={<AdminDisputes />} />
           <Route path="settings" element={<AdminSettings />} />

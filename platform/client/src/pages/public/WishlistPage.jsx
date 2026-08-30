@@ -8,6 +8,7 @@ import { useAuth } from '../../store/auth.js';
 import { useWishlist } from '../../store/wishlist.js';
 import { useLoginGate } from '../../store/loginGate.js';
 import { fmtPrice } from '../../lib/format.js';
+import { usePrice } from '../../store/currency.js';
 
 export default function WishlistPage() {
   const { t } = useTranslation();
@@ -15,6 +16,7 @@ export default function WishlistPage() {
   const reload = useWishlist((s) => s.load);
   const toggle = useWishlist((s) => s.toggle);
   const openGate = useLoginGate((s) => s.open);
+  const price = usePrice();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -69,18 +71,18 @@ export default function WishlistPage() {
           {items.map((p) => (
             <div key={p._id} className="card p-3 flex gap-3 items-center">
               <Link to={`/product/${p._id}`} className="w-20 h-20 rounded-lg overflow-hidden shrink-0"
-                    style={{ background: 'var(--color-bg)' }}>
+                style={{ background: 'var(--color-bg)' }}>
                 {p.images?.[0] && <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />}
               </Link>
               <div className="flex-1 min-w-0">
                 <Link to={`/product/${p._id}`} className="font-medium line-clamp-2 hover:underline">{p.name}</Link>
                 <div className="price-num font-bold mt-1" style={{ color: 'var(--color-brand)' }}>
-                  {fmtPrice(p.flashSaleActive ? p.flashSalePrice : p.price)} USD
+                  {price.fmt(p.flashSaleActive ? p.flashSalePrice : p.price)}
                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <button onClick={() => moveToCart(p)} disabled={p.stock === 0}
-                        className="btn-primary text-sm py-1.5 px-3">
+                  className="btn-primary text-sm py-1.5 px-3">
                   <ShoppingCart size={14} /> {t('product.addToCart')}
                 </button>
                 <button onClick={() => remove(p._id)} className="btn-ghost text-sm py-1.5 px-3 text-danger-600">

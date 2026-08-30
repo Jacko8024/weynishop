@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../store/auth.js';
-import { formatMoney } from '../../lib/helpers.js';
+import { usePrice } from '../../store/currency.js';
 import MapView, { AddressPicker } from '../../components/MapView.jsx';
 import GeolocationButton from '../../components/GeolocationButton.jsx';
 import useDocumentTitle from '../../lib/useDocumentTitle.js';
@@ -15,6 +15,7 @@ export default function Checkout() {
   // desktop keeps the existing 2-column layout untouched.
   const isMobile = useIsMobile();
   const { cart, clearCart, user } = useAuth();
+  const price = usePrice();
   const nav = useNavigate();
   const [addr, setAddr] = useState(
     user?.defaultAddress?.coordinates
@@ -85,12 +86,12 @@ export default function Checkout() {
           {cart.map((c) => (
             <div key={c.product} className="flex justify-between text-sm">
               <span>{c.name} × {c.qty}</span>
-              <span>{formatMoney(c.price * c.qty)}</span>
+              <span>{price.fmt(c.price * c.qty)}</span>
             </div>
           ))}
           <hr />
           <div className="flex justify-between font-semibold">
-            <span>Subtotal</span><span>{formatMoney(subtotal)}</span>
+            <span>Subtotal</span><span>{price.fmt(subtotal)}</span>
           </div>
         </div>
 

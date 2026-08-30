@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
-import { Op, fn, col } from 'sequelize';
-import { User, Order, Product, Dispute, Settings, VendorProfile, DeliveryProfile, SurpriseBooking } from '../../models/index.js';
+import { Op, fn, col, literal } from 'sequelize';
+import { User, Order, Product, OrderItem, Dispute, Settings, VendorProfile, DeliveryProfile, SurpriseBooking, Currency, BASE_CURRENCY } from '../../models/index.js';
 import { protect, requireRole, signToken } from '../../middleware/auth.js';
 
 const router = Router();
@@ -59,7 +59,7 @@ router.get(
 router.get(
   '/analytics',
   asyncHandler(async (_req, res) => {
-    const [totalOrders, completedRows, activeOrders, totalProducts, byRole, surpriseNew, surpriseTotal] = await Promise.all([
+    const [totalOrders, completedRows, activeOrders, totalProducts, byRole, surpriseNew, surpriseTotal, topProducts, salesByWeek] = await Promise.all([
       Order.count(),
       Order.findAll({ where: { currentStage: 'delivered_paid' } }),
       Order.count({ where: { currentStage: { [Op.ne]: 'delivered_paid' }, cancelledAt: null } }),
@@ -67,9 +67,68 @@ router.get(
       User.findAll({ attributes: ['role', [fn('COUNT', col('id')), 'n']], group: ['role'], raw: true }),
       SurpriseBooking.count({ where: { status: 'new' } }),
       SurpriseBooking.count(),
+      // Top products by units sold (spec §29) — real OrderItem aggregates.
+      OrderItem.findAll({
+        attributes: [
+          'productId',
+          [fn('SUM', col('qty')), 'units'],
+          [fn('SUM', literal('qty * price')), 'revenue'],
+        ],
+        group: ['productId'],
+        order: [[literal('SUM(qty)'), 'DESC']],
+        limit: 5,
+        raw: true,
+      }),
+      // Sales overview (spec §29): completed revenue bucketed by ISO week,
+      // most recent 8 weeks. Real Order rows only — no fabricated numbers.
+      Order.findAll({
+        where: { currentStage: 'delivered_paid' },
+        attributes: ['total', 'createdAt'],
+        raw: true,
+      }),
     ]);
     const revenue = completedRows.reduce((s, o) => s + Number(o.total), 0);
     const usersByRole = Object.fromEntries(byRole.map((r) => [r.role, Number(r.n)]));
+
+    // Resolve top-product names/photos from the products table (name is also
+    // snapshotted on the OrderItem itself as a fallback).
+    const topIds = topProducts.map((r) => r.productId).filter((id) => id != null);
+    const prods = topIds.length
+      ? await Product.findAll({ where: { id: topIds }, attributes: ['id', 'name', 'images'], raw: true })
+      : [];
+    const prodById = new Map(prods.map((p) => [p.id, p]));
+    const top = await Promise.all(
+      topProducts.map(async (r) => {
+        const p = prodById.get(r.productId);
+        let name = p?.name;
+        if (!name) {
+          const snap = await OrderItem.findOne({ where: { productId: r.productId }, attributes: ['name'], raw: true });
+          name = snap?.name || `#${r.productId}`;
+        }
+        return {
+          id: r.productId,
+          name,
+          image: Array.isArray(p?.images) && p.images[0] ? p.images[0] : '',
+          units: Number(r.units),
+          revenue: Number(r.revenue),
+        };
+      })
+    );
+
+    // Bucket completed orders into the last 8 ISO weeks (oldest → newest).
+    const now = new Date();
+    const weeks = [];
+    for (let i = 7; i >= 0; i--) {
+      const end = new Date(now.getTime() - i * 7 * 86400000);
+      const start = new Date(end.getTime() - 7 * 86400000);
+      weeks.push({ start, end, label: end.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }), revenue: 0, orders: 0 });
+    }
+    for (const o of completedRows) {
+      const t = new Date(o.createdAt).getTime();
+      const w = weeks.find((w) => t >= w.start.getTime() && t < w.end.getTime());
+      if (w) { w.revenue += Number(o.total); w.orders += 1; }
+    }
+
     res.json({
       totalOrders,
       completed: completedRows.length,
@@ -79,6 +138,8 @@ router.get(
       usersByRole,
       surpriseBookings: surpriseTotal,
       surpriseNew,
+      topProducts: top,
+      salesByWeek: weeks.map(({ label, revenue: r, orders }) => ({ label, revenue: r, orders })),
     });
   })
 );
@@ -127,6 +188,63 @@ router.put(
     });
     await s.save();
     res.json({ settings: s });
+  })
+);
+
+// ── Currency exchange rates (spec §17/§30) ─────────────────────────────────
+// Admin-controlled FX table. Clients display prices through these rates;
+// orders/commissions stay stored in the base currency (ETB).
+
+router.get(
+  '/currencies',
+  asyncHandler(async (_req, res) => {
+    const rows = await Currency.findAll({ order: [['sortOrder', 'ASC'], ['code', 'ASC']] });
+    res.json({ base: BASE_CURRENCY, currencies: rows });
+  })
+);
+
+// Upsert one currency by code. rateToBase = how many ETB one unit is worth.
+router.put(
+  '/currencies/:code',
+  asyncHandler(async (req, res) => {
+    const code = String(req.params.code || '').toUpperCase().trim();
+    if (!/^[A-Z]{3}$/.test(code)) return res.status(400).json({ message: 'Invalid currency code' });
+    const { name, symbol, rateToBase, decimals, active, sortOrder } = req.body;
+    const rate = Number(rateToBase);
+    if (!Number.isFinite(rate) || rate <= 0) return res.status(400).json({ message: 'rateToBase must be a positive number' });
+
+    let row = await Currency.findOne({ where: { code } });
+    if (row) {
+      if (code === BASE_CURRENCY && Math.abs(rate - 1) > 1e-9) {
+        return res.status(400).json({ message: 'Base currency rate must stay 1' });
+      }
+      row.set({
+        name: name ?? row.name,
+        symbol: symbol ?? row.symbol,
+        rateToBase: rate,
+        decimals: Number.isInteger(decimals) ? decimals : row.decimals,
+        active: active ?? row.active,
+        sortOrder: Number.isInteger(sortOrder) ? sortOrder : row.sortOrder,
+      });
+      await row.save();
+    } else {
+      row = await Currency.create({
+        code, name: name || code, symbol: symbol || code,
+        rateToBase: rate, decimals: Number.isInteger(decimals) ? decimals : 2,
+        active: active ?? true, sortOrder: Number.isInteger(sortOrder) ? sortOrder : 99,
+      });
+    }
+    res.json({ currency: row });
+  })
+);
+
+router.delete(
+  '/currencies/:code',
+  asyncHandler(async (req, res) => {
+    const code = String(req.params.code || '').toUpperCase().trim();
+    if (code === BASE_CURRENCY) return res.status(400).json({ message: 'Cannot delete the base currency' });
+    await Currency.destroy({ where: { code } });
+    res.json({ ok: true });
   })
 );
 
@@ -288,7 +406,7 @@ router.put(
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
     const allowed = ['name', 'description', 'stock', 'category', 'images', 'isActive', 'freeShipping',
-                     'flashSaleStart', 'flashSaleEnd', 'flashSalePercent', 'bulkPriceTiers'];
+      'flashSaleStart', 'flashSaleEnd', 'flashSalePercent', 'bulkPriceTiers'];
     for (const field of allowed) {
       if (req.body[field] !== undefined) product[field] = req.body[field];
     }

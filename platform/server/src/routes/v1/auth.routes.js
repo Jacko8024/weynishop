@@ -7,32 +7,85 @@ import { verifyFirebaseIdToken } from '../../config/firebase.js';
 
 const router = Router();
 
-// Normalize a phone number to E.164 for the supported countries:
-//   Ethiopia +251 (mobiles start 9/7, 9 digits) and Saudi Arabia +966
-//   (mobiles start 5, 9 digits).
-// Accepts E.164 (+251…/+966…), 00-prefixed, country-code-prefixed or bare
-// local (09…/9…, 05…/5…) with any separators. Returns '' when no digits.
-// A country code is only stripped when the total length is exactly CC + 9
-// local digits, so an Ethiopian local number starting "966…" is never
-// mistaken for a +966 number. Bare local numbers are disambiguated by
-// their leading digit: 5XXXXXXXX → +966, 7/9XXXXXXXX → +251. The legacy
-// fallback keeps the old +251 behaviour for malformed input so existing
+// ---------------------------------------------------------------------------
+// Phone normalization + validation for ALL supported countries (12).
+//
+// E.164 is the internal representation everywhere. Mobile patterns mirror
+// lib/countries.js on the client (the server cannot import the web bundle,
+// so the rules are duplicated here and MUST be kept in sync when a country
+// is added).
+//
+//   Ethiopia +251   /^[79]\d{8}$/     Saudi Arabia +966  /^5\d{8}$/
+//   Jordan +962     /^7\d{8}$/        Iraq +964          /^7\d{9}$/
+//   Kuwait +965     /^[569]\d{7}$/    Qatar +974         /^[3567]\d{7}$/
+//   UAE +971        /^5\d{8}$/        Oman +968          /^[79]\d{7}$/
+//   Yemen +967      /^7\d{8}$/        Bahrain +973       /^[36]\d{7}$/
+//   Lebanon +961    /^(3\d{6}|[78]\d{7})$/   Syria +963  /^9\d{8}$/
+//
+// normalizePhone() accepts E.164 (+962…), 00-prefixed, country-code-
+// prefixed or 0-prefixed/bare local input with any separators and returns
+// the E.164 string. A dial prefix is only stripped when the remaining
+// length matches that country's national number length exactly, so e.g. an
+// Ethiopian local number starting "966…" is never mistaken for +966.
+// Bare local numbers (no country code) are disambiguated by their leading
+// digits; unidentifiable input keeps the legacy +251 fallback so existing
 // Ethiopian accounts never stop matching.
-const DIAL_BY_CC = { 251: '+251', 966: '+966' };
+// ---------------------------------------------------------------------------
+const PHONE_RULES = [
+  // lens = accepted local-part lengths (Lebanon has two: 7 and 8).
+  { cc: '251', dial: '+251', mobile: /^[79]\d{8}$/, lens: [9] },
+  { cc: '966', dial: '+966', mobile: /^5\d{8}$/, lens: [9] },
+  { cc: '962', dial: '+962', mobile: /^7\d{8}$/, lens: [9] },
+  { cc: '964', dial: '+964', mobile: /^7\d{9}$/, lens: [10] },
+  { cc: '965', dial: '+965', mobile: /^[569]\d{7}$/, lens: [8] },
+  { cc: '974', dial: '+974', mobile: /^[3567]\d{7}$/, lens: [8] },
+  { cc: '971', dial: '+971', mobile: /^5\d{8}$/, lens: [9] },
+  { cc: '968', dial: '+968', mobile: /^[79]\d{7}$/, lens: [8] },
+  { cc: '967', dial: '+967', mobile: /^7\d{8}$/, lens: [9] },
+  { cc: '973', dial: '+973', mobile: /^[36]\d{7}$/, lens: [8] },
+  { cc: '961', dial: '+961', mobile: /^(3\d{6}|[78]\d{7})$/, lens: [7, 8] },
+  { cc: '963', dial: '+963', mobile: /^9\d{8}$/, lens: [9] },
+];
+
 const normalizePhone = (raw) => {
   let d = String(raw || '').replace(/\D/g, '');
   if (!d) return '';
   if (d.startsWith('00')) d = d.slice(2);
-  for (const cc of Object.keys(DIAL_BY_CC)) {
-    if (d.startsWith(cc) && d.length === cc.length + 9) {
-      return `${DIAL_BY_CC[cc]}${d.slice(cc.length)}`;
+
+  // 1) Explicit country-code prefix (E.164 without '+', or CC + local).
+  //    Exact-length match required, so an Ethiopian local starting "966…"
+  //    (9 digits) is never mistaken for a +966 number (needs 3+9=12).
+  for (const rule of PHONE_RULES) {
+    if (d.startsWith(rule.cc) && rule.lens.includes(d.length - rule.cc.length)) {
+      return `${rule.dial}${d.slice(rule.cc.length)}`;
     }
   }
+
+  // 2) 0-prefixed or bare local number. Ethiopia is checked FIRST: legacy
+  //    accounts were all stored as bare ET locals, and an ET local starting
+  //    "9…" collides with Syria's mobile pattern (and "7…" with Jordan /
+  //    Yemen). Only patterns ET doesn't claim fall through to the rest.
   if (d.startsWith('0')) d = d.slice(1);
-  if (/^5\d{8}$/.test(d)) return `+966${d}`;    // Saudi mobile
-  if (/^[79]\d{8}$/.test(d)) return `+251${d}`; // Ethiopian mobile
-  return `+251${d}`;                             // legacy fallback
+  if (PHONE_RULES[0].mobile.test(d)) return `+251${d}`;    // Ethiopian mobile
+  const localMatch = PHONE_RULES.slice(1).find((r) => r.mobile.test(d));
+  if (localMatch) return `${localMatch.dial}${d}`;
+
+  // 3) Legacy fallback — keep existing +251 accounts matching on old data.
+  return `+251${d}`;
 };
+
+// True when the E.164/local value is a VALID mobile for a supported country.
+// Used by registration to reject unsupported/invalid numbers (login keeps
+// the lenient normalizer so existing accounts are never locked out).
+const isValidSupportedPhone = (raw) => {
+  const e164 = normalizePhone(raw);
+  if (!e164) return false;
+  const digits = e164.slice(1);
+  const rule = PHONE_RULES.find((r) => digits.startsWith(r.cc));
+  if (!rule) return false;
+  return rule.mobile.test(digits.slice(rule.cc.length));
+};
+
 // Back-compat alias — existing call sites below keep working unchanged.
 const normalizeEthPhone = normalizePhone;
 
@@ -61,6 +114,11 @@ router.post(
     }
     const exists = await User.findOne({ where: { email: email.toLowerCase() } });
     if (exists) return res.status(409).json({ message: 'Email already registered' });
+    // Reject unsupported/invalid phone numbers at registration (login stays
+    // lenient so existing accounts can never be locked out).
+    if (phone && !isValidSupportedPhone(phone)) {
+      return res.status(400).json({ message: 'Invalid phone number for the selected country' });
+    }
     const user = await User.create({
       name,
       email: email.toLowerCase(),
@@ -93,9 +151,15 @@ router.post(
       const normalized = normalizeEthPhone(phone);
       if (normalized) user = await User.findOne({ where: { phone: normalized } });
     }
-    if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+    // Friendly, distinct messages: unknown phone vs wrong password. Never
+    // leak which one failed beyond what the user can already infer.
+    if (!user) {
+      return res.status(401).json({
+        message: phone ? 'No account found with this phone number' : 'Invalid credentials',
+      });
+    }
     const ok = await user.comparePassword(password);
-    if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!ok) return res.status(401).json({ message: 'Incorrect password' });
     if (user.status === 'suspended') return res.status(403).json({ message: 'Account suspended' });
     const token = signToken(user);
     res.json({ token, user: userPayload(user) });
@@ -182,6 +246,9 @@ router.post(
     if (!agreedToTerms) {
       return res.status(400).json({ message: 'You must accept the terms and conditions' });
     }
+    if (phone && !isValidSupportedPhone(phone)) {
+      return res.status(400).json({ message: 'Invalid phone number for the selected country' });
+    }
 
     const exists = await User.findOne({ where: { email: email.toLowerCase() } });
     if (exists) return res.status(409).json({ message: 'Email already registered' });
@@ -232,6 +299,9 @@ router.post(
     }
     if (!agreedToTerms) {
       return res.status(400).json({ message: 'You must accept the terms and conditions' });
+    }
+    if (phone && !isValidSupportedPhone(phone)) {
+      return res.status(400).json({ message: 'Invalid phone number for the selected country' });
     }
 
     const exists = await User.findOne({ where: { email: email.toLowerCase() } });

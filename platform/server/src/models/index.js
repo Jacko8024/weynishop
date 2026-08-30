@@ -23,6 +23,7 @@ import { SurpriseBooking, SURPRISE_STATUSES } from './SurpriseBooking.js';
 import { SurpriseService } from './SurpriseService.js';
 import { DeviceToken } from './DeviceToken.js';
 import { Notification } from './Notification.js';
+import { Currency, BASE_CURRENCY } from './Currency.js';
 
 // Notifications: FCM device tokens (mobile push) + stored in-app rows
 DeviceToken.belongsTo(User, { as: 'user', foreignKey: 'userId' });
@@ -124,6 +125,8 @@ export {
   SurpriseService,
   DeviceToken,
   Notification,
+  Currency,
+  BASE_CURRENCY,
   STAGES,
   STAGE_LABELS,
 };

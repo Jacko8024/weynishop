@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { api } from '../../api/client.js';
-import { formatMoney } from '../../lib/helpers.js';
+import { usePrice } from '../../store/currency.js';
 
 export default function Browse() {
+  const price = usePrice();
   const [items, setItems] = useState([]);
   const [cats, setCats] = useState([]);
   const [filters, setFilters] = useState({ q: '', category: '', maxPrice: '' });
@@ -87,7 +88,7 @@ export default function Browse() {
               <div className="p-3">
                 <div className="font-medium line-clamp-1">{p.name}</div>
                 <div className="text-xs text-slate-500">{p.seller?.shopName || p.seller?.name}</div>
-                <div className="mt-1 font-semibold text-brand-600">{formatMoney(p.price)}</div>
+                <div className="mt-1 font-semibold text-brand-600">{price.fmt(p.price)}</div>
               </div>
             </Link>
           ))}

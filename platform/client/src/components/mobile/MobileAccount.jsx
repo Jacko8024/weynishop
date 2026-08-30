@@ -4,13 +4,18 @@ import { useTranslation } from 'react-i18next';
 import {
   ChevronRight, ClipboardList, Heart, Globe, CircleHelp, Info,
   LogOut, LogIn, UserPlus, Store, Package, LayoutGrid, Bell, MapPin,
+  Coins, UserRound, ShieldCheck, Lock,
 } from 'lucide-react';
 import { api } from '../../api/client.js';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../store/auth.js';
 import { useWishlist } from '../../store/wishlist.js';
+import { useCurrency } from '../../store/currency.js';
 import Logo from '../Logo.jsx';
 import LanguageSheet from './LanguageSheet.jsx';
+import CurrencySheet from './CurrencySheet.jsx';
+import ProfileSheet from './ProfileSheet.jsx';
+import SecuritySheet from './SecuritySheet.jsx';
 
 function Row({ to, onClick, icon: Icon, label, value, danger }) {
   const inner = (
@@ -35,17 +40,35 @@ function Row({ to, onClick, icon: Icon, label, value, danger }) {
 
 const LANG_NAMES = { en: 'English', am: 'አማርኛ', or: 'Afaan Oromoo', ti: 'ትግርኛ', so: 'Af Soomaali' };
 
+const Card = ({ title, children }) => (
+  <div className="mt-3 mx-3 card px-4">
+    {title && (
+      <div className="pt-3 pb-1 text-[11px] font-bold uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
+        {title}
+      </div>
+    )}
+    {children}
+  </div>
+);
+
 /**
  * Dedicated Account screen (replaces the big homepage login block).
- * Guests get a compact sign-in prompt; logged-in users get a
- * marketplace-style settings list. Language moved here per design spec.
+ * Spec §27 structure:
+ *   ACCOUNT  — Profile / Orders / Wishlist / Addresses / Notifications
+ *   SETTINGS — Language / Currency / Notification preferences / Privacy / Security
+ *   SUPPORT  — Help / About / Sign out
+ * Every row is backed by a real destination or a real API call — no stubs.
  */
 export default function MobileAccount() {
   const { t } = useTranslation();
   const nav = useNavigate();
   const { user, logout, cart } = useAuth();
   const clearWish = useWishlist((s) => s.clear);
+  const currency = useCurrency((s) => s.current);
   const [langOpen, setLangOpen] = useState(false);
+  const [curOpen, setCurOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [securityOpen, setSecurityOpen] = useState(false);
   const [unread, setUnread] = useState(0);
 
   // Real unread badge (Phase 7) — server count only, no local fakes.
@@ -70,9 +93,13 @@ export default function MobileAccount() {
 
   return (
     <div className="pb-6">
-      {/* ── Profile header ── */}
-      <div className="px-4 pt-5 pb-5 flex items-center gap-3.5"
-        style={{ background: 'linear-gradient(135deg, rgba(236,92,44,0.10), rgba(245,166,35,0.08))' }}>
+      {/* ── Profile header (tap to edit when signed in) ── */}
+      <button
+        type="button"
+        onClick={user ? () => setProfileOpen(true) : undefined}
+        className="w-full text-left px-4 pt-5 pb-5 flex items-center gap-3.5"
+        style={{ background: 'linear-gradient(135deg, rgba(236,92,44,0.10), rgba(245,166,35,0.08))' }}
+      >
         {user ? (
           <>
             <div className="w-14 h-14 rounded-full grid place-items-center text-xl font-extrabold text-white shrink-0"
@@ -80,9 +107,12 @@ export default function MobileAccount() {
               aria-hidden="true">
               {(user.name || '?').charAt(0).toUpperCase()}
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="font-bold text-lg leading-tight truncate">{user.name}</div>
               <div className="text-sm truncate" style={{ color: 'var(--color-muted)' }}>{user.email}</div>
+              <div className="text-xs mt-0.5" style={{ color: 'var(--color-brand)' }}>
+                {t('settings.editProfile')}
+              </div>
             </div>
           </>
         ) : (
@@ -94,7 +124,7 @@ export default function MobileAccount() {
             </div>
           </>
         )}
-      </div>
+      </button>
 
       {/* ── Guest CTAs ── */}
       {!user && (
@@ -108,45 +138,48 @@ export default function MobileAccount() {
         </div>
       )}
 
-      {/* ── Shopping list ── */}
-      <div className="mt-4 mx-3 card px-4">
-        {user?.role === 'buyer' && (
-          <>
-            <Row to="/buyer/orders" icon={ClipboardList} label={t('nav.orders')} />
-            <Row to="/wishlist" icon={Heart} label={t('nav.wishlist')} />
-            <Row to="/buyer/cart" icon={Package} label={t('nav.cart')} value={cartCount > 0 ? String(cartCount) : ''} />
-          </>
-        )}
-        {!user && (
-          <>
-            <Row to="/wishlist" icon={Heart} label={t('nav.wishlist')} />
-            <Row to="/deals" icon={LayoutGrid} label={t('nav.deals')} />
-          </>
-        )}
-        {/* Seller / delivery / admin portal shortcut */}
-        {user && user.role && user.role !== 'buyer' && (
-          <Row to={`/${user.role}`} icon={Store} label={`${user.role.charAt(0).toUpperCase() + user.role.slice(1)} portal`} />
-        )}
-      </div>
-
-      {/* ── My account list (Phase 5) — Orders/Wishlist/Cart above stay as
-             quick links; account-level destinations live HERE only ── */}
+      {/* ── ACCOUNT (spec §27) ── */}
       {user && (
-        <div className="mt-3 mx-3 card px-4">
-          <div className="pt-3 pb-1 text-[11px] font-bold uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
-            {t('mobile.myAccount')}
-          </div>
-          <Row to="/account/notifications" icon={Bell} label={t('notif.title')} value={unread > 0 ? String(unread) : ''} />
+        <Card title={t('mobile.myAccount')}>
+          <Row onClick={() => setProfileOpen(true)} icon={UserRound} label={t('settings.profile')} />
+          {user?.role === 'buyer' && (
+            <>
+              <Row to="/buyer/orders" icon={ClipboardList} label={t('nav.orders')} />
+              <Row to="/buyer/cart" icon={Package} label={t('nav.cart')} value={cartCount > 0 ? String(cartCount) : ''} />
+            </>
+          )}
+          <Row to="/wishlist" icon={Heart} label={t('nav.wishlist')} />
           <Row to="/account/addresses" icon={MapPin} label={t('addr.title')} value={user?.defaultAddress ? t('addr.saved') : ''} />
-        </div>
+          <Row to="/account/notifications" icon={Bell} label={t('notif.title')} value={unread > 0 ? String(unread) : ''} />
+          {/* Seller / delivery / admin portal shortcut */}
+          {user.role && user.role !== 'buyer' && (
+            <Row to={`/${user.role}`} icon={Store} label={`${user.role.charAt(0).toUpperCase() + user.role.slice(1)} portal`} />
+          )}
+        </Card>
       )}
 
-      {/* ── Settings list ── */}
-      <div className="mt-3 mx-3 card px-4">
+      {/* Guest shopping shortcuts (same destinations as the buyer list) */}
+      {!user && (
+        <Card>
+          <Row to="/wishlist" icon={Heart} label={t('nav.wishlist')} />
+          <Row to="/deals" icon={LayoutGrid} label={t('nav.deals')} />
+        </Card>
+      )}
+
+      {/* ── SETTINGS (spec §27) ── */}
+      <Card title={t('settings.title')}>
         <Row onClick={() => setLangOpen(true)} icon={Globe} label={t('mobile.language')} value={activeLang} />
+        <Row onClick={() => setCurOpen(true)} icon={Coins} label={t('settings.currency')} value={currency} />
+        <Row to="/account/notifications" icon={Bell} label={t('settings.notifications')} value={unread > 0 ? String(unread) : ''} />
+        <Row to="/privacy" icon={Lock} label={t('settings.privacy')} />
+        <Row onClick={() => setSecurityOpen(true)} icon={ShieldCheck} label={t('settings.security')} />
+      </Card>
+
+      {/* ── SUPPORT ── */}
+      <Card>
         <Row to="/faq" icon={CircleHelp} label={t('mobile.help')} />
         <Row to="/about" icon={Info} label={t('mobile.aboutWeyni')} />
-      </div>
+      </Card>
 
       {/* ── Logout ── */}
       {user && (
@@ -160,7 +193,9 @@ export default function MobileAccount() {
       )}
 
       <LanguageSheet open={langOpen} onClose={() => setLangOpen(false)} />
+      <CurrencySheet open={curOpen} onClose={() => setCurOpen(false)} />
+      <ProfileSheet open={profileOpen} onClose={() => setProfileOpen(false)} />
+      <SecuritySheet open={securityOpen} onClose={() => setSecurityOpen(false)} />
     </div>
   );
 }
-

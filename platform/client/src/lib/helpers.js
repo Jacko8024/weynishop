@@ -18,7 +18,10 @@ export const STAGE_LABELS = {
 
 export const stageIndex = (s) => STAGES.indexOf(s);
 
-export const formatMoney = (n) => `USD ${Number(n || 0).toLocaleString()}`;
+// Base-currency money formatter (admin/seller/delivery portals + fallback).
+// Amounts are stored in the base currency ETB (spec §17) — admin-controlled
+// conversion for buyer display lives in store/currency.js (usePrice).
+export const formatMoney = (n) => `ETB ${Number(n || 0).toLocaleString()}`;
 
 export const haversineKm = (a, b) => {
   if (!a || !b) return null;

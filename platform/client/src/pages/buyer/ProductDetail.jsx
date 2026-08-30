@@ -3,12 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../store/auth.js';
-import { formatMoney } from '../../lib/helpers.js';
+import { usePrice } from '../../store/currency.js';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const nav = useNavigate();
   const { addToCart } = useAuth();
+  const price = usePrice();
   const [product, setProduct] = useState(null);
   const [qty, setQty] = useState(1);
 
@@ -26,7 +27,7 @@ export default function ProductDetail() {
       <div>
         <div className="text-sm text-slate-500">{product.seller?.shopName || product.seller?.name}</div>
         <h1 className="text-2xl font-bold mt-1">{product.name}</h1>
-        <div className="text-2xl text-brand-600 font-bold mt-2">{formatMoney(product.price)}</div>
+        <div className="text-2xl text-brand-600 font-bold mt-2">{price.fmt(product.price)}</div>
         <p className="mt-4 text-slate-600 whitespace-pre-line">{product.description}</p>
         <div className="text-sm text-slate-500 mt-2">In stock: {product.stock}</div>
 

@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { MapPin, Navigation, Search, Check, ChevronLeft, Banknote } from 'lucide-react';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../store/auth.js';
-import { formatMoney } from '../../lib/helpers.js';
+import { usePrice } from '../../store/currency.js';
 import { AddressPicker } from '../MapView.jsx';
 import MapView from '../MapView.jsx';
 import GeolocationButton from '../GeolocationButton.jsx';
@@ -25,6 +25,7 @@ export default function MobileCheckout() {
     const { t } = useTranslation();
     const nav = useNavigate();
     const { cart, clearCart, user, refreshMe } = useAuth();
+    const price = usePrice();
     const saved = user?.defaultAddress;
 
     const [addr, setAddr] = useState(
@@ -107,12 +108,12 @@ export default function MobileCheckout() {
                     {cart.map((c) => (
                         <div key={c.product} className="flex justify-between text-sm gap-3">
                             <span className="truncate">{c.name} × {c.qty}</span>
-                            <span className="font-medium shrink-0">{formatMoney(c.price * c.qty)}</span>
+                            <span className="font-medium shrink-0">{price.fmt(c.price * c.qty)}</span>
                         </div>
                     ))}
                     <div className="flex justify-between font-bold pt-2" style={{ borderTop: '1px solid var(--color-border)' }}>
                         <span>{t('checkout.subtotal')}</span>
-                        <span>{formatMoney(subtotal)}</span>
+                        <span>{price.fmt(subtotal)}</span>
                     </div>
                 </div>
 

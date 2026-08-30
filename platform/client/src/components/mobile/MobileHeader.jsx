@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Search, ShoppingCart, Bell } from 'lucide-react';
+import { Search, ShoppingCart, Bell, Globe } from 'lucide-react';
 import { useAuth } from '../../store/auth.js';
 import { api } from '../../api/client.js';
 import Logo from '../Logo.jsx';
+import LanguageSheet from './LanguageSheet.jsx';
 
 /**
  * Compact mobile shopping header.
@@ -27,6 +28,7 @@ export default function MobileHeader() {
   const { user, cart } = useAuth();
   const cartCount = cart.reduce((s, c) => s + c.qty, 0);
   const [unread, setUnread] = useState(0);
+  const [langOpen, setLangOpen] = useState(false);
 
   // Real unread count — logged-in users only. Silent on failure (badge
   // simply stays at its last known value).
@@ -97,6 +99,16 @@ export default function MobileHeader() {
           <span className="truncate">{t('mobile.searchPlaceholder')}</span>
         </button>
 
+        {/* Language globe — always visible (spec §25) */}
+        <button
+          type="button"
+          onClick={() => setLangOpen(true)}
+          className="w-10 h-10 grid place-items-center rounded-full btn-ghost shrink-0"
+          aria-label={t('mobile.language')}
+        >
+          <Globe size={20} />
+        </button>
+
         <Link
           to={user ? '/buyer/cart' : '/login'}
           className="relative w-10 h-10 grid place-items-center rounded-full btn-ghost shrink-0"
@@ -113,6 +125,9 @@ export default function MobileHeader() {
           )}
         </Link>
       </div>
+
+      {/* Language sheet — shared with Account → Settings → Language */}
+      <LanguageSheet open={langOpen} onClose={() => setLangOpen(false)} />
     </header>
   );
 }

@@ -6,7 +6,7 @@ import { Server as SocketServer } from 'socket.io';
 
 import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
-import { sequelize, Settings, CommissionLedger, DeliveryEarning, SellerEarning, OrderItem, User, Product, Banner, Category, ContactInquiry, SurpriseBooking, SurpriseService } from './models/index.js';
+import { sequelize, Settings, CommissionLedger, DeliveryEarning, SellerEarning, OrderItem, User, Product, Banner, Category, ContactInquiry, SurpriseBooking, SurpriseService, Currency } from './models/index.js';
 import { DeviceToken } from './models/DeviceToken.js';
 import { Notification } from './models/Notification.js';
 import { errorHandler, notFound } from './middleware/error.js';
@@ -173,6 +173,14 @@ const start = async () => {
   await safeAlter('SurpriseService', SurpriseService);
   await safeAlter('DeviceToken', DeviceToken);     // push notifications (device_tokens)
   await safeAlter('Notification', Notification);   // in-app notifications (notifications)
+  await safeAlter('Currency', Currency);           // admin FX rates (currencies)
+
+  // Seed the four launch currencies once (idempotent; admin edits survive).
+  try {
+    await Currency.seedDefaults();
+  } catch (e) {
+    console.warn('[migrate] currency seed skipped:', e.message);
+  }
 
   // One-time backfill: any pre-existing product rows have basePrice = 0 from
   // the column default. Initialise them to the current price so seller

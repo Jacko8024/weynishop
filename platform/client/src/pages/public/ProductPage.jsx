@@ -11,7 +11,8 @@ import { api } from '../../api/client.js';
 import { useAuth } from '../../store/auth.js';
 import { useWishlist } from '../../store/wishlist.js';
 import { useLoginGate } from '../../store/loginGate.js';
-import { fmtPrice, fmtCompact, effectivePrice } from '../../lib/format.js';
+import { fmtCompact, effectivePrice } from '../../lib/format.js';
+import { usePrice } from '../../store/currency.js';
 import { useCategories, findCategory } from '../../lib/categories.js';
 import { addRecentlyViewed } from '../../lib/recentlyViewed.js';
 import useDocumentTitle from '../../lib/useDocumentTitle.js';
@@ -29,6 +30,7 @@ export default function ProductPage() {
   const wished = useWishlist((s) => s.ids.has(String(id)));
   const toggleWish = useWishlist((s) => s.toggle);
   const openGate = useLoginGate((s) => s.open);
+  const money = usePrice();
 
   const [product, setProduct] = useState(null);
   const [ProductCatIcon, setProductCatIcon] = useState(null);
@@ -190,11 +192,11 @@ export default function ProductPage() {
           <div className="card p-4">
             <div className="flex items-baseline gap-2 flex-wrap">
               <span className="price-num text-3xl font-extrabold" style={{ color: isFlash ? 'var(--color-flash)' : 'var(--color-brand)' }}>
-                {fmtPrice(price)} USD
+                {money.fmt(price)}
               </span>
               {(isFlash || qty > 1) && Number(price) !== Number(product.price) && (
                 <span className="price-num text-base line-through" style={{ color: 'var(--color-muted)' }}>
-                  {fmtPrice(product.price)}
+                  {money.fmt(product.price)}
                 </span>
               )}
               {isFlash && percent && (
@@ -225,7 +227,7 @@ export default function ProductPage() {
                         <div className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
                           {tier.minQty}+ pcs
                         </div>
-                        <div className="price-num font-semibold text-sm">{fmtPrice(tier.price)} USD</div>
+                        <div className="price-num font-semibold text-sm">{money.fmt(tier.price)}</div>
                       </div>
                     ))}
                   </div>

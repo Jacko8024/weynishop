@@ -7,6 +7,7 @@ import { useAuth } from '../../store/auth.js';
 import { useWishlist } from '../../store/wishlist.js';
 import { useLoginGate } from '../../store/loginGate.js';
 import { fmtPrice, fmtCompact } from '../../lib/format.js';
+import { usePrice } from '../../store/currency.js';
 import Stars from '../Stars.jsx';
 
 /**
@@ -20,6 +21,7 @@ export default function MobileProductCard({ product }) {
   const wished = useWishlist((s) => s.ids.has(String(product._id)));
   const toggleWish = useWishlist((s) => s.toggle);
   const openGate = useLoginGate((s) => s.open);
+  const price = usePrice();
   const [popping, setPopping] = useState(false);
 
   const images = product.images?.length ? product.images : [product.image].filter(Boolean);
@@ -65,7 +67,7 @@ export default function MobileProductCard({ product }) {
         {/* Discount badge */}
         {isFlash && percent && (
           <span className="absolute top-1.5 left-1.5 text-[10px] font-bold text-white px-1.5 py-0.5 rounded"
-                style={{ background: 'linear-gradient(135deg,#EB5824,#C7461A)' }}>
+            style={{ background: 'linear-gradient(135deg,#EB5824,#C7461A)' }}>
             -{percent}%
           </span>
         )}
@@ -99,11 +101,11 @@ export default function MobileProductCard({ product }) {
             className="price-num text-[15px] font-bold leading-none"
             style={{ color: isFlash ? 'var(--color-flash)' : 'var(--color-brand)' }}
           >
-            ${fmtPrice(isFlash ? flashPrice : product.price)}
+            {price.fmt(isFlash ? flashPrice : product.price)}
           </span>
           {isFlash && Number(flashPrice) !== Number(product.price) && (
             <span className="price-num text-[11px] line-through" style={{ color: 'var(--color-muted)' }}>
-              ${fmtPrice(product.price)}
+              {price.fmt(product.price)}
             </span>
           )}
         </div>

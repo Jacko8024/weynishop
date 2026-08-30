@@ -6,7 +6,7 @@ import MobileCategoryScroller from './MobileCategoryScroller.jsx';
 import MobileFlashDeals from './MobileFlashDeals.jsx';
 import MobileProductCard from './MobileProductCard.jsx';
 import { getRecentlyViewed } from '../../lib/recentlyViewed.js';
-import { fmtPrice } from '../../lib/format.js';
+import { usePrice } from '../../store/currency.js';
 
 function SectionHeader({ title, to }) {
   const { t } = useTranslation();
@@ -24,32 +24,33 @@ function SectionHeader({ title, to }) {
 
 /** Compact product tile for horizontal rails (Food / Groceries / Recent). */
 function RailCard({ product }) {
+  const price = usePrice();
   const images = product.images?.length ? product.images : [product.image].filter(Boolean);
   const isFlash = !!product.flashSaleActive;
   return (
     <Link to={`/product/${product._id}`} className="w-[118px] shrink-0 press" aria-label={product.name}>
       <div className="relative w-[118px] h-[118px] rounded-xl overflow-hidden"
-           style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+        style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
         {images[0] ? (
           <img src={images[0]} alt={product.name} width="236" height="236"
-               className="w-full h-full object-cover" loading="lazy" decoding="async" />
+            className="w-full h-full object-cover" loading="lazy" decoding="async" />
         ) : (
           <div className="w-full h-full grid place-items-center text-2xl">📦</div>
         )}
         {isFlash && product.flashSalePercent > 0 && (
           <span className="absolute bottom-0 left-0 text-[10px] font-bold text-white px-1.5 py-0.5 rounded-tr-lg"
-                style={{ background: 'linear-gradient(135deg,#EB5824,#C7461A)' }}>
+            style={{ background: 'linear-gradient(135deg,#EB5824,#C7461A)' }}>
             -{Math.round(Number(product.flashSalePercent))}%
           </span>
         )}
       </div>
       <div className="mt-1 text-[11px] leading-tight line-clamp-2 min-h-[2.4em] font-localized"
-           style={{ color: 'var(--color-text)' }}>
+        style={{ color: 'var(--color-text)' }}>
         {product.name}
       </div>
       <div className="price-num text-[13px] font-bold mt-0.5"
-           style={{ color: isFlash ? 'var(--color-flash)' : 'var(--color-brand)' }}>
-        ${fmtPrice(isFlash ? product.flashSalePrice : product.price)}
+        style={{ color: isFlash ? 'var(--color-flash)' : 'var(--color-brand)' }}>
+        {price.fmt(isFlash ? product.flashSalePrice : product.price)}
       </div>
     </Link>
   );
