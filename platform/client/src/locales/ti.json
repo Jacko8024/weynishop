@@ -86,6 +86,7 @@
     "invalidPhone": "ትኽክለኛ ቁጽሪ ተሌፎን ኣእትዉ",
     "loggingIn": "ይኣትዉ ኣለዉ…",
     "continueWithGoogle": "ብGoogle ቀጽሉ",
+    "googleNotSetup": "እቲ ናይ Google እንቶይ ንዚህ ትሕዝቶ ኣይተዳለወን። ኣብ Firebase Console ነቲ ናይ Android ትሕዝቶ com.weynishop.app ምስ እቲ SHA-1 ናይ keystore ውሳኢ ወስደዉ ድሕሪኡ ነቲ ትሕዝቶ ደግመዉ ሃንደዉ።",
     "googleWorking": "ኣእታዉ ኣብ ምውዳእ ላይ…",
     "googleFailed": "እቲ ናይ Google እንቶይ ኣይተዓወተን። እባክዉ ደግመዉ ፈትኑ።",
     "googleCancelled": "እቲ ናይ Google እንቶይ ተሰሪዑ።",

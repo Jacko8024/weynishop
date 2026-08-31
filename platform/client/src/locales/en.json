@@ -86,6 +86,7 @@
     "invalidPhone": "Enter a valid phone number",
     "loggingIn": "Logging in…",
     "continueWithGoogle": "Continue with Google",
+    "googleNotSetup": "Google sign-in isn't set up for this app yet. In Firebase Console, add the Android app com.weynishop.app with your keystore SHA-1 fingerprint, then rebuild the app.",
     "googleWorking": "Completing sign-in…",
     "googleFailed": "Google sign-in failed. Please try again.",
     "googleCancelled": "Google sign-in cancelled.",

@@ -86,6 +86,7 @@
     "invalidPhone": "Geli lambarka taleefanka saxda ah",
     "loggingIn": "Soo galaya…",
     "continueWithGoogle": "Sii wad Google",
+    "googleNotSetup": "Galitaanka Google weli lama dejiyin barnaamijkan. Firebase Console ku dar abka Android com.weynishop.app oo leh tirakoobkaaga SHA-1, ka dibna abka dib u dhis.",
     "googleWorking": "Dhammaystiraya gelitaanka…",
     "googleFailed": "Galitaanka Google wuu fashilmay. Fadlan mar kale isku day.",
     "googleCancelled": "Galitaanka Google waa la joojiyay.",

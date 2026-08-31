@@ -86,6 +86,7 @@
     "invalidPhone": "ትክክለኛ የስልክ ቁጥር ያስገቡ",
     "loggingIn": "በመግባት ላይ…",
     "continueWithGoogle": "በGoogle ይቀጥሉ",
+    "googleNotSetup": "የGoogle ግቢያ ለዚህ መተግበሪያ እስካሁን አልተዘጋጀም። በFirebase Console ውስጥ የcom.weynishop.app አንድሮይድ መተግበሪያውን ከእርስዎ keystore SHA-1 ጋር ያክሉ፣ ከዚያ መተግበሪያውን እንደገና ይገንቡ።",
     "googleWorking": "ግቢያውን በማጠናቀቅ ላይ…",
     "googleFailed": "የGoogle ግቢያ አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
     "googleCancelled": "የGoogle ግቢያ ተሰርዟል።",

@@ -65,11 +65,25 @@ const GoogleAuth = Capacitor.registerPlugin('GoogleAuth', {
  * Rejects with code CANCELLED when the user dismisses the chooser.
  */
 const nativeGoogleSignIn = async () => {
-  const res = await GoogleAuth.signIn(); // { idToken, displayName?, photoUrl? }
-  const credential = GoogleAuthProvider.credential(res.idToken);
-  const cred = await signInWithCredential(firebaseAuth, credential);
-  const idToken = await cred.user.getIdToken(/* forceRefresh */ true);
-  return { idToken, firebaseUser: cred.user };
+  try {
+    const res = await GoogleAuth.signIn(); // { idToken, displayName?, photoUrl? }
+    const credential = GoogleAuthProvider.credential(res.idToken);
+    const cred = await signInWithCredential(firebaseAuth, credential);
+    const idToken = await cred.user.getIdToken(/* forceRefresh */ true);
+    return { idToken, firebaseUser: cred.user };
+  } catch (err) {
+    // Capacitor rejects plugin calls with a plain object { code, message } —
+    // not an Error instance. Wrap it so the code (CANCELLED /
+    // NO_CREDENTIALS / NATIVE_ERROR …) and message survive intact to
+    // GoogleSignInButton's cancel-vs-error handling.
+    if (err && typeof err === 'object' && !(err instanceof Error)) {
+      throw Object.assign(new Error(err.message || 'Google sign-in failed'), {
+        code: err.code,
+        data: err.data,
+      });
+    }
+    throw err;
+  }
 };
 
 // Role chosen on the Login screen (buyer/seller/delivery) must reach the

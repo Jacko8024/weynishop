@@ -86,6 +86,7 @@
     "invalidPhone": "Lakkoofsa bilbilaa sirrii galchi",
     "loggingIn": "Seenua…",
     "continueWithGoogle": "Google waliin seenua",
+    "googleNotSetup": "Seensi Googlen kun appii kanaaf amma hin qopheeffanne. Firebase Console keessatti appii Android com.weynishop.app fi SHA-1 keysaa kee waliin dabalachiisi, booda appii haaromsi.",
     "googleWorking": "Seensa xumuraa jira…",
     "googleFailed": "Google'n seensa kufeedha. Irra deebi'ii yaaladhu.",
     "googleCancelled": "Seensi Google dhaabameera.",

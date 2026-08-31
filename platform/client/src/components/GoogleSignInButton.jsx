@@ -32,10 +32,20 @@ export default function GoogleSignInButton({ role, onSuccess, label }) {
         code === 'auth/cancelled-popup-request' ||
         code === 'access_denied' ||
         code === 'auth/user-cancelled' ||
-        code === 'CANCELLED' ||        // native chooser dismissed (Credential Manager)
-        code === 'NO_CREDENTIALS'      // no Google account on the device + user backed out
+        code === 'CANCELLED'        // native chooser dismissed (Credential Manager)
       ) {
         // User dismissed / cancelled — quiet return to the login screen.
+        return;
+      }
+      if (code === 'NO_CREDENTIALS') {
+        // NOT a quiet cancel: on a device with a Google account this almost
+        // always means Credential Manager REJECTED our app (missing Android
+        // OAuth client / SHA-1 in Firebase) — ApiException 10 arrives
+        // wrapped as NoCredentialException. Silent swallowing here was the
+        // "button does nothing" bug.
+        setFailed(true);
+        toast.error(t('auth.googleNotSetup'));
+        console.error('[GoogleSignIn] NO_CREDENTIALS — register com.weynishop.app in Firebase with its SHA-1 fingerprint (see MOBILE_SETUP.md)');
         return;
       }
       setFailed(true);
