@@ -60,9 +60,23 @@ public class GoogleAuthPlugin extends Plugin {
 
     private static final String TAG = "WeyniGoogleAuth";
 
-    // Public web OAuth client (client_type 3) of the Firebase project
-    // "weynishop". Public identifier — NOT a secret.
-    private static final String WEB_CLIENT_ID = "700988913337-pjdm0g3m6p2rkmq8mesolck7e5ks1qnt.apps.googleusercontent.com";
+    // Fallback web OAuth client (client_type 3) of the Firebase project "weynishop".
+    private static final String WEB_CLIENT_ID = "700988913337-fr311o2v828198entc788olphcesvsap.apps.googleusercontent.com";
+
+    private String getServerClientId() {
+        try {
+            int resId = getContext().getResources().getIdentifier("default_web_client_id", "string", getContext().getPackageName());
+            if (resId != 0) {
+                String clientId = getContext().getString(resId);
+                if (clientId != null && !clientId.trim().isEmpty()) {
+                    return clientId.trim();
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Could not load default_web_client_id resource: " + e.getMessage());
+        }
+        return WEB_CLIENT_ID;
+    }
 
     /**
      * Launch the native Google account chooser.
@@ -83,13 +97,15 @@ public class GoogleAuthPlugin extends Plugin {
         activity.runOnUiThread(() -> {
             try {
                 final CredentialManager credentialManager = CredentialManager.create(getContext());
+                final String clientId = getServerClientId();
+                Log.d(TAG, "Using server client ID: " + clientId);
 
                 // filterByAuthorizedAccounts=false → show ALL device Google
                 // accounts and the system "Add another account" entry.
                 // autoSelectEnabled=false → always show the chooser sheet.
                 GetGoogleIdOption googleIdOption = new GetGoogleIdOption.Builder()
                         .setFilterByAuthorizedAccounts(false)
-                        .setServerClientId(WEB_CLIENT_ID)
+                        .setServerClientId(clientId)
                         .setAutoSelectEnabled(false)
                         .build();
 
