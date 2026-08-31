@@ -34,7 +34,7 @@ const MAP_OPTIONS = {
 
 const AUTOCOMPLETE_FIELDS = ['formatted_address', 'name', 'geometry'];
 const AUTOCOMPLETE_OPTIONS = {
-  componentRestrictions: { country: ['et'] },
+  componentRestrictions: { country: ['et', 'sa', 'ae', 'qa', 'kw', 'om', 'bh', 'jo', 'iq', 'ye', 'lb', 'sy'] },
   fields: AUTOCOMPLETE_FIELDS,
 };
 
@@ -276,9 +276,11 @@ export function AddressPicker({
 
   const handleInputChange = useCallback(
     (e) => {
-      updateValue(e.target.value);
+      const text = e.target.value;
+      updateValue(text);
+      onChange?.({ address: text });
     },
-    [updateValue]
+    [onChange, updateValue]
   );
 
   // Block Enter from submitting parent forms before a Places suggestion is picked.

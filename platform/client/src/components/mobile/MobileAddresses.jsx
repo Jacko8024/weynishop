@@ -30,15 +30,17 @@ export default function MobileAddresses() {
     const [saving, setSaving] = useState(false);
 
     const save = async () => {
-        if (!addr?.lat || !addr.address?.trim()) {
+        if (!addr?.address?.trim()) {
             toast.error(t('addr.needAddress'));
             return;
         }
+        const lat = addr?.lat || 9.0227;
+        const lng = addr?.lng || 38.7613;
         setSaving(true);
         try {
             await api.put('/users/me', {
                 defaultAddress: {
-                    coordinates: [addr.lng, addr.lat],
+                    coordinates: [lng, lat],
                     address: addr.address.trim(),
                 },
             });
@@ -123,7 +125,13 @@ export default function MobileAddresses() {
                                     className="input"
                                     placeholder={t('addr.searchPh')}
                                     defaultValue={addr?.address || ''}
-                                    onChange={(v) => v.lat && setAddr(v)}
+                                    onChange={(v) =>
+                                        setAddr((prev) => ({
+                                            lat: v.lat ?? prev?.lat ?? 9.0227,
+                                            lng: v.lng ?? prev?.lng ?? 38.7613,
+                                            address: v.address !== undefined ? v.address : prev?.address || '',
+                                        }))
+                                    }
                                 />
                             </div>
                         </div>

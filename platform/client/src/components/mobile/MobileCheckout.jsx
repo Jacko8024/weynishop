@@ -42,7 +42,10 @@ export default function MobileCheckout() {
     /* ---- step 2 → 3: open the confirmation card ---- */
     const review = () => {
         if (!cart.length) return toast.error(t('empty.emptyCart'));
-        if (!addr?.lat || !addr?.address?.trim()) return toast.error(t('addr.needAddress'));
+        if (!addr?.address?.trim()) return toast.error(t('addr.needAddress'));
+        if (!addr?.lat || !addr?.lng) {
+            setAddr((prev) => ({ ...prev, lat: prev?.lat || 9.0227, lng: prev?.lng || 38.7613 }));
+        }
         setConfirming(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -189,7 +192,13 @@ export default function MobileCheckout() {
                     className="input"
                     placeholder={t('addr.searchPh')}
                     defaultValue={addr?.address || ''}
-                    onChange={(v) => v.lat && setAddr(v)}
+                    onChange={(v) =>
+                        setAddr((prev) => ({
+                            lat: v.lat ?? prev?.lat ?? 9.0227,
+                            lng: v.lng ?? prev?.lng ?? 38.7613,
+                            address: v.address !== undefined ? v.address : prev?.address || '',
+                        }))
+                    }
                 />
             </div>
 
