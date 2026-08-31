@@ -187,6 +187,7 @@
     "confirm": "Confirm address",
     "searching": "Searching…",
     "searchFailed": "Address search is unavailable. Please type your address manually.",
+    "noResults": "No matching addresses — type your address manually",
     "mapsFailed": "Google Maps failed to load",
     "mapsOff": "Maps search is disabled — enter your address manually",
     "approximateLabel": "Approximate location",

@@ -187,6 +187,7 @@
     "confirm": "Teessoo mirkaneessi",
     "searching": "Barbaadaa jira…",
     "searchFailed": "Barbaanni teessoo hin argamu. Maaloo harkaan barreessi.",
+    "noResults": "Teessoon wal simtu hin argamne — maaloo harkaan barreessi",
     "mapsFailed": "Google Maps hin fe'amu",
     "mapsOff": "Barbaanni kaartaa cufameera — teessoo kee harkaan barreessi",
     "approximateLabel": "Teessoo shallagaa",

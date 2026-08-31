@@ -9,6 +9,7 @@ import {
   canOpenLocationSettings,
   openLocationSettings,
 } from '../lib/geo.js';
+import { reverseGeocode } from '../lib/places.js';
 
 /**
  * Reusable "Use my current location" button (Phase 3).
@@ -30,7 +31,16 @@ export default function GeolocationButton({ onLocate, className = '', label }) {
     setLoading(true);
     try {
       const loc = await getCurrentLocation();
-      onLocate?.(loc);
+
+      // Best effort: turn the raw coordinate into a readable street address
+      // via the server-side proxy (the key is referrer-restricted, and the
+      // Android WebView origin is not allow-listed — direct calls 403 there).
+      let address = null;
+      try {
+        address = await reverseGeocode(loc.lat, loc.lng);
+      } catch { /* fall back to coordinates below */ }
+
+      onLocate?.(address ? { ...loc, address } : loc);
       toast.success(t('geo.captured'));
     } catch (err) {
       const kind = err?.kind || 'error';

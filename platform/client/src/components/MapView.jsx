@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   GoogleMap,
   Marker,
-  Autocomplete,
   DirectionsRenderer,
   useJsApiLoader,
 } from '@react-google-maps/api';
+import { MapPin, Search, Loader2 } from 'lucide-react';
 import { GOOGLE_MAPS_API_KEY } from '../api/client.js';
+import { searchPlaces, getPlaceDetails, staticMapUrl } from '../lib/places.js';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -32,19 +34,35 @@ const MAP_OPTIONS = {
   clickableIcons: false,
 };
 
-const AUTOCOMPLETE_FIELDS = ['formatted_address', 'name', 'geometry'];
-const AUTOCOMPLETE_OPTIONS = {
-  fields: AUTOCOMPLETE_FIELDS,
+const MAPS_LOAD_TIMEOUT_MS = 9000;
+
+/**
+ * Global Google-Maps auth-failure tracking.
+ *
+ * When the Maps JS key is rejected (HTTP-referrer restriction vs the
+ * Capacitor WebView origin `https://localhost`), Google calls
+ * `window.gm_authFailure` and leaves the map gray. We record it and
+ * broadcast an event so every mounted MapView can swap to the
+ * server-proxied STATIC map image, which never depends on the referrer.
+ */
+let mapsAuthFailed = false;
+const readAuthFailed = () => {
+  try { return mapsAuthFailed || sessionStorage.getItem('weynishop:mapsAuthFailed') === '1'; } catch { return mapsAuthFailed; }
+};
+const markAuthFailed = () => {
+  mapsAuthFailed = true;
+  try { sessionStorage.setItem('weynishop:mapsAuthFailed', '1'); } catch { /* ignore */ }
+  window.dispatchEvent(new Event('weynishop:maps-auth-failed'));
 };
 
-// Surface API-key / billing failures clearly. Google calls this global on auth errors.
 if (typeof window !== 'undefined') {
   window.gm_authFailure = () => {
     // eslint-disable-next-line no-console
     console.error(
-      '[Google Maps] Authentication failed. Verify VITE_GOOGLE_MAPS_API_KEY and that ' +
-        'Maps JavaScript API + Places API are enabled with billing on the Google Cloud project.'
+      '[Google Maps] Authentication failed (key rejected for this origin). ' +
+      'Falling back to the server-proxied static map + Places proxy.'
     );
+    markAuthFailed();
   };
 }
 
@@ -65,6 +83,12 @@ export const useGoogleMaps = () =>
     language: 'en',
   });
 
+/**
+ * True when the interactive Maps JS cannot be used in this context
+ * (auth failure recorded earlier, e.g. inside the Android APK).
+ */
+export const isMapsJsBlocked = readAuthFailed;
+
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
@@ -83,12 +107,39 @@ const routeKey = (route) =>
     ? `${route.origin.lat},${route.origin.lng}|${route.destination.lat},${route.destination.lng}`
     : '';
 
+/** Static-map fallback (server-proxied; works even when Maps JS auth fails). */
+const StaticMap = ({ center, markers = [], zoom = 14, height }) => {
+  const pin = markers[0]?.position || center;
+  if (!pin) return <StatusBox height={height}>Map unavailable</StatusBox>;
+  return (
+    <div
+      className="rounded-xl overflow-hidden border border-slate-200 relative"
+      style={{ height }}
+    >
+      <img
+        src={staticMapUrl({ lat: pin.lat, lng: pin.lng, zoom, w: 640, h: Math.round(height) })}
+        alt="Map"
+        className="w-full h-full object-cover"
+        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+      />
+      <div className="absolute inset-0 grid place-items-center pointer-events-none">
+        <MapPin size={28} style={{ color: 'var(--color-brand)' }} fill="currentColor" />
+      </div>
+    </div>
+  );
+};
+
 // ---------------------------------------------------------------------------
 // MapView
 // ---------------------------------------------------------------------------
 
 /**
- * Generic Google Map.
+ * Generic Google Map with a graceful degradation chain:
+ *
+ *   1. Interactive Maps JS (website, and the APK when the key allows it)
+ *   2. Server-proxied STATIC map image (APK when the referrer-restricted
+ *      key rejects the WebView origin — see gm_authFailure above)
+ *   3. Neutral status box
  *
  * @param {object}   props
  * @param {{lat:number,lng:number}=}             props.center
@@ -111,9 +162,27 @@ export default function MapView({
   fitMarkers = true,
 }) {
   const { isLoaded, loadError } = useGoogleMaps();
+  const [authFailed, setAuthFailed] = useState(readAuthFailed());
+  const [timedOut, setTimeouted] = useState(false);
   const [directions, setDirections] = useState(null);
   const mapRef = useRef(null);
   const lastRouteKeyRef = useRef('');
+
+  // React to a global auth failure announced after this component mounted.
+  useEffect(() => {
+    const onFail = () => setAuthFailed(true);
+    window.addEventListener('weynishop:maps-auth-failed', onFail);
+    return () => window.removeEventListener('weynishop:maps-auth-failed', onFail);
+  }, []);
+
+  // If the Maps script hangs (blocked network / silent failure inside the
+  // APK), give up after a timeout and show the static fallback instead of an
+  // endless "Loading map…" box.
+  useEffect(() => {
+    if (isLoaded || loadError || authFailed || timedOut) return undefined;
+    const t = window.setTimeout(() => setTimeouted(true), MAPS_LOAD_TIMEOUT_MS);
+    return () => window.clearTimeout(t);
+  }, [isLoaded, loadError, authFailed, timedOut]);
 
   const resolvedCenter = useMemo(
     () => center || markers[0]?.position || DEFAULT_CENTER,
@@ -174,8 +243,17 @@ export default function MapView({
       </StatusBox>
     );
   }
-  if (loadError) {
-    return <StatusBox height={height}>Failed to load Google Maps</StatusBox>;
+
+  // Degraded modes — static image still gives a usable map (via our proxy).
+  if (authFailed || loadError || timedOut) {
+    return (
+      <StaticMap
+        center={resolvedCenter}
+        markers={markers}
+        zoom={zoom}
+        height={height}
+      />
+    );
   }
   if (!isLoaded) {
     return <StatusBox height={height}>Loading map…</StatusBox>;
@@ -213,8 +291,14 @@ export default function MapView({
 // ---------------------------------------------------------------------------
 
 /**
- * Places-Autocomplete search box. Resolves a selected place to
- * `{ lat, lng, address }` and forwards via `onChange`.
+ * Address search box backed by the SERVER-SIDE Places proxy
+ * (`/api/v1/places/*`). It deliberately does NOT depend on the Google Maps
+ * JS bundle: the old `Autocomplete` widget silently returned nothing inside
+ * the Android APK because the referrer-restricted key rejected the WebView's
+ * `https://localhost` origin. Search now behaves identically on web & mobile.
+ *
+ * Resolves a selected place to `{ lat, lng, address }` and forwards via
+ * `onChange`; plain typing forwards `{ address }` only.
  *
  * @param {object} props
  * @param {(loc:{lat?:number,lng?:number,address:string})=>void} props.onChange
@@ -222,6 +306,7 @@ export default function MapView({
  * @param {string} [props.defaultValue]
  * @param {string} [props.value]               Optional controlled value.
  * @param {string} [props.className='input']
+ * @param {{lat:number,lng:number}} [props.near]  Optional bias point (user GPS).
  */
 export function AddressPicker({
   onChange,
@@ -229,10 +314,21 @@ export function AddressPicker({
   defaultValue = '',
   value,
   className = 'input',
+  near,
 }) {
-  const { isLoaded, loadError } = useGoogleMaps();
-  const autocompleteRef = useRef(null);
+  const { t } = useTranslation();
   const [internalValue, setInternalValue] = useState(defaultValue);
+  const [predictions, setPredictions] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState('idle'); // idle | searching | failed
+  const [highlight, setHighlight] = useState(-1);
+
+  const wrapRef = useRef(null);
+  const sessionRef = useRef(
+    `sess_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`
+  );
+  const debounceRef = useRef(null);
+  const latestReqRef = useRef(0);
 
   const isControlled = value !== undefined;
   const inputValue = isControlled ? value : internalValue;
@@ -244,82 +340,166 @@ export function AddressPicker({
     [isControlled]
   );
 
-  const handleAutocompleteLoad = useCallback((instance) => {
-    autocompleteRef.current = instance;
-    // Bias towards Ethiopia + restrict returned fields (cheaper API call).
-    instance.setOptions(AUTOCOMPLETE_OPTIONS);
-    if (window.google?.maps?.LatLngBounds) {
-      const { north, south, east, west } = ETHIOPIA_BOUNDS;
-      instance.setBounds(
-        new window.google.maps.LatLngBounds(
-          { lat: south, lng: west },
-          { lat: north, lng: east }
-        )
-      );
-    }
+  // Close on outside taps (the WebView needs the explicit `mousedown`+`touchstart`).
+  useEffect(() => {
+    const onDoc = (e) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('touchstart', onDoc);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('touchstart', onDoc);
+    };
   }, []);
 
-  const handlePlaceChanged = useCallback(() => {
-    const place = autocompleteRef.current?.getPlace();
-    if (!place?.geometry?.location) {
-      // User pressed Enter before a suggestion was selected — keep the typed text only.
-      onChange?.({ address: inputValue });
-      return;
-    }
-    const lat = place.geometry.location.lat();
-    const lng = place.geometry.location.lng();
-    const address = place.formatted_address || place.name || '';
-    updateValue(address);
-    onChange?.({ lat, lng, address });
-  }, [inputValue, onChange, updateValue]);
+  useEffect(
+    () => () => {
+      if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    },
+    []
+  );
+
+  const runSearch = useCallback(
+    (text) => {
+      const reqId = ++latestReqRef.current;
+      setStatus('searching');
+      searchPlaces(text, { lat: near?.lat, lng: near?.lng, session: sessionRef.current })
+        .then((res) => {
+          if (reqId !== latestReqRef.current) return; // stale response
+          if (res === null) {
+            setPredictions([]);
+            setStatus('failed');
+            return;
+          }
+          setPredictions(res);
+          setStatus('idle');
+          setOpen(true);
+          setHighlight(res.length ? 0 : -1);
+        })
+        .catch(() => {
+          if (reqId !== latestReqRef.current) return;
+          setPredictions([]);
+          setStatus('failed');
+        });
+    },
+    [near?.lat, near?.lng]
+  );
 
   const handleInputChange = useCallback(
     (e) => {
       const text = e.target.value;
       updateValue(text);
       onChange?.({ address: text });
+
+      if (debounceRef.current) window.clearTimeout(debounceRef.current);
+      const trimmed = text.trim();
+      if (trimmed.length < 2) {
+        setPredictions([]);
+        setStatus('idle');
+        setOpen(false);
+        return;
+      }
+      debounceRef.current = window.setTimeout(() => runSearch(trimmed), 300);
+    },
+    [onChange, runSearch, updateValue]
+  );
+
+  const pick = useCallback(
+    async (pred) => {
+      setOpen(false);
+      if (!pred) return;
+      const description = pred.description || pred.mainText || '';
+      updateValue(description);
+      setStatus('searching');
+      const place = await getPlaceDetails(pred.placeId);
+      setStatus('idle');
+      if (place && Number.isFinite(place.lat) && Number.isFinite(place.lng)) {
+        onChange?.({ lat: place.lat, lng: place.lng, address: place.address || description });
+      } else {
+        // Details failed — still hand back the text so checkout can continue.
+        onChange?.({ address: description });
+      }
     },
     [onChange, updateValue]
   );
 
-  // Block Enter from submitting parent forms before a Places suggestion is picked.
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter') e.preventDefault();
-  }, []);
-
-  // ---- fallback states ----
-  if (!GOOGLE_MAPS_API_KEY) {
-    return (
-      <input
-        className={className}
-        placeholder="Type address (Maps disabled)"
-        value={inputValue}
-        onChange={(e) => {
-          updateValue(e.target.value);
-          onChange?.({ address: e.target.value });
-        }}
-      />
-    );
-  }
-  if (loadError) {
-    return (
-      <input className={className} placeholder="Maps failed to load" disabled value={inputValue} />
-    );
-  }
-  if (!isLoaded) {
-    return <input className={className} placeholder="Loading…" disabled />;
-  }
+  // Enter: pick the highlighted/first suggestion instead of submitting the form.
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === 'Escape') {
+        setOpen(false);
+        return;
+      }
+      if (e.key === 'ArrowDown' && open && predictions.length) {
+        e.preventDefault();
+        setHighlight((h) => Math.min(h + 1, predictions.length - 1));
+        return;
+      }
+      if (e.key === 'ArrowUp' && open && predictions.length) {
+        e.preventDefault();
+        setHighlight((h) => Math.max(h - 1, 0));
+        return;
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (open && predictions.length) {
+          pick(predictions[Math.max(highlight, 0)]);
+        }
+      }
+    },
+    [highlight, open, pick, predictions]
+  );
 
   return (
-    <Autocomplete onLoad={handleAutocompleteLoad} onPlaceChanged={handlePlaceChanged}>
+    <div ref={wrapRef} className="relative">
       <input
         className={className}
         placeholder={placeholder}
         value={inputValue}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
+        onFocus={() => { if (predictions.length) setOpen(true); }}
         autoComplete="off"
+        enterKeyHint="search"
       />
-    </Autocomplete>
+      {open && (
+        <div className="addr-suggest" role="listbox">
+          {status === 'searching' && (
+            <div className="addr-suggest-status">
+              <Loader2 size={14} className="animate-spin" /> {t('addr.searching')}
+            </div>
+          )}
+          {status === 'failed' && (
+            <div className="addr-suggest-status">{t('addr.searchFailed')}</div>
+          )}
+          {status === 'idle' && predictions.length === 0 && (
+            <div className="addr-suggest-status">{t('addr.noResults')}</div>
+          )}
+          {status !== 'failed' &&
+            predictions.map((p, i) => (
+              <button
+                key={p.placeId || i}
+                type="button"
+                role="option"
+                aria-selected={i === highlight}
+                className={`addr-suggest-item ${i === highlight ? 'addr-suggest-item-active' : ''}`}
+                onMouseEnter={() => setHighlight(i)}
+                onClick={() => pick(p)}
+              >
+                <Search size={14} className="shrink-0 mt-0.5" style={{ color: 'var(--color-muted)' }} />
+                <span className="min-w-0">
+                  <span className="block font-medium truncate">{p.mainText}</span>
+                  {p.secondaryText && (
+                    <span className="block truncate addr-suggest-sub">{p.secondaryText}</span>
+                  )}
+                </span>
+              </button>
+            ))}
+        </div>
+      )}
+    </div>
   );
 }

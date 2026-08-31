@@ -64,8 +64,8 @@ export default function Checkout() {
         <div className="flex items-center justify-between gap-2 mt-2">
           <div className="text-xs text-slate-500">Or tap on the map to drop a pin.</div>
           <GeolocationButton
-            onLocate={({ lat, lng }) =>
-              setAddr({ lat, lng, address: `${lat.toFixed(5)}, ${lng.toFixed(5)}` })
+            onLocate={({ lat, lng, address }) =>
+              setAddr({ lat, lng, address: address || `${lat.toFixed(5)}, ${lng.toFixed(5)}` })
             }
           />
         </div>

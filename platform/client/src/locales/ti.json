@@ -187,6 +187,7 @@
     "confirm": "ኣድራሻ ኣረጋግጽ",
     "searching": "ዝምርካብ…",
     "searchFailed": "ምርካብ ኣድራሻ ኣይተረኽበን። በጃኻ ብኢድኻ ኣእትዉ።",
+    "noResults": "እተመሳሳል ኣድራሻ ኣይተረኽበን — በጃኻ ብኢድኻ ኣእትዉ",
     "mapsFailed": "Google Maps ኣይተጻወዐን",
     "mapsOff": "ምርካብ ካርታ ተቐጺሩ እዩ — ኣድራሻኻ ብኢድኻ ኣእትዉ",
     "approximateLabel": "ግምታዊ ቦታ",

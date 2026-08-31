@@ -187,6 +187,7 @@
     "confirm": "Xaqiiji cinwaanka",
     "searching": "Raadinaya…",
     "searchFailed": "Raadinta cinwaanka lama heli karo. Fadlan gacanta ku qor cinwaankaaga.",
+    "noResults": "Cinwaan la mid ah lama helin — fadlan gacanta ku qor cinwaankaaga",
     "mapsFailed": "Google Maps lama soo dejin karo",
     "mapsOff": "Raadinta khariidad waa la damiyay — gacanta ku qor cinwaankaaga",
     "approximateLabel": "Goob qiyaasi ah",

@@ -49,35 +49,46 @@ Firebase Console → Authentication → Sign-in method → **Google enabled**.
 
 ## 2. Google Maps / Places (address search + map)
 
-`VITE_GOOGLE_MAPS_API_KEY` is already set in `platform/client/.env` —
-**you do NOT need to add another env var.** Verified diagnosis for the
-current key (`AIzaSyCF…WJJs`, project `41192588528`):
+**"Map works on the website but not in the app" — root cause & fix.**
+The web key is restricted by HTTP referrers; the website origin is
+allow-listed, but the Android WebView serves the bundle from
+`https://localhost` and does not reliably send a `Referer` header, so
+Google 403s the requests **only inside the APK**.
 
-- `Maps JavaScript API` loads (HTTP 200) ✔
-- Places calls return `403 PERMISSION_DENIED` ✘ — two blockers in
-  **Google Cloud Console**, not in code:
+Address search, reverse geocoding ("use my location") and the fallback
+map are therefore now routed through **our own API server**
+(`GET /api/v1/places/search|details|reverse|static-map`) — no browser
+referrer involved, identical behaviour on web and mobile. The
+interactive map still uses the Maps JS key and silently falls back to
+the server-proxied static map if the key is rejected in the WebView.
 
-1. **Enable billing** on the project:
+Google Cloud Console setup (project of key `AIzaSyCF…WJJs`):
+
+1. **Enable billing** — required for Places/Geocoding/Static Map:
    <https://console.cloud.google.com/project/_/billing/enable>
-   (Google Maps gives a recurring free monthly credit; autocomplete
-   sessions are billed per session, not per keystroke.)
-2. **Enable the APIs** for the project:
-   - *Maps JavaScript API*
-   - *Places API* (the restored address search uses the classic Places
-     Autocomplete widget bundled with the `places` library)
-   - *Geocoding API* (reverse "use my location" lookup)
-3. Recommended — **restrict the key** (APIs ▸ Credentials ▸ your key):
-   - API restriction: the three APIs above
+   (recurring free monthly credit; autocomplete sessions are billed per
+   session, not per keystroke).
+2. **Enable the APIs**:
+   - *Maps JavaScript API* (interactive map on the website)
+   - *Places API* (legacy) — autocomplete + place details (server proxy)
+   - *Geocoding API* — reverse "use my location" lookup (server proxy)
+   - *Maps Static API* — the fallback map inside the APK (server proxy)
+3. **Restrict the key** (APIs ▸ Credentials ▸ your key):
+   - API restriction: the four APIs above
    - Application restriction ▸ HTTP referrers:
      - `https://www.weynishop.com/*`
      - `https://weynishop.com/*`
      - `http://localhost:5173/*` (dev server)
-     - `https://localhost/*` ← **the Android app**: Capacitor serves the
-       WebView from `https://localhost` (`androidScheme: "https"`)
+     - `https://localhost/*` (Capacitor WebView origin — needed only if
+       the interactive map should also work inside the APK)
+4. Server env: `GOOGLE_MAPS_API_KEY` must be set on the API server
+   (already in `platform/server/.env.example`). Calls originate from the
+   server IP, so you may additionally allow-list that IP in the console.
 
-Until billing + APIs are enabled, the app degrades gracefully: the map
-shows a "Maps disabled" box and address search falls back to plain text
-input — checkout is never blocked.
+Even with no console changes, checkout degrades gracefully: address
+search returns no suggestions (manual entry still works), GPS still
+captures coordinates, and the map falls back to a plain status box —
+checkout is never blocked.
 
 ## 3. Rebuild the Android app
 

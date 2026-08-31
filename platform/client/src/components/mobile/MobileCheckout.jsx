@@ -155,10 +155,10 @@ export default function MobileCheckout() {
                 <div className="text-[13px] mb-3.5" style={{ color: 'var(--color-muted)' }}>{t('checkout.locateHint')}</div>
                 <GeolocationButton
                     className="w-full h-11 rounded-full font-semibold"
-                    onLocate={({ lat, lng }) =>
+                    onLocate={({ lat, lng, address }) =>
                         setAddr((a) => ({
                             lat, lng,
-                            address: a?.address?.trim() ? a.address : `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+                            address: a?.address?.trim() ? a.address : (address || `${lat.toFixed(5)}, ${lng.toFixed(5)}`),
                         }))
                     }
                 />

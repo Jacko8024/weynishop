@@ -35,26 +35,65 @@ html[lang='ti'] .font-localized {
 }
 
 @layer base {
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply antialiased;
     background: var(--color-bg);
     color: var(--color-text);
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }
-  ::selection { background: var(--color-brand); color: #fff; }
+
+  ::selection {
+    background: var(--color-brand);
+    color: #fff;
+  }
 }
 
 @layer components {
-  .btn { @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed; }
-  .btn-primary { @apply btn text-white; background: var(--color-brand); }
-  .btn-primary:hover:not(:disabled) { background: var(--color-brand-dark); }
-  .btn-secondary { @apply btn; background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-border); }
-  .btn-secondary:hover:not(:disabled) { background: var(--color-bg); }
-  .btn-danger { @apply btn bg-danger-500 hover:bg-danger-600 text-white; }
-  .btn-ghost { @apply btn; color: var(--color-text); }
-  .btn-ghost:hover:not(:disabled) { background: var(--color-bg); }
-  .btn-accent { @apply btn text-black; background: var(--color-accent); }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn text-white;
+    background: var(--color-brand);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-brand-dark);
+  }
+
+  .btn-secondary {
+    @apply btn;
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--color-bg);
+  }
+
+  .btn-danger {
+    @apply btn bg-danger-500 hover:bg-danger-600 text-white;
+  }
+
+  .btn-ghost {
+    @apply btn;
+    color: var(--color-text);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--color-bg);
+  }
+
+  .btn-accent {
+    @apply btn text-black;
+    background: var(--color-accent);
+  }
 
   .input {
     @apply w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2;
@@ -63,11 +102,26 @@ html[lang='ti'] .font-localized {
     border: 1px solid var(--color-border);
     --tw-ring-color: var(--color-brand);
   }
-  .label { @apply block text-sm font-medium mb-1; color: var(--color-text); }
-  .card { @apply rounded-xl shadow-sm; background: var(--color-surface); border: 1px solid var(--color-border); }
-  .badge { @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium; }
 
-  .price-num { font-family: 'DM Mono', ui-monospace, monospace; font-feature-settings: 'tnum'; }
+  .label {
+    @apply block text-sm font-medium mb-1;
+    color: var(--color-text);
+  }
+
+  .card {
+    @apply rounded-xl shadow-sm;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .price-num {
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-feature-settings: 'tnum';
+  }
 
   .skeleton {
     background: linear-gradient(90deg, var(--color-border) 25%, var(--color-bg) 50%, var(--color-border) 75%);
@@ -75,7 +129,10 @@ html[lang='ti'] .font-localized {
     @apply animate-shimmer rounded;
   }
 
-  .nav-blur { backdrop-filter: blur(8px); background: color-mix(in srgb, var(--color-surface) 85%, transparent); }
+  .nav-blur {
+    backdrop-filter: blur(8px);
+    background: color-mix(in srgb, var(--color-surface) 85%, transparent);
+  }
 
   /* Flash sale ribbon */
   .flash-ribbon {
@@ -90,36 +147,78 @@ html[lang='ti'] .font-localized {
   }
 
   /* Hide scrollbar utility for category strip */
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
 }
 
 /* Progress bar pulse */
-.progress-pulse { animation: pulse-ring 1.6s ease-out infinite; }
+.progress-pulse {
+  animation: pulse-ring 1.6s ease-out infinite;
+}
+
 @keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgba(236,92,44,.6); }
-  70% { box-shadow: 0 0 0 12px rgba(236,92,44,0); }
-  100% { box-shadow: 0 0 0 0 rgba(236,92,44,0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(236, 92, 44, .6);
+  }
+
+  70% {
+    box-shadow: 0 0 0 12px rgba(236, 92, 44, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(236, 92, 44, 0);
+  }
 }
 
 /* Heart pop on wishlist toggle */
-.heart-pop { animation: heartPop 400ms ease-out; }
+.heart-pop {
+  animation: heartPop 400ms ease-out;
+}
+
 @keyframes heartPop {
-  0%   { transform: scale(1); }
-  35%  { transform: scale(1.45); }
-  70%  { transform: scale(0.9); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  35% {
+    transform: scale(1.45);
+  }
+
+  70% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* ----------- Mobile app shell helpers ----------- */
 /* Safe areas for iPhone notch/Dynamic Island + Android gesture bars */
-.safe-top { padding-top: env(safe-area-inset-top, 0px); }
-.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
 
 /* App-like feel on phones: no tap flash, no text selection on chrome */
 @media (max-width: 767px) {
-  * { -webkit-tap-highlight-color: transparent; }
-  header, nav { -webkit-user-select: none; user-select: none; }
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  header,
+  nav {
+    -webkit-user-select: none;
+    user-select: none;
+  }
 }
 
 /* Horizontal rails (flash deals / categories) snap cleanly */
@@ -130,12 +229,17 @@ html[lang='ti'] .font-localized {
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
 }
-.mobile-rail > * { scroll-snap-align: start; flex-shrink: 0; }
+
+.mobile-rail>* {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
 
 /* Sticky purchase bar on product page (mobile) */
 .mobile-buy-bar {
   position: fixed;
-  bottom: calc(54px + env(safe-area-inset-bottom, 0px)); /* above bottom nav incl. gesture area */
+  bottom: calc(54px + env(safe-area-inset-bottom, 0px));
+  /* above bottom nav incl. gesture area */
   left: 0;
   right: 0;
   z-index: 35;
@@ -147,51 +251,67 @@ html[lang='ti'] .font-localized {
 }
 
 /* Press feedback for tappable cards/buttons */
-.press { transition: transform 0.12s ease; }
-.press:active { transform: scale(0.97); }
-
-/* ----------- Google Places Autocomplete (.pac-container) ----------- */
-.pac-container {
-  z-index: 99999 !important;
-  pointer-events: auto !important;
-  background-color: var(--color-surface, #ffffff) !important;
-  border: 1px solid var(--color-border, #e5e5e5) !important;
-  border-radius: 12px !important;
-  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.18), 0 6px 12px -3px rgba(0, 0, 0, 0.12) !important;
-  font-family: inherit !important;
-  margin-top: 4px !important;
-  overflow: hidden !important;
+.press {
+  transition: transform 0.12s ease;
 }
 
-.pac-item {
-  padding: 10px 14px !important;
-  font-size: 14px !important;
-  line-height: 1.4 !important;
-  cursor: pointer !important;
-  border-top: 1px solid var(--color-border, #f1f5f9) !important;
-  color: var(--color-text, #1e293b) !important;
+.press:active {
+  transform: scale(0.97);
 }
 
-.pac-item:first-child {
-  border-top: none !important;
+/* ----------- Address search dropdown (server-proxied Places) -----------
+   Replaces the Google .pac-container widget, which never rendered inside
+   the Android APK WebView. Plain DOM = identical behaviour everywhere. */
+.addr-suggest {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e5e5e5);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.18), 0 6px 12px -3px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  max-height: 280px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.pac-item:hover,
-.pac-item-selected {
-  background-color: rgba(236, 92, 44, 0.08) !important;
+.addr-suggest-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--color-muted, #64748b);
 }
 
-.pac-matched {
-  font-weight: 700 !important;
-  color: var(--color-brand, #ec5c2c) !important;
+.addr-suggest-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-text, #1e293b);
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
-.pac-item-query {
-  font-size: 14px !important;
-  color: var(--color-text, #1e293b) !important;
+.addr-suggest-item+.addr-suggest-item {
+  border-top: 1px solid var(--color-border, #f1f5f9);
 }
 
-.pac-icon {
-  margin-top: 3px !important;
+.addr-suggest-item-active,
+.addr-suggest-item:active {
+  background-color: rgba(236, 92, 44, 0.08);
 }
 
+.addr-suggest-item .addr-suggest-sub {
+  font-size: 12px;
+  color: var(--color-muted, #64748b);
+}

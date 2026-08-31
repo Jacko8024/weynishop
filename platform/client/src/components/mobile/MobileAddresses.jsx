@@ -108,10 +108,10 @@ export default function MobileAddresses() {
                             </div>
                             <GeolocationButton
                                 className="w-full"
-                                onLocate={({ lat, lng }) =>
+                                onLocate={({ lat, lng, address }) =>
                                     setAddr((a) => ({
                                         lat, lng,
-                                        address: a?.address?.trim() ? a.address : `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+                                        address: a?.address?.trim() ? a.address : (address || `${lat.toFixed(5)}, ${lng.toFixed(5)}`),
                                     }))
                                 }
                             />

@@ -36,6 +36,7 @@ import contactRoutes from './routes/v1/contact.routes.js';
 import sitemapRoutes from './routes/v1/sitemap.routes.js';
 import surpriseRoutes from './routes/v1/surprise.routes.js';
 import notificationRoutes from './routes/v1/notification.routes.js';
+import placesRoutes from './routes/v1/places.routes.js';
 
 import { registerSocketHandlers } from './sockets/index.js';
 
@@ -135,6 +136,7 @@ app.use('/api/v1/uploads', uploadRoutes);
 app.use('/api/v1/contact', contactRoutes);
 app.use('/api/v1/surprise', surpriseRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/places', placesRoutes);
 app.use(sitemapRoutes);
 
 app.use(notFound);

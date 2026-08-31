@@ -47,7 +47,9 @@ export default function SellerProfile() {
         <div className="flex items-center justify-between gap-2 mt-2">
           <div className="text-xs text-slate-500">Tap the map to drop a pin.</div>
           <GeolocationButton
-            onLocate={({ lat, lng }) => setPin({ lat, lng, address: `${lat.toFixed(5)}, ${lng.toFixed(5)}` })}
+            onLocate={({ lat, lng, address }) =>
+              setPin({ lat, lng, address: address || `${lat.toFixed(5)}, ${lng.toFixed(5)}` })
+            }
           />
         </div>
         <div className="mt-3">

@@ -187,6 +187,7 @@
     "confirm": "አድራሻውን አረጋግጥ",
     "searching": "በመፈለግ ላይ…",
     "searchFailed": "የአድራሻ ፍለጋ አይገኝም። እባክዎ አድራሻዎን በእጅ ያስገቡ።",
+    "noResults": "ተመሳሳይ አድራሻ አልተገኘም — እባክዎ አድራሻዎን በእጅ ያስገቡ",
     "mapsFailed": "Google Maps መጫን አልተሳካም",
     "mapsOff": "የካርታ ፍለጋ ጠፍቷል — አድራሻዎን በእጅ ያስገቡ",
     "approximateLabel": "ግምታዊ ቦታ",
