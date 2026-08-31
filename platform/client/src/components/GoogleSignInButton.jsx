@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import { useAuth } from '../store/auth.js';
@@ -8,39 +8,24 @@ import { useAuth } from '../store/auth.js';
  * If `role` is provided and the user is new, the server registers them with
  * that role; for existing accounts the stored role is preserved.
  *
- * Mobile (native): signInWithRedirect runs INSIDE the app WebView (see
- * lib/firebase.js) — the WebView navigates to accounts.google.com and back,
- * the SPA reboots and finishBootGoogleRedirect() (lib/deeplink.js)
- * completes the login, so this component's promise usually never resolves
- * on native. A 3-minute watchdog prevents an infinite spinner if the
- * navigation never happens (e.g. the WebView blocks it).
+ * Native app: Google's native account chooser (Credential Manager) returns
+ * the ID token directly to the app — no browser involved, the promise
+ * resolves in-app (see lib/firebase.js).
+ * Website: unchanged popup flow.
  */
 export default function GoogleSignInButton({ role, onSuccess, label }) {
   const { t } = useTranslation();
   const { loginWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
-  const watchdog = useRef(null);
-
-  // Safety: if the app returns without a deep link (user backs out of
-  // Chrome manually), stop the spinner after the grace period.
-  useEffect(() => () => clearTimeout(watchdog.current), []);
 
   const start = async () => {
     setLoading(true);
     setFailed(false);
-    clearTimeout(watchdog.current);
-    watchdog.current = setTimeout(() => {
-      // Still pending → the browser probably never returned a callback.
-      setLoading(false);
-    }, 3 * 60 * 1000);
-
     try {
       const user = await loginWithGoogle(role);
-      clearTimeout(watchdog.current);
       onSuccess?.(user);
     } catch (err) {
-      clearTimeout(watchdog.current);
       const code = err?.code || '';
       if (
         code === 'auth/popup-closed-by-user' ||

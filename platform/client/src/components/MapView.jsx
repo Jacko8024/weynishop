@@ -1,27 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  GoogleMap,
-  Marker,
-  Autocomplete,
-  DirectionsRenderer,
-  useJsApiLoader,
-} from '@react-google-maps/api';
+import { GoogleMap, Marker, DirectionsRenderer } from '@react-google-maps/api';
+import { useGoogleMaps } from '../lib/googleMapsLoader.js';
 import { GOOGLE_MAPS_API_KEY } from '../api/client.js';
+
+// Back-compat re-export: legacy consumers (buyer/Checkout.jsx, seller/Profile.jsx)
+// import { AddressPicker } from MapView.jsx. The implementation is now the
+// Places API (New) autocomplete — see components/AddressAutocomplete.jsx.
+export { default as AddressPicker } from './AddressAutocomplete.jsx';
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
-/** Libraries must be a stable reference — recreating it triggers script reload. */
-const GOOGLE_MAPS_LIBRARIES = ['places', 'geometry'];
-
 const DEFAULT_CENTER = { lat: 9.0227, lng: 38.7613 }; // Addis Ababa
-const ETHIOPIA_BOUNDS = {
-  north: 14.9,
-  south: 3.4,
-  west: 32.9,
-  east: 48.0,
-};
 
 const MAP_CONTAINER_STYLE = { width: '100%', height: '100%' };
 
@@ -31,40 +22,6 @@ const MAP_OPTIONS = {
   fullscreenControl: false,
   clickableIcons: false,
 };
-
-const AUTOCOMPLETE_FIELDS = ['formatted_address', 'name', 'geometry'];
-const AUTOCOMPLETE_OPTIONS = {
-  componentRestrictions: { country: ['et'] },
-  fields: AUTOCOMPLETE_FIELDS,
-};
-
-// Surface API-key / billing failures clearly. Google calls this global on auth errors.
-if (typeof window !== 'undefined') {
-  window.gm_authFailure = () => {
-    // eslint-disable-next-line no-console
-    console.error(
-      '[Google Maps] Authentication failed. Verify VITE_GOOGLE_MAPS_API_KEY and that ' +
-        'Maps JavaScript API + Places API are enabled with billing on the Google Cloud project.'
-    );
-  };
-}
-
-// ---------------------------------------------------------------------------
-// Loader hook
-// ---------------------------------------------------------------------------
-
-/**
- * Shared Google Maps JS API loader. Using a stable `id` prevents the script
- * from being reinjected when multiple components mount.
- */
-export const useGoogleMaps = () =>
-  useJsApiLoader({
-    id: 'gmap-script',
-    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
-    libraries: GOOGLE_MAPS_LIBRARIES,
-    region: 'ET',
-    language: 'en',
-  });
 
 // ---------------------------------------------------------------------------
 // Internal helpers
@@ -209,116 +166,5 @@ export default function MapView({
   );
 }
 
-// ---------------------------------------------------------------------------
-// AddressPicker
-// ---------------------------------------------------------------------------
-
-/**
- * Places-Autocomplete search box. Resolves a selected place to
- * `{ lat, lng, address }` and forwards via `onChange`.
- *
- * @param {object} props
- * @param {(loc:{lat?:number,lng?:number,address:string})=>void} props.onChange
- * @param {string} [props.placeholder]
- * @param {string} [props.defaultValue]
- * @param {string} [props.value]               Optional controlled value.
- * @param {string} [props.className='input']
- */
-export function AddressPicker({
-  onChange,
-  placeholder = 'Search address…',
-  defaultValue = '',
-  value,
-  className = 'input',
-}) {
-  const { isLoaded, loadError } = useGoogleMaps();
-  const autocompleteRef = useRef(null);
-  const [internalValue, setInternalValue] = useState(defaultValue);
-
-  const isControlled = value !== undefined;
-  const inputValue = isControlled ? value : internalValue;
-
-  const updateValue = useCallback(
-    (next) => {
-      if (!isControlled) setInternalValue(next);
-    },
-    [isControlled]
-  );
-
-  const handleAutocompleteLoad = useCallback((instance) => {
-    autocompleteRef.current = instance;
-    // Bias towards Ethiopia + restrict returned fields (cheaper API call).
-    instance.setOptions(AUTOCOMPLETE_OPTIONS);
-    if (window.google?.maps?.LatLngBounds) {
-      const { north, south, east, west } = ETHIOPIA_BOUNDS;
-      instance.setBounds(
-        new window.google.maps.LatLngBounds(
-          { lat: south, lng: west },
-          { lat: north, lng: east }
-        )
-      );
-    }
-  }, []);
-
-  const handlePlaceChanged = useCallback(() => {
-    const place = autocompleteRef.current?.getPlace();
-    if (!place?.geometry?.location) {
-      // User pressed Enter before a suggestion was selected — keep the typed text only.
-      onChange?.({ address: inputValue });
-      return;
-    }
-    const lat = place.geometry.location.lat();
-    const lng = place.geometry.location.lng();
-    const address = place.formatted_address || place.name || '';
-    updateValue(address);
-    onChange?.({ lat, lng, address });
-  }, [inputValue, onChange, updateValue]);
-
-  const handleInputChange = useCallback(
-    (e) => {
-      updateValue(e.target.value);
-    },
-    [updateValue]
-  );
-
-  // Block Enter from submitting parent forms before a Places suggestion is picked.
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter') e.preventDefault();
-  }, []);
-
-  // ---- fallback states ----
-  if (!GOOGLE_MAPS_API_KEY) {
-    return (
-      <input
-        className={className}
-        placeholder="Type address (Maps disabled)"
-        value={inputValue}
-        onChange={(e) => {
-          updateValue(e.target.value);
-          onChange?.({ address: e.target.value });
-        }}
-      />
-    );
-  }
-  if (loadError) {
-    return (
-      <input className={className} placeholder="Maps failed to load" disabled value={inputValue} />
-    );
-  }
-  if (!isLoaded) {
-    return <input className={className} placeholder="Loading…" disabled />;
-  }
-
-  return (
-    <Autocomplete onLoad={handleAutocompleteLoad} onPlaceChanged={handlePlaceChanged}>
-      <input
-        className={className}
-        placeholder={placeholder}
-        value={inputValue}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-        autoComplete="off"
-      />
-    </Autocomplete>
-  );
-}
+// AddressPicker now lives in components/AddressAutocomplete.jsx (Places API —
+// New) and is re-exported above for back-compat with legacy import sites.

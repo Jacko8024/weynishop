@@ -182,7 +182,25 @@
     "needAddress": "በጃኻ ኣድራሻ መጓዓዝያኻ ምረጽ ወይ ኣእትዉ",
     "save": "ኣድራሻ ኣቐምጥ",
     "saving": "ኣብ ምቕማጥ ላይ…",
-    "savedOk": "ኣድራሻ ተቐምጡ"
+    "savedOk": "ኣድራሻ ተቐምጡ",
+    "confirm": "ኣድራሻ ኣረጋግጽ",
+    "searching": "ዝምርካብ…",
+    "searchFailed": "ምርካብ ኣድራሻ ኣይተረኽበን። በጃኻ ብኢድኻ ኣእትዉ።",
+    "mapsFailed": "Google Maps ኣይተጻወዐን",
+    "mapsOff": "ምርካብ ካርታ ተቐጺሩ እዩ — ኣድራሻኻ ብኢድኻ ኣእትዉ",
+    "approximateLabel": "ግምታዊ ቦታ",
+    "approximateHint": "ትክክለኛ ኣድራሻ ኣብዚ ኣይረኽብናን — ዝርዝር ጐደና ኣብ ታሕቲ ወስኽ።",
+    "selectedLabel": "ዝተመርጸ ኣድራሻ",
+    "adjustPinHint": "ፒን ንምስታሕ ካርታ ተቕበል",
+    "resolvingAddress": "ኣድራሻኻ ዝምርካብ…",
+    "apartment": "ኣፓርትመንት / ቑጽሪ ቤት",
+    "apartmentPh": "ከምኡዝ: ኣፓርትመንት 3ቢ",
+    "building": "ሕንጻ / ምልክቲ ቦታ",
+    "buildingPh": "ከምኡዝ: ሰንሻይን ታወር፣ ኣብ ሸነኽ መስጊድ",
+    "instructions": "መምርሕ መጓዓዝያ",
+    "instructionsPh": "ከምኡዝ: ምስ በጺሕካ ደውል",
+    "contactPhone": "ቑጽሪ ተሌፎን",
+    "or": "ወይ"
   },
   "notif": {
     "title": "ሓበኒ",
@@ -206,7 +224,9 @@
     "prev": "ዝሓለፈ",
     "yes": "እወ",
     "no": "ኣይፋል",
-    "you": "ንስኻ"
+    "you": "ንስኻ",
+    "or": "ወይ",
+    "clear": "ሣሕ"
   },
   "surprise": {
     "metaDesc": "ኣብ ቤሩት ሰርፕራይዝ ኣገልግሎት — ልደት, ሓዘን, ድግስ, ሕሙም ምሕታት, ህያብ ምትሕልላፍ እና ጠለስታ ፍቕሪ.",

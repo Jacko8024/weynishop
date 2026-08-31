@@ -5,7 +5,7 @@ import { ChevronDown, Check, Search } from 'lucide-react';
 import { COUNTRIES, DEFAULT_COUNTRY, localDigits, isValidLocalPhone, toE164 } from '../lib/countries.js';
 
 /**
- * Mobile phone input with country selector:
+ * Phone input with country selector:
  *
  *   ┌───────────────────────────────┐
  *   │ 🇪🇹 +251 ▾ │ 9XX XXX XXX       │
@@ -18,6 +18,16 @@ import { COUNTRIES, DEFAULT_COUNTRY, localDigits, isValidLocalPhone, toE164 } fr
  * - Searchable country sheet (12 supported countries) — filter by country
  *   name or dial code.
  * - Controlled via onChange({ country, local, e164, valid })
+ *
+ * ── MOBILE TAP FIX ──
+ * The sheet is rendered via createPortal(document.body) so it escapes any
+ * overflow-hidden ancestor. The old version closed the sheet on a
+ * document-level `mousedown` that checked wrapRef.contains(target) — but
+ * the PORTAL lives outside wrapRef, so the FIRST touch on a country row
+ * (touch devices emit mousedown→mouseup→click) closed the sheet before the
+ * click event could reach the button. Selection silently did nothing: the
+ * "countries are not selectable" bug. Fixed by closing ONLY on taps that
+ * hit the backdrop itself / Escape / after a row is chosen.
  */
 
 export default function PhoneInput({ value = '', country: countryProp, onChange, error, id = 'phone', onFocus, onBlur, t: tProp }) {
@@ -26,7 +36,6 @@ export default function PhoneInput({ value = '', country: countryProp, onChange,
     const [country, setCountry] = useState(countryProp || DEFAULT_COUNTRY);
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState('');
-    const wrapRef = useRef(null);
     const searchRef = useRef(null);
     const local = localDigits(value, country);
 
@@ -35,17 +44,14 @@ export default function PhoneInput({ value = '', country: countryProp, onChange,
         if (countryProp && countryProp.code !== country.code) setCountry(countryProp);
     }, [countryProp]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Close the country sheet on outside tap / Escape.
+    // Close the sheet on Escape only — backdrop taps are handled by the
+    // backdrop element itself (see the onClick on the overlay), so taps on
+    // country rows can never be mistaken for "outside" taps.
     useEffect(() => {
         if (!open) return;
-        const onDoc = (e) => { if (!wrapRef.current?.contains(e.target)) setOpen(false); };
         const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
-        document.addEventListener('mousedown', onDoc);
         document.addEventListener('keydown', onKey);
-        return () => {
-            document.removeEventListener('mousedown', onDoc);
-            document.removeEventListener('keydown', onKey);
-        };
+        return () => document.removeEventListener('keydown', onKey);
     }, [open]);
 
     // Focus + reset the search box whenever the sheet opens.
@@ -57,7 +63,7 @@ export default function PhoneInput({ value = '', country: countryProp, onChange,
         }
     }, [open]);
 
-    // Search filter: match country name (any locale fallback: English name)
+    // Search filter: match country name (English name — any-locale fallback)
     // or dial code, case-insensitive. Empty query → full list.
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
@@ -76,8 +82,17 @@ export default function PhoneInput({ value = '', country: countryProp, onChange,
         });
     };
 
+    const pick = (c) => {
+        setCountry(c);
+        setOpen(false);
+        // Keep typed digits (truncated to the new country's length) and
+        // re-validate for the new rules — e.g. selecting 🇸🇦 +966 while
+        // "911234567" is typed truncates/revalidates against /^5\d{8}$/.
+        emit(c, local.slice(0, c.maxLength));
+    };
+
     return (
-        <div className="relative" ref={wrapRef}>
+        <div className="relative">
             <div
                 className={`flex items-stretch overflow-hidden rounded-lg focus-within:ring-2 ${error ? 'border-red-300' : ''}`}
                 style={{
@@ -101,7 +116,9 @@ export default function PhoneInput({ value = '', country: countryProp, onChange,
                     <ChevronDown size={14} style={{ color: 'var(--color-muted)' }} />
                 </button>
 
-                {/* National number — numeric keyboard, local formatting */}
+                {/* National number — numeric keyboard, local formatting.
+                    The dial code is a fixed prefix chip: the field shows
+                    "+966 | 5XX XXX XXX" semantics and E.164 goes to the API. */}
                 <input
                     id={id}
                     className="flex-1 min-w-0 h-12 px-3 text-base tracking-wide focus:outline-none"
@@ -117,13 +134,17 @@ export default function PhoneInput({ value = '', country: countryProp, onChange,
                 />
             </div>
 
-            {/* Searchable country sheet */}
+            {/* Searchable country sheet — portal escapes overflow clipping.
+                The overlay closes ONLY on a direct tap on itself (never on
+                bubbling events), so country-row taps always register. */}
             {open &&
                 createPortal(
-                    <div className="fixed inset-0 z-[60] bg-black/40 animate-fadeIn" onClick={() => setOpen(false)}>
+                    <div
+                        className="fixed inset-0 z-[60] bg-black/40 animate-fadeIn"
+                        onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+                    >
                         <div
                             className="absolute bottom-0 inset-x-0 rounded-t-2xl overflow-hidden flex flex-col"
-                            onClick={(e) => e.stopPropagation()}
                             role="listbox"
                             aria-label={tr('auth.chooseCountry')}
                             style={{
@@ -170,11 +191,7 @@ export default function PhoneInput({ value = '', country: countryProp, onChange,
                                                 type="button"
                                                 role="option"
                                                 aria-selected={active}
-                                                onClick={() => {
-                                                    setCountry(c);
-                                                    setOpen(false);
-                                                    emit(c, local.slice(0, c.maxLength)); // re-validate for new country
-                                                }}
+                                                onClick={() => pick(c)}
                                                 className="w-full flex items-center justify-between px-4 py-3.5 text-left press"
                                             >
                                                 <span className="flex items-center gap-3 min-w-0">

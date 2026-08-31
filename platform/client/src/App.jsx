@@ -1,9 +1,7 @@
-import { useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './store/auth.js';
 import LoginGateModal from './components/LoginGateModal.jsx';
 import PublicShell from './components/PublicShell.jsx';
-import { setDeepLinkRouter } from './lib/deeplink.js';
 
 import Login from './pages/auth/Login.jsx';
 import Register from './pages/auth/Register.jsx';
@@ -81,13 +79,6 @@ const Protected = ({ role, children }) => {
 };
 
 export default function App() {
-  // Expose the real router navigate to the deep-link handler (Case C —
-  // completing Google login after a cold relaunch without a page reload).
-  const navigate = useNavigate();
-  useEffect(() => {
-    setDeepLinkRouter({ navigate });
-  }, [navigate]);
-
   return (
     <>
       <LoginGateModal />

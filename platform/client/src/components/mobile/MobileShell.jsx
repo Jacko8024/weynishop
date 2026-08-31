@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { Capacitor } from '@capacitor/core';
 import { useAuth } from '../../store/auth.js';
 import MobileHeader from './MobileHeader.jsx';
 import MobileBottomNav from './MobileBottomNav.jsx';
 import MobileOnboarding, { ONBOARDED_KEY } from './MobileOnboarding.jsx';
+import { isNativeApp } from '../../lib/platform.js';
 
 // Spec §31/§32: the intro/onboarding flow is ANDROID-APP ONLY. On the normal
-// website (any width) Capacitor.isNativePlatform() is false and onboarding is
-// skipped entirely — mobile-web visitors land straight on the storefront.
-const IS_NATIVE_APP = Capacitor.isNativePlatform();
+// website (any width) real Capacitor platform detection is false and
+// onboarding is skipped entirely — mobile-web visitors land straight on the
+// storefront. NOTE: this shell still renders on narrow WEBSITE viewports
+// (responsive layout), but the onboarding intro inside it never does.
+const IS_NATIVE_APP = isNativeApp();
 
 /**
  * Dedicated mobile presentation shell:

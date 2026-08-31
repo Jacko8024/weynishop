@@ -2,24 +2,28 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
-import { MapPin, Navigation, Search, Check, ChevronLeft, Banknote } from 'lucide-react';
+import { MapPin, Check, ChevronLeft, Banknote } from 'lucide-react';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../store/auth.js';
 import { usePrice } from '../../store/currency.js';
-import { AddressPicker } from '../MapView.jsx';
+import DeliveryAddressForm from '../DeliveryAddressForm.jsx';
 import MapView from '../MapView.jsx';
-import GeolocationButton from '../GeolocationButton.jsx';
 
 /**
  * Mobile checkout (Phase 4) — professional delivery-address flow:
  *
- *   1. Hero "Use my current location" card (permission asked on tap only)
- *   2. Address search (Places) + map with draggable pin
- *   3. Saved default address quick-pick (if the user has one)
- *   4. Confirmation card (address + total + Cash-on-Delivery notice)
+ *   1. DeliveryAddressForm:
+ *        · Google Places search (Places API — New)
+ *        · "Use my current location" → reverse-geocoded address
+ *        · Apartment / building / instructions / contact phone
+ *        · Map preview with adjustable pin
+ *   2. Confirmation card (address + total + Cash-on-Delivery notice)
  *      → Confirm & Place order
  *
- * Replaces the desktop-style 2-column Checkout below 768px.
+ * Orders go through the EXISTING backend:
+ *   POST /api/v1/orders { items, deliveryLocation:{coordinates,address} }
+ * and the address is saved as the buyer default via PUT /users/me
+ * (best effort — never blocks order placement).
  */
 export default function MobileCheckout() {
     const { t } = useTranslation();
@@ -28,26 +32,22 @@ export default function MobileCheckout() {
     const price = usePrice();
     const saved = user?.defaultAddress;
 
-    const [addr, setAddr] = useState(
-        saved?.coordinates
-            ? { lat: saved.coordinates[1], lng: saved.coordinates[0], address: saved.address || '' }
-            : null
-    );
+    const [addr, setAddr] = useState(null);
     const [confirming, setConfirming] = useState(false); // confirmation card open
     const [placing, setPlacing] = useState(false);
 
     const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
     const itemCount = cart.reduce((s, c) => s + c.qty, 0);
 
-    /* ---- step 2 → 3: open the confirmation card ---- */
-    const review = () => {
+    /* ---- step 1 → 2: address confirmed, open the review card ---- */
+    const review = (payload) => {
         if (!cart.length) return toast.error(t('empty.emptyCart'));
-        if (!addr?.lat || !addr?.address?.trim()) return toast.error(t('addr.needAddress'));
+        setAddr(payload);
         setConfirming(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    /* ---- step 3: place ---- */
+    /* ---- step 2: place ---- */
     const place = async () => {
         setPlacing(true);
         try {
@@ -94,6 +94,14 @@ export default function MobileCheckout() {
                         </span>
                         <div className="text-[15px] font-medium leading-snug">{addr.address}</div>
                     </div>
+                    {(addr.apartment || addr.building || addr.instructions || addr.contactPhone) && (
+                        <div className="text-[13px] mt-2 space-y-0.5" style={{ color: 'var(--color-muted)' }}>
+                            {addr.apartment && <div>{t('addr.apartment')}: {addr.apartment}</div>}
+                            {addr.building && <div>{t('addr.building')}: {addr.building}</div>}
+                            {addr.instructions && <div>{t('addr.instructions')}: {addr.instructions}</div>}
+                            {addr.contactPhone && <div>{t('addr.contactPhone')}: {addr.contactPhone}</div>}
+                        </div>
+                    )}
                     <MapView
                         height={140}
                         center={{ lat: addr.lat, lng: addr.lng }}
@@ -136,35 +144,21 @@ export default function MobileCheckout() {
         );
     }
 
-    /* --------------------------- address picker ------------------------- */
+    /* --------------------------- address form --------------------------- */
     return (
         <div className="px-3 pt-3 pb-6">
             <div className="font-bold text-[19px] mb-1">{t('checkout.addressTitle')}</div>
             <div className="text-sm mb-4" style={{ color: 'var(--color-muted)' }}>{t('checkout.addressSubtitle')}</div>
 
-            {/* 1 — Hero: use my current location */}
-            <div className="rounded-2xl p-5 mb-3"
-                style={{ background: 'linear-gradient(135deg, rgba(236,92,44,0.10), rgba(245,166,35,0.08))', border: '1px solid rgba(236,92,44,0.25)' }}>
-                <div className="flex items-center gap-2 mb-1">
-                    <Navigation size={18} style={{ color: 'var(--color-brand)' }} />
-                    <span className="font-bold text-[16px]">{t('geo.useMyLocation')}</span>
-                </div>
-                <div className="text-[13px] mb-3.5" style={{ color: 'var(--color-muted)' }}>{t('checkout.locateHint')}</div>
-                <GeolocationButton
-                    className="w-full h-11 rounded-full font-semibold"
-                    onLocate={({ lat, lng }) =>
-                        setAddr((a) => ({
-                            lat, lng,
-                            address: a?.address?.trim() ? a.address : `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
-                        }))
-                    }
-                />
-            </div>
-
-            {/* 2 — Saved address quick-pick */}
-            {saved?.coordinates && (
+            {/* Saved default address quick-pick */}
+            {saved?.coordinates && !addr && (
                 <button type="button"
-                    onClick={() => setAddr({ lat: saved.coordinates[1], lng: saved.coordinates[0], address: saved.address || '' })}
+                    onClick={() => review({
+                        lat: saved.coordinates[1],
+                        lng: saved.coordinates[0],
+                        address: saved.address || '',
+                        contactPhone: user?.phone || '',
+                    })}
                     className="w-full card p-4 mb-3 flex items-center gap-3 text-left active:opacity-80">
                     <span className="w-10 h-10 rounded-full grid place-items-center shrink-0"
                         style={{ background: 'rgba(236,92,44,0.10)', color: 'var(--color-brand)' }}>
@@ -179,41 +173,17 @@ export default function MobileCheckout() {
                 </button>
             )}
 
-            {/* 3 — Search */}
-            <div className="card p-4 mb-3">
-                <div className="flex items-center gap-2 mb-2.5">
-                    <Search size={16} style={{ color: 'var(--color-muted)' }} />
-                    <span className="font-semibold text-[15px]">{t('addr.searchTitle')}</span>
-                </div>
-                <AddressPicker
-                    className="input"
-                    placeholder={t('addr.searchPh')}
-                    defaultValue={addr?.address || ''}
-                    onChange={(v) => v.lat && setAddr(v)}
-                />
-            </div>
-
-            {/* 4 — Map pin */}
-            <div className="card p-4 mb-4">
-                <div className="font-semibold text-[15px] mb-2.5">{t('checkout.pinTitle')}</div>
-                <MapView
-                    height={240}
-                    center={addr ? { lat: addr.lat, lng: addr.lng } : undefined}
-                    markers={addr ? [{ key: 'me', position: { lat: addr.lat, lng: addr.lng } }] : []}
-                    onClick={(p) => setAddr((a) => ({ ...p, address: a?.address || `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` }))}
-                />
-                {addr?.address && (
-                    <div className="text-sm mt-2.5 flex items-start gap-1.5" style={{ color: 'var(--color-muted)' }}>
-                        <MapPin size={14} className="mt-0.5 shrink-0" /> {addr.address}
-                    </div>
-                )}
-            </div>
-
-            {/* CTA — review & confirm */}
-            <button type="button" onClick={review}
-                className="btn-primary w-full py-3.5 text-base font-bold rounded-full">
-                {t('checkout.reviewCta')}
-            </button>
+            <DeliveryAddressForm
+                initial={saved?.coordinates ? {
+                    lat: saved.coordinates[1],
+                    lng: saved.coordinates[0],
+                    address: saved.address || '',
+                    contactPhone: user?.phone || '',
+                } : { contactPhone: user?.phone || '' }}
+                onConfirm={review}
+                submitLabel={t('checkout.reviewCta')}
+                compact
+            />
         </div>
     );
 }

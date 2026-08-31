@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ShoppingBag, Store, Truck, Check, LogIn, UserPlus } from 'lucide-react';
 import Logo from '../Logo.jsx';
 import { SUPPORTED_LANGS } from '../../lib/i18n.js';
+import { isNativeApp } from '../../lib/platform.js';
 
 export const ONBOARDED_KEY = 'weynshop:onboarded';
 
@@ -22,6 +23,17 @@ const ROLES = [
 export default function MobileOnboarding({ onDone }) {
   const { t, i18n } = useTranslation();
   const nav = useNavigate();
+
+  // SELF-GATING (defense in depth): even if some future caller imports and
+  // renders this component on the website, it renders NOTHING there. The
+  // onboarding intro is native-app-only by spec — detection is real
+  // Capacitor platform presence, never window.innerWidth.
+  if (!isNativeApp()) return null;
+
+  return <OnboardingSteps onDone={onDone} t={t} i18n={i18n} nav={nav} />;
+}
+
+function OnboardingSteps({ onDone, t, i18n, nav }) {
   const [step, setStep] = useState('lang');
   const [lang, setLang] = useState(() => (i18n.language || 'am').slice(0, 2));
   const [role, setRole] = useState('buyer');
@@ -74,7 +86,7 @@ export default function MobileOnboarding({ onDone }) {
               >
                 <span className="flex items-center gap-3">
                   <span className="w-10 h-10 rounded-full grid place-items-center text-lg font-bold text-white"
-                        style={{ background: primary }}>አ</span>
+                    style={{ background: primary }}>አ</span>
                   <span className="text-left">
                     <span className="block text-base font-bold">{mainLang.native}</span>
                     <span className="block text-[11px]" style={{ color: 'var(--color-brand)' }}>
@@ -131,7 +143,7 @@ export default function MobileOnboarding({ onDone }) {
                     }}
                   >
                     <span className="w-12 h-12 rounded-xl grid place-items-center shrink-0 text-white"
-                          style={{ background: active ? primary : 'var(--color-muted)' }}>
+                      style={{ background: active ? primary : 'var(--color-muted)' }}>
                       <Icon size={22} />
                     </span>
                     <span className="min-w-0 flex-1">
@@ -174,7 +186,7 @@ export default function MobileOnboarding({ onDone }) {
 
             {role === 'buyer' && (
               <button onClick={goBrowse} className="text-sm font-medium mt-6 mx-auto underline underline-offset-4"
-                      style={{ color: 'var(--color-muted)' }}>
+                style={{ color: 'var(--color-muted)' }}>
                 {t('onboarding.browseFirst')}
               </button>
             )}

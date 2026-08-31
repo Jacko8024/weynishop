@@ -3,9 +3,7 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  signInWithRedirect,
   signInWithCredential,
-  getRedirectResult,
   signOut as firebaseSignOut,
 } from 'firebase/auth';
 import { Capacitor } from '@capacitor/core';
@@ -29,41 +27,31 @@ export const firebaseAuth = getAuth(app);
 firebaseAuth.useDeviceLanguage();
 
 // ---------------------------------------------------------------------------
-// Native mobile (Capacitor) Google sign-in
+// NATIVE MOBILE (Capacitor) GOOGLE SIGN-IN — Android Credential Manager
 // ---------------------------------------------------------------------------
-// The OAuth redirect_uri Firebase presents to Google is always
-//   https://<authDomain>/__/auth/handler
-// Google only accepts handler URLs of REAL, provisioned Firebase domains
-// (weynishop.firebaseapp.com / weynishop.web.app) — a made-up subdomain such
-// as com.weynishop.app.firebaseapp.com is never registered on the Google
-// OAuth client and fails at accounts.google.com with redirect_uri_mismatch.
+// WHY NO BROWSER FALLBACK (this was the long-standing Android bug):
+//   The old code fell back to signInWithRedirect() inside the app WebView
+//   whenever the native plugin hiccupped. Google explicitly disallows OAuth
+//   in embedded WebViews ("disallowed_user_agent"): it either fails outright
+//   or bounces the flow out to Chrome — and Chrome had no way back into the
+//   app, so the login never completed.
 //
-// Therefore the native app runs signInWithRedirect() INSIDE the app WebView
-// with the SAME real authDomain as the website:
-//
-//   1. signInWithRedirect() navigates the WebView itself to
-//      accounts.google.com; redirect_uri is the real handler Google already
-//      trusts (this is why the website works).
-//   2. The Firebase handler bounces back to the page that started the flow.
-//      In Capacitor the app is served from https://localhost
-//      (capacitor.config.json → androidScheme: "https"), and `localhost` is
-//      a default Authorized domain in every Firebase project.
-//   3. The SPA boots fresh on return; finishBootGoogleRedirect()
-//      (lib/deeplink.js, called from main.jsx) resolves the credential via
-//      getRedirectResult(), exchanges the idToken and navigates the user.
-//
-// No Firebase Console / Google Cloud Console changes are required, and the
-// desktop website keeps its unchanged popup flow.
+//   Per current official Google guidance (Credential Manager + Sign in with
+//   Google), the native app flow is:
+//     1. GoogleAuthPlugin.java launches Google's OFFICIAL account chooser
+//        (every Google account on the device + "Add another account").
+//     2. It returns a Google ID token minted for the project's public web
+//        OAuth client (client_type 3 — the SAME client the website uses).
+//     3. We exchange it into a Firebase credential via signInWithCredential
+//        → same Firebase user/UID as the website.
+//     4. A fresh Firebase ID token goes to the EXISTING POST /auth/google
+//        endpoint (find-or-create by firebaseUid/email → WeyniShop JWT).
+//   No WebView, no Chrome tab, no embedded browser — the flow returns to the
+//   app directly from Google's native chooser sheet.
 const isNative = Capacitor.isNativePlatform();
 
-// ---------------------------------------------------------------------------
-// Native Google Sign-In bridge (Android Credential Manager)
-// ---------------------------------------------------------------------------
-// Implemented by GoogleAuthPlugin.java (registered in MainActivity). The
-// plugin shows Google's OFFICIAL account chooser with every Google account
-// on the device + "Add another account" — no browser involved.
-// Resolved via Capacitor.registerPlugin so the web bundle never hard-imports
-// a native module; on web/dev the proxy rejects and we fall back cleanly.
+// Registered by MainActivity (GoogleAuthPlugin.java). The web bundle never
+// hard-imports a native module; on the website the proxy is never called.
 const GoogleAuth = Capacitor.registerPlugin('GoogleAuth', {
   web: {
     signIn: () => Promise.reject(new Error('GoogleAuth is native-only')),
@@ -72,10 +60,8 @@ const GoogleAuth = Capacitor.registerPlugin('GoogleAuth', {
 });
 
 /**
- * Native path: Google's account chooser → Google ID token (minted for the
- * project's public web OAuth client) → exchanged into a Firebase credential
- * via signInWithCredential → same Firebase user/UID as the website flow →
- * fresh Firebase ID token for POST /auth/google.
+ * Native path: Google's official account chooser → Google ID token →
+ * Firebase credential → fresh Firebase ID token for POST /auth/google.
  * Rejects with code CANCELLED when the user dismisses the chooser.
  */
 const nativeGoogleSignIn = async () => {
@@ -86,8 +72,8 @@ const nativeGoogleSignIn = async () => {
   return { idToken, firebaseUser: cred.user };
 };
 
-// Role chosen on the Login screen (buyer/seller/delivery) must survive the
-// full-page redirect round-trip so first-time users register with it.
+// Role chosen on the Login screen (buyer/seller/delivery) must reach the
+// registration call for first-time users.
 const GOOGLE_ROLE_KEY = 'weynishop:googleRole';
 
 export const stashGoogleRole = (role) => {
@@ -113,129 +99,34 @@ const buildProvider = () => {
   return p;
 };
 
-// ---------------------------------------------------------------------------
-// Pending-login bridge (legacy deep-link path)
-// ---------------------------------------------------------------------------
-// If a com.weynishop.app://auth/callback URL ever arrives (appUrlOpen
-// listener in deeplink.js — kept as a fallback), or the redirect completes
-// without a full navigation, the awaiting caller below is resolved here.
-let pendingNative = null;
-
-export const resolvePendingGoogleSignIn = (result) => {
-  if (!pendingNative) return false;
-  const { resolve } = pendingNative;
-  pendingNative = null;
-  resolve(result);
-  return true;
-};
-
-export const rejectPendingGoogleSignIn = (err) => {
-  if (!pendingNative) return false;
-  const { reject } = pendingNative;
-  pendingNative = null;
-  reject(err);
-  return true;
-};
-
-export const hasPendingGoogleSignIn = () => !!pendingNative;
-
 /**
  * Start Google sign-in.
  *
- * - Web/desktop browser → popup (existing behaviour, unchanged).
- * - Native app → PRIMARY: Google's native account chooser (Credential
- *   Manager, GoogleAuthPlugin.java) — returns an idToken directly, no
- *   browser involved. FALLBACK: only when the native plugin is missing
- *   (dev server in a plain browser) do we use the in-WebView redirect
- *   described below.
+ * - WEBSITE (desktop or mobile browser): popup — existing behaviour,
+ *   completely unchanged.
+ * - NATIVE APP: Google's native account chooser ONLY. There is deliberately
+ *   NO WebView/redirect fallback: a fallback that opens Chrome is exactly
+ *   the bug this replaced, and signInWithRedirect inside a Capacitor
+ *   WebView is rejected by Google (disallowed_user_agent). If the native
+ *   chooser genuinely fails (no Play services etc.) we surface the error
+ *   to the user — email/phone login remains available.
  *
- *   Redirect fallback: the WebView navigates to accounts.google.com; the
- *   SPA reboots and finishBootGoogleRedirect() completes the login. If the
- *   flow completes without a navigation, the promise resolves here instead.
- *   `role` is stashed so registration keeps the user's chosen role.
+ * Native error contract (from GoogleAuthPlugin.java):
+ *   CANCELLED | NO_CREDENTIALS | EMPTY_TOKEN | NO_ACTIVITY | …
  */
-export const signInWithGoogle = (role) => {
+export const signInWithGoogle = async (role) => {
   if (isNative) {
-    if (pendingNative) return pendingNative.promise; // prevent duplicate taps
-    let resolve, reject;
-    const promise = new Promise((res, rej) => { resolve = res; reject = rej; });
-    pendingNative = { promise, resolve, reject };
-
-    (async () => {
-      try {
-        stashGoogleRole(role);
-
-        // ── PRIMARY — native account chooser (no browser) ──
-        try {
-          const result = await nativeGoogleSignIn();
-          resolvePendingGoogleSignIn(result);
-          return;
-        } catch (err) {
-          const code = err?.code || '';
-          // User dismissed the chooser → quiet cancel, same as the web
-          // popup-closed behaviour. Never fall back to the browser here.
-          if (code === 'CANCELLED' || code === 'NO_CREDENTIALS') {
-            rejectPendingGoogleSignIn(err);
-            return;
-          }
-          // Plugin genuinely unavailable (dev web preview) → redirect
-          // fallback below. Any other native error also falls back so a
-          // transient Play-services hiccup doesn't block login.
-          console.warn('[google-auth] native chooser unavailable, falling back to WebView redirect:', err);
-        }
-
-        // ── FALLBACK — in-WebView redirect (dev preview / no plugin) ──
-        // NOTE: keep the default browserLocalPersistence — the redirect
-        // flow needs storage that survives the full-page navigation
-        // (inMemoryPersistence breaks signInWithRedirect round-trips).
-        await signInWithRedirect(firebaseAuth, buildProvider());
-        // If the WebView completed in-page (no top-level navigation), a
-        // credential may already be here — finish immediately.
-        const cred = await getRedirectResult(firebaseAuth).catch(() => null);
-        if (cred?.user && pendingNative) {
-          const idToken = await cred.user.getIdToken(/* forceRefresh */ true);
-          resolvePendingGoogleSignIn({ idToken, firebaseUser: cred.user });
-        }
-        // Otherwise the WebView left for accounts.google.com; this promise
-        // stays pending and finishBootGoogleRedirect() finishes the flow
-        // after the app reloads. (GoogleSignInButton's watchdog stops the
-        // spinner if the user backs out and the page never navigates.)
-      } catch (err) {
-        rejectPendingGoogleSignIn(err);
-      }
-    })();
-
-    return promise;
+    stashGoogleRole(role);
+    return nativeGoogleSignIn();
   }
 
   // Web: existing popup behaviour (desktop website unchanged).
-  return (async () => {
-    const cred = await signInWithPopup(firebaseAuth, buildProvider());
-    const idToken = await cred.user.getIdToken(/* forceRefresh */ true);
-    return { idToken, firebaseUser: cred.user };
-  })();
+  const cred = await signInWithPopup(firebaseAuth, buildProvider());
+  const idToken = await cred.user.getIdToken(/* forceRefresh */ true);
+  return { idToken, firebaseUser: cred.user };
 };
 
-/**
- * Resolve a Google credential after the redirect returned (native only).
- * Used by the boot finisher and the legacy appUrlOpen deep-link path.
- * Resolves with { idToken } or null when there is no pending redirect.
- */
-export const finishGoogleSignIn = async () => {
-  if (!isNative) return null;
-  try {
-    const cred = await getRedirectResult(firebaseAuth);
-    if (!cred?.user) return null;
-    const idToken = await cred.user.getIdToken(/* forceRefresh */ true);
-    return { idToken, firebaseUser: cred.user };
-  } catch (err) {
-    // Rejected redirect (user cancelled etc.) — surface the code so the
-    // caller can show the right message instead of "no credential".
-    return { error: err?.code || String(err?.message || 'unknown') };
-  }
-};
-
-/** Sign out of Firebase (does not clear our app's JWT — call useAuth.logout for that). */
+/** Sign out of Firebase (does not clear our app's JWT — call useAuth.logout). */
 export const signOutFirebase = async () => {
   const tasks = [firebaseSignOut(firebaseAuth).catch(() => { })];
   // Native: clear Credential Manager state so the next sign-in shows the

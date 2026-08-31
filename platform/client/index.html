@@ -104,11 +104,16 @@
   <script>
     // Splash logic
     // Rules:
-    //   1. The full branded splash is shown ONLY on true app startup
+    //   1. NATIVE APP ONLY (Capacitor). On the normal website — at any
+    //      screen width — the splash is removed immediately: the website
+    //      must show a normal page with no mobile intro (spec §31/§32).
+    //      Detection uses the REAL Capacitor bridge object that Android
+    //      injects before page scripts run — never window.innerWidth.
+    //   2. In the native app the splash shows only on true app startup
     //      (once per session). If the WebView reloads mid-session
     //      (app resume, config change, etc.) the splash is skipped so
     //      the app never feels like it is restarting.
-    //   2. On a real startup it shows for a short brand moment (MIN_MS)
+    //   3. On a real startup it shows for a short brand moment (MIN_MS)
     //      and hides as soon as React has painted real page content.
 
     (function () {
@@ -121,6 +126,14 @@
           if (splash.parentNode) splash.parentNode.removeChild(splash);
         }, fast ? 150 : 600);
       }
+
+      // WEBSITE (any browser, any width): no splash, ever.
+      var isNative = false;
+      try {
+        isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform &&
+                      window.Capacitor.isNativePlatform());
+      } catch (e) { isNative = false; }
+      if (!isNative) { hide(true); return; }
 
       // Once-per-session guard: sessionStorage survives WebView reloads
       // within the same app session but resets when the app process dies.

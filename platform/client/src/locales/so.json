@@ -182,7 +182,25 @@
     "needAddress": "Fadlan dooro ama geli cinwaankaaga gaadiidka",
     "save": "Kaydi cinwaanka",
     "saving": "Kaydinaya…",
-    "savedOk": "Cinwaanka waa la kaydiyay"
+    "savedOk": "Cinwaanka waa la kaydiyay",
+    "confirm": "Xaqiiji cinwaanka",
+    "searching": "Raadinaya…",
+    "searchFailed": "Raadinta cinwaanka lama heli karo. Fadlan gacanta ku qor cinwaankaaga.",
+    "mapsFailed": "Google Maps lama soo dejin karo",
+    "mapsOff": "Raadinta khariidad waa la damiyay — gacanta ku qor cinwaankaaga",
+    "approximateLabel": "Goob qiyaasi ah",
+    "approximateHint": "Cinwaan sax ah halkan kuma helno — ku dar faahfaahin waddadaada hoos.",
+    "selectedLabel": "Cinwaanka la doortay",
+    "adjustPinHint": "Taabo khariiddada si aad u hagaajiso pin-ka",
+    "resolvingAddress": "Cinwaankaaga raadinaya…",
+    "apartment": "Lambarka guriga / flat-ka",
+    "apartmentPh": "Tusaale: Flat 3B",
+    "building": "Dhisme / astaanta goobta",
+    "buildingPh": "Tusaale: Sunshine Tower, masjidka dhow",
+    "instructions": "Tilmaamaha gaadiidka",
+    "instructionsPh": "Tusaale: Marka aad timaado wac",
+    "contactPhone": "Lambarka soo xiriirka",
+    "or": "ama"
   },
   "notif": {
     "title": "Ogeysiis",
@@ -206,7 +224,9 @@
     "prev": "Hore",
     "yes": "Haa",
     "no": "Maya",
-    "you": "adiga"
+    "you": "adiga",
+    "or": "ama",
+    "clear": "Nadiifi"
   },
   "surprise": {
     "metaDesc": "Adeegga surpriiska ee Beirut — dhalashada, murugada, digaaga, booqashada bukaanka, hadiyad gaarsiin iyo soo jeedinta jacayl.",

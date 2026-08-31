@@ -182,7 +182,25 @@
     "needAddress": "Maaloo teessoo geejjibaa kee filadhu ykn barreessi",
     "save": "Teessoo olkaa'i",
     "saving": "Olkaa'aa jira…",
-    "savedOk": "Teessonni olkaa'ameera"
+    "savedOk": "Teessonni olkaa'ameera",
+    "confirm": "Teessoo mirkaneessi",
+    "searching": "Barbaadaa jira…",
+    "searchFailed": "Barbaanni teessoo hin argamu. Maaloo harkaan barreessi.",
+    "mapsFailed": "Google Maps hin fe'amu",
+    "mapsOff": "Barbaanni kaartaa cufameera — teessoo kee harkaan barreessi",
+    "approximateLabel": "Teessoo shallagaa",
+    "approximateHint": "Teessoo sirrii aa asitti hin arganne — faarf fo'aa koo jalatti dabalisi.",
+    "selectedLabel": "Teessoo filatame",
+    "adjustPinHint": "Pin sana haaromsuuf kaartaa tuqi",
+    "resolvingAddress": "Teessoo kee barbaadaa jira…",
+    "apartment": "Lakkoofsa gosa / gosa jireenyaa",
+    "apartmentPh": "Fakkeenya: Gosa 3B",
+    "building": "Ijibama / mallannoo teessoo",
+    "buildingPh": "Fakkeenya: Sunshine Tower, masjiida dhiyoo",
+    "instructions": "Qajeelfama geejjibaa",
+    "instructionsPh": "Fakkeenya: Yeroo dhufu bilbila",
+    "contactPhone": "Lakkoofsa bilbilaa",
+    "or": "ykn"
   },
   "notif": {
     "title": "Beeksisa",
@@ -206,7 +224,9 @@
     "prev": "Duraa",
     "yes": "Eeyyee",
     "no": "Lakki",
-    "you": "ati"
+    "you": "ati",
+    "or": "ykn",
+    "clear": "Haqi"
   },
   "surprise": {
     "metaDesc": "Tajaajila surprise Baayroota keessa — guyyaa dhalootaa, gaddaa, xorsoo, dhukkubsataa gaafachuu, kennaa dhiyeessuu fi gaaffii jaalalaa.",

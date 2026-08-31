@@ -58,7 +58,8 @@ export default function Checkout() {
         <h2 className="text-lg font-bold mb-3">Delivery address</h2>
         <AddressPicker
           defaultValue={addr?.address || ''}
-          onChange={(v) => v.lat && setAddr(v)}
+          onPick={(p) => setAddr({ lat: p.lat, lng: p.lng, address: p.address })}
+          onType={(text) => setAddr((prev) => (prev ? { ...prev, address: text } : prev))}
           placeholder="Search your address…"
         />
         <div className="flex items-center justify-between gap-2 mt-2">

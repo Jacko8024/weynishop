@@ -3,6 +3,8 @@ import toast from 'react-hot-toast';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../store/auth.js';
 import MapView, { AddressPicker } from '../../components/MapView.jsx';
+// AddressPicker is the new Places API (New) autocomplete — onPick resolves
+// a suggestion; onType mirrors raw typed text (manual entry).
 import GeolocationButton from '../../components/GeolocationButton.jsx';
 
 export default function SellerProfile() {
@@ -43,7 +45,11 @@ export default function SellerProfile() {
 
       <div>
         <h2 className="font-bold mb-2">Pickup location</h2>
-        <AddressPicker defaultValue={pin?.address || ''} onChange={(v) => v.lat && setPin(v)} />
+        <AddressPicker
+          defaultValue={pin?.address || ''}
+          onPick={(p) => setPin({ lat: p.lat, lng: p.lng, address: p.address })}
+          onType={(text) => setPin((prev) => (prev ? { ...prev, address: text } : prev))}
+        />
         <div className="flex items-center justify-between gap-2 mt-2">
           <div className="text-xs text-slate-500">Tap the map to drop a pin.</div>
           <GeolocationButton

@@ -182,7 +182,24 @@
     "needAddress": "Please pick or enter your delivery address",
     "save": "Save address",
     "saving": "Saving…",
-    "savedOk": "Address saved"
+    "savedOk": "Address saved",
+    "confirm": "Confirm address",
+    "searching": "Searching…",
+    "searchFailed": "Address search is unavailable. Please type your address manually.",
+    "mapsFailed": "Google Maps failed to load",
+    "mapsOff": "Maps search is disabled — enter your address manually",
+    "approximateLabel": "Approximate location",
+    "approximateHint": "We couldn't find an exact address here — add your street details below.",
+    "selectedLabel": "Selected address",
+    "adjustPinHint": "Tap the map to adjust the pin",
+    "resolvingAddress": "Finding your address…",
+    "apartment": "Apartment / house number",
+    "apartmentPh": "e.g. Apt 3B",
+    "building": "Building / landmark",
+    "buildingPh": "e.g. Sunshine Tower, near the mosque",
+    "instructions": "Delivery instructions",
+    "instructionsPh": "e.g. Call when you arrive",
+    "contactPhone": "Contact phone"
   },
   "notif": {
     "title": "Notifications",
@@ -206,7 +223,9 @@
     "prev": "Previous",
     "yes": "Yes",
     "no": "No",
-    "you": "you"
+    "you": "you",
+    "or": "or",
+    "clear": "Clear"
   },
   "surprise": {
     "metaDesc": "Surprise service in Beirut — birthday, funeral, feast, health visit, gift delivery and proposal surprises with same-day representation.",

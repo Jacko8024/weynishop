@@ -2,6 +2,7 @@ package com.weynishop.app;
 
 import android.app.Activity;
 import android.os.CancellationSignal;
+import android.util.Log;
 
 import androidx.credentials.ClearCredentialStateRequest;
 import androidx.credentials.Credential;
@@ -29,7 +30,8 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
  *
  * Shows Google's own account chooser: every Google account on the device
  * plus "Add another account". No account list is built by the app and no
- * password is ever seen by WeyniShop.
+ * password is ever seen by WeyniShop. No WebView / browser is involved —
+ * the chooser sheet returns the credential straight into the app.
  *
  * The returned Google ID token is minted for the Firebase project's PUBLIC
  * web OAuth client (client_type 3 in google-services.json — the same client
@@ -38,11 +40,25 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
  * existing POST /auth/google endpoint verifies server-side. No secrets are
  * embedded in the APK (an OAuth client ID is a public identifier).
  *
- * Isolated native implementation (PART 7 of the spec): all Google/Android
- * auth code lives in this file; the web app only sees signIn()/signOut().
+ * ── SETUP REQUIREMENT (root cause of the old "Chrome opens" bug) ──
+ * Credential Manager verifies the CALLING APP against Google Cloud:
+ *   1. The Google Cloud/Firebase project must contain an ANDROID OAuth
+ *      client for package "com.weynishop.app" with the SHA-1 of EVERY
+ *      keystore used to sign the build (debug AND release).
+ *      Firebase Console → Project settings → Your apps → Android app →
+ *      "Add fingerprint" (get it with: cd android && .\gradlew.bat signingReport)
+ *   2. That Android client must live in the SAME project as WEB_CLIENT_ID.
+ * Without the SHA-1 fingerprint Google rejects the request (ApiException 10
+ * / "Calling package not permitted" style errors). Historically those
+ * errors triggered a fallback to signInWithRedirect inside the WebView,
+ * which Google disallows (disallowed_user_agent) → Chrome → never returned.
+ * The JS layer no longer has that fallback; errors are surfaced to the user
+ * and logged loudly via logcat tag "WeyniGoogleAuth".
  */
 @CapacitorPlugin(name = "GoogleAuth")
 public class GoogleAuthPlugin extends Plugin {
+
+    private static final String TAG = "WeyniGoogleAuth";
 
     // Public web OAuth client (client_type 3) of the Firebase project
     // "weynishop". Public identifier — NOT a secret.
@@ -51,7 +67,8 @@ public class GoogleAuthPlugin extends Plugin {
     /**
      * Launch the native Google account chooser.
      * Resolves { idToken, displayName?, photoUrl? }.
-     * Rejects with code CANCELLED | NO_CREDENTIALS | EMPTY_TOKEN | …
+     * Rejects with code CANCELLED | NO_CREDENTIALS | EMPTY_TOKEN | NATIVE_ERROR
+     * (message includes the underlying exception class for diagnosis).
      */
     @PluginMethod
     public void signIn(final PluginCall call) {
@@ -93,6 +110,8 @@ public class GoogleAuthPlugin extends Plugin {
                                 Credential credential = response.getCredential();
                                 if (credential == null || !GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
                                         .equals(credential.getType())) {
+                                    Log.w(TAG, "No Google credential returned (type="
+                                            + (credential != null ? credential.getType() : "null") + ")");
                                     call.reject("No Google credential returned", "NO_CREDENTIALS");
                                     return;
                                 }
@@ -115,6 +134,7 @@ public class GoogleAuthPlugin extends Plugin {
                                     }
                                     call.resolve(ret);
                                 } catch (Exception e) {
+                                    Log.e(TAG, "Failed to parse Google credential", e);
                                     call.reject("Failed to parse Google credential: "
                                             + e.getMessage(), "PARSE_ERROR");
                                 }
@@ -124,16 +144,23 @@ public class GoogleAuthPlugin extends Plugin {
                             public void onError(GetCredentialException e) {
                                 String code;
                                 if (e instanceof GetCredentialCancellationException) {
-                                    code = "CANCELLED";
+                                    code = "CANCELLED"; // user dismissed the sheet — quiet cancel
                                 } else if (e instanceof NoCredentialException) {
                                     code = "NO_CREDENTIALS";
                                 } else {
-                                    code = e.getClass().getSimpleName();
+                                    code = "NATIVE_ERROR";
                                 }
-                                call.reject(e.getMessage() == null ? code : e.getMessage(), code);
+                                // Loud log with the concrete exception type — this is
+                                // where a missing SHA-1 / Android OAuth client shows up
+                                // (e.g. ApiException 10 "Calling package not permitted").
+                                Log.e(TAG, "Google credential flow failed: " + e.getClass().getName()
+                                        + " — " + e.getMessage(), e);
+                                call.reject(e.getClass().getSimpleName()
+                                        + (e.getMessage() != null ? ": " + e.getMessage() : ""), code);
                             }
                         });
             } catch (Exception e) {
+                Log.e(TAG, "Credential Manager could not start", e);
                 call.reject("Native Google sign-in failed: " + e.getMessage(), "NATIVE_ERROR");
             }
         });

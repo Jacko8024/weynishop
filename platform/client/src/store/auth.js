@@ -50,21 +50,9 @@ export const useAuth = create((set, get) => ({
     return data.user;
   },
   loginWithGoogle: async (role) => {
-    // `role` flows into signInWithGoogle so the native redirect path can
-    // stash it across the page navigation (first-time users register with
-    // the role they picked instead of the server default).
+    // Native: Google's account chooser → ID token directly (no redirect).
+    // Web: popup. Either way we then exchange the token server-side.
     const { idToken } = await signInWithGoogle(role);
-    const user = await get().exchangeGoogleIdToken(idToken, role);
-    return user;
-  },
-
-  /**
-   * Boot completion (page reloaded after the in-WebView redirect, or the
-   * appUrlOpen fallback fired) after the Login screen was destroyed.
-   * Exchange the Firebase credential for our JWT + session here, so the
-   * user is truly logged in. `role` comes from the pre-redirect stash.
-   */
-  loginWithGoogleFromIdToken: async (idToken, role) => {
     const user = await get().exchangeGoogleIdToken(idToken, role);
     return user;
   },
