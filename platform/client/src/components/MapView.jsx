@@ -34,7 +34,6 @@ const MAP_OPTIONS = {
 
 const AUTOCOMPLETE_FIELDS = ['formatted_address', 'name', 'geometry'];
 const AUTOCOMPLETE_OPTIONS = {
-  componentRestrictions: { country: ['et', 'sa', 'ae', 'qa', 'kw', 'om', 'bh', 'jo', 'iq', 'ye', 'lb', 'sy'] },
   fields: AUTOCOMPLETE_FIELDS,
 };
 
