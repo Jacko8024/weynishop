@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './store/auth.js';
 import LoginGateModal from './components/LoginGateModal.jsx';
+import AppInstallPrompt from './components/AppInstallPrompt.jsx';
 import PublicShell from './components/PublicShell.jsx';
 
 import Login from './pages/auth/Login.jsx';
@@ -82,6 +83,7 @@ export default function App() {
   return (
     <>
       <LoginGateModal />
+      <AppInstallPrompt />
       <Routes>
         {/* Public storefront */}
         <Route element={<PublicShell />}>

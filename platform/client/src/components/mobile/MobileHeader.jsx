@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Search, ShoppingCart, Bell, Globe } from 'lucide-react';
+import { Search, ShoppingCart, Bell, Globe, Download } from 'lucide-react';
 import { useAuth } from '../../store/auth.js';
 import { api } from '../../api/client.js';
+import { isNativeApp } from '../../lib/platform.js';
 import Logo from '../Logo.jsx';
 import LanguageSheet from './LanguageSheet.jsx';
 
@@ -46,40 +47,58 @@ export default function MobileHeader() {
 
   return (
     <header className="sticky top-0 z-40 safe-top nav-blur" style={{ borderBottom: '1px solid var(--color-border)' }}>
-      {/* Row 1 — logo + notifications */}
+      {/* Row 1 — logo + app download (web only) + notifications / auth */}
       <div className="h-11 px-3 flex items-center justify-between">
         <Link to="/" aria-label="WeyniShopping home" className="shrink-0 flex items-center">
           <Logo height={26} />
         </Link>
 
-        {/* Notification bell — visible for signed-in users, minimum
-            40px touch target, accessible label with count. */}
-        {user ? (
-          <Link
-            to="/account/notifications"
-            aria-label={unread > 0 ? `${t('notif.title')} (${unread})` : t('notif.title')}
-            className="relative w-10 h-10 grid place-items-center rounded-full btn-ghost"
-          >
-            <Bell size={20} />
-            {unread > 0 && (
-              <span
-                className="absolute top-0.5 right-0 min-w-[17px] h-[17px] px-1 text-[10px] font-bold rounded-full grid place-items-center text-white"
-                style={{ background: 'var(--color-flash)' }}
-              >
-                {unread > 99 ? '99+' : unread}
-              </span>
-            )}
-          </Link>
-        ) : (
-          <Link
-            to="/login"
-            aria-label={t('auth.loginBtn')}
-            className="h-9 px-4 grid place-items-center rounded-full text-sm font-semibold text-white press"
-            style={{ background: 'var(--color-brand)' }}
-          >
-            {t('auth.loginBtn')}
-          </Link>
-        )}
+        <div className="flex items-center gap-1.5">
+          {!isNativeApp() && (
+            <a
+              href="/weynishop.apk"
+              download="weynishop.apk"
+              className="h-8 px-2.5 rounded-full flex items-center gap-1 text-xs font-semibold border active:scale-95 transition"
+              style={{
+                borderColor: 'rgba(236, 92, 44, 0.4)',
+                color: 'var(--color-brand)',
+                background: 'rgba(236, 92, 44, 0.08)'
+              }}
+              title="Download Android App"
+            >
+              <Download size={13} />
+              <span>App</span>
+            </a>
+          )}
+
+          {/* Notification bell — visible for signed-in users */}
+          {user ? (
+            <Link
+              to="/account/notifications"
+              aria-label={unread > 0 ? `${t('notif.title')} (${unread})` : t('notif.title')}
+              className="relative w-10 h-10 grid place-items-center rounded-full btn-ghost"
+            >
+              <Bell size={20} />
+              {unread > 0 && (
+                <span
+                  className="absolute top-0.5 right-0 min-w-[17px] h-[17px] px-1 text-[10px] font-bold rounded-full grid place-items-center text-white"
+                  style={{ background: 'var(--color-flash)' }}
+                >
+                  {unread > 99 ? '99+' : unread}
+                </span>
+              )}
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              aria-label={t('auth.loginBtn')}
+              className="h-8 px-3.5 grid place-items-center rounded-full text-xs font-semibold text-white press"
+              style={{ background: 'var(--color-brand)' }}
+            >
+              {t('auth.loginBtn')}
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Row 2 — search + cart */}

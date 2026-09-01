@@ -3,9 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Search, ShoppingCart, Heart, User as UserIcon, Menu, X,
-  ClipboardList, LogOut, Store, Zap, Gift, Info,
+  ClipboardList, LogOut, Store, Zap, Gift, Info, Smartphone, Download,
 } from 'lucide-react';
 import { useAuth } from '../store/auth.js';
+import { isNativeApp } from '../lib/platform.js';
 import LangSwitcher from './LangSwitcher.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 import Logo from './Logo.jsx';
@@ -72,6 +73,17 @@ export default function PublicNavbar() {
 
         {/* Desktop right cluster */}
         <div className="hidden md:flex items-center gap-1">
+          {!isNativeApp() && (
+            <a
+              href="/weynishop.apk"
+              download="weynishop.apk"
+              className="btn-ghost text-sm gap-1.5 font-medium hover:text-brand-600 transition"
+              title="Download Android App (APK)"
+            >
+              <Smartphone size={16} style={{ color: 'var(--color-brand)' }} />
+              <span>App</span>
+            </a>
+          )}
           <Link to="/surprise" className="btn-ghost text-sm gap-1.5 font-semibold"
                 style={{ color: 'var(--color-brand)' }}>
             <Gift size={16} /> Surprise
@@ -162,6 +174,17 @@ export default function PublicNavbar() {
           <div className="pt-1 pb-2 border-b border-slate-200">
             <LangSwitcher inline />
           </div>
+          {!isNativeApp() && (
+            <a
+              href="/weynishop.apk"
+              download="weynishop.apk"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-white shadow-sm"
+              style={{ background: 'var(--color-brand)' }}
+            >
+              <Download size={16} /> Download Android App
+            </a>
+          )}
           <Link to="/deals" onClick={() => setMenuOpen(false)} className="block btn-ghost w-full justify-start text-sm">
             <Zap size={16} className="text-flash" /> {t('nav.deals')}
           </Link>

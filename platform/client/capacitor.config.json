@@ -9,5 +9,11 @@
   "android": {
     "allowMixedContent": false
   },
-  "plugins": {}
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0,
+      "launchAutoHide": true,
+      "backgroundColor": "#ffffff"
+    }
+  }
 }

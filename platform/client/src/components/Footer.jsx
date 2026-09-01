@@ -11,6 +11,7 @@ const NAV = [
       { to: '/search', label: 'All products' },
       { to: '/deals', label: 'Flash deals' },
       { to: '/wishlist', label: 'My wishlist' },
+      { to: '/weynishop.apk', label: '📱 Download Android App', download: true },
     ],
   },
   {
@@ -84,13 +85,24 @@ export default function Footer() {
                 <ul className="space-y-2">
                   {col.links.map((l) => (
                     <li key={l.to}>
-                      <Link
-                        to={l.to}
-                        className="text-sm hover:text-brand-700"
-                        style={{ color: "var(--color-muted)" }}
-                      >
-                        {l.label}
-                      </Link>
+                      {l.download ? (
+                        <a
+                          href={l.to}
+                          download="weynishop.apk"
+                          className="text-sm hover:text-brand-700 font-medium"
+                          style={{ color: "var(--color-brand)" }}
+                        >
+                          {l.label}
+                        </a>
+                      ) : (
+                        <Link
+                          to={l.to}
+                          className="text-sm hover:text-brand-700"
+                          style={{ color: "var(--color-muted)" }}
+                        >
+                          {l.label}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
