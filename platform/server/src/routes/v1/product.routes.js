@@ -4,6 +4,7 @@ import { Op } from 'sequelize';
 import { Product } from '../../models/Product.js';
 import { User } from '../../models/User.js';
 import { Settings } from '../../models/Settings.js';
+import { ContactInquiry } from '../../models/index.js';
 import { chargeListingFee } from '../../services/commission.service.js';
 import { protect, requireRole, requireActive } from '../../middleware/auth.js';
 
@@ -228,6 +229,26 @@ router.delete(
     const n = await Product.destroy({ where: { id: req.params.id, sellerId: req.user.id } });
     if (!n) return res.status(404).json({ message: 'Product not found' });
     res.json({ ok: true });
+  })
+);
+
+// Public/Buyer report listing (Google Play User-Generated Content / Marketplace compliance)
+router.post(
+  '/:id/report',
+  asyncHandler(async (req, res) => {
+    const product = await Product.findByPk(req.params.id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+    const reason = String(req.body?.reason || 'Objectionable or Counterfeit Content').slice(0, 200);
+    const details = String(req.body?.details || '').slice(0, 1000);
+
+    await ContactInquiry.create({
+      name: 'UGC Content Report',
+      email: req.user?.email || 'ugc-moderation@weynishopping.com',
+      subject: `[UGC Report] Product #${product.id}: ${product.name}`,
+      message: `Reason: ${reason}\nDetails: ${details}\nReported Product ID: ${product.id}\nSeller ID: ${product.sellerId}`,
+    });
+
+    res.json({ ok: true, message: 'Report submitted successfully. Our team will review this listing.' });
   })
 );
 

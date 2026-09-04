@@ -21,6 +21,7 @@ import ContactPage from './pages/public/ContactPage.jsx';
 import FAQPage from './pages/public/FAQPage.jsx';
 import TermsPage from './pages/public/TermsPage.jsx';
 import PrivacyPage from './pages/public/PrivacyPage.jsx';
+import DeleteAccountPage from './pages/public/DeleteAccountPage.jsx';
 import NotFoundPage from './pages/public/NotFoundPage.jsx';
 import SurprisePage from './pages/public/SurprisePage.jsx';
 import AccountPage from './pages/public/AccountPage.jsx';
@@ -105,6 +106,7 @@ export default function App() {
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/delete-account" element={<DeleteAccountPage />} />
           <Route path="/surprise" element={<SurprisePage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>

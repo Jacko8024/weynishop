@@ -61,7 +61,7 @@ export default function PublicNavbar() {
         <form onSubmit={submitSearch} className="flex-1 max-w-2xl">
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2"
-                    style={{ color: 'var(--color-muted)' }} />
+              style={{ color: 'var(--color-muted)' }} />
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
@@ -85,7 +85,7 @@ export default function PublicNavbar() {
             </a>
           )}
           <Link to="/surprise" className="btn-ghost text-sm gap-1.5 font-semibold"
-                style={{ color: 'var(--color-brand)' }}>
+            style={{ color: 'var(--color-brand)' }}>
             <Gift size={16} /> Surprise
           </Link>
           <Link to="/about" className="btn-ghost text-sm gap-1.5">
@@ -93,8 +93,8 @@ export default function PublicNavbar() {
           </Link>
           <Link to="/deals" className="btn-ghost text-sm gap-1.5">
             <Zap size={16} className="text-flash" /> {t('nav.deals')}
-          <ThemeToggle />
           </Link>
+          <ThemeToggle />
           <LangSwitcher />
 
           {!user ? (
@@ -110,32 +110,32 @@ export default function PublicNavbar() {
               </button>
               {accountOpen && (
                 <div className="absolute right-0 mt-2 w-56 rounded-xl shadow-lg border z-50 overflow-hidden animate-fadeIn"
-                     style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+                  style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
                   <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--color-border)' }}>
                     <div className="font-semibold truncate">{user.name}</div>
                     <div className="text-xs" style={{ color: 'var(--color-muted)' }}>{user.email}</div>
                   </div>
                   {portalLink && (
                     <Link to={portalLink} onClick={() => setAccountOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-[var(--color-bg)]">
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-[var(--color-bg)]">
                       <Store size={15} /> {user.role === 'buyer' ? t('nav.account') : t(`auth.${user.role}`)}
                     </Link>
                   )}
                   {user.role === 'buyer' && (
                     <>
                       <Link to="/buyer/orders" onClick={() => setAccountOpen(false)}
-                            className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-[var(--color-bg)]">
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-[var(--color-bg)]">
                         <ClipboardList size={15} /> {t('nav.orders')}
                       </Link>
                       <Link to="/wishlist" onClick={() => setAccountOpen(false)}
-                            className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-[var(--color-bg)]">
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-[var(--color-bg)]">
                         <Heart size={15} /> {t('nav.wishlist')}
                       </Link>
                     </>
                   )}
                   <button onClick={() => { logout(); setAccountOpen(false); nav('/'); }}
-                          className="w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-[var(--color-bg)] border-t"
-                          style={{ borderColor: 'var(--color-border)' }}>
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-[var(--color-bg)] border-t"
+                    style={{ borderColor: 'var(--color-border)' }}>
                     <LogOut size={15} /> {t('nav.logout')}
                   </button>
                 </div>
@@ -147,7 +147,7 @@ export default function PublicNavbar() {
             <ShoppingCart size={20} />
             {cartCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full grid place-items-center text-white"
-                    style={{ background: 'var(--color-brand)' }}>
+                style={{ background: 'var(--color-brand)' }}>
                 {cartCount}
               </span>
             )}
@@ -156,7 +156,7 @@ export default function PublicNavbar() {
 
         {/* Mobile menu button */}
         <button className="md:hidden btn-ghost p-2" onClick={() => setMenuOpen((o) => !o)}
-                aria-label="Menu">
+          aria-label="Menu">
           {menuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
@@ -164,7 +164,7 @@ export default function PublicNavbar() {
       {/* Mobile drawer */}
       {menuOpen && (
         <div className="md:hidden border-t animate-fadeIn px-4 py-3 space-y-2"
-             style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+          style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
           <div className="flex items-center justify-end">
             <Link to={user ? '/buyer/cart' : '/login'} className="btn-ghost relative" onClick={() => setMenuOpen(false)}>
               <ShoppingCart size={18} /> {t('nav.cart')}
@@ -189,7 +189,7 @@ export default function PublicNavbar() {
             <Zap size={16} className="text-flash" /> {t('nav.deals')}
           </Link>
           <Link to="/surprise" onClick={() => setMenuOpen(false)} className="block btn-ghost w-full justify-start text-sm font-semibold"
-                style={{ color: 'var(--color-brand)' }}>
+            style={{ color: 'var(--color-brand)' }}>
             <Gift size={16} /> Surprise
           </Link>
           <Link to="/about" onClick={() => setMenuOpen(false)} className="block btn-ghost w-full justify-start text-sm">
@@ -204,24 +204,24 @@ export default function PublicNavbar() {
             <>
               {portalLink && (
                 <Link to={portalLink} onClick={() => setMenuOpen(false)}
-                      className="block btn-ghost w-full justify-start text-sm">
+                  className="block btn-ghost w-full justify-start text-sm">
                   <Store size={16} /> {user.role === 'buyer' ? t('nav.account') : t(`auth.${user.role}`)}
                 </Link>
               )}
               {user.role === 'buyer' && (
                 <>
                   <Link to="/buyer/orders" onClick={() => setMenuOpen(false)}
-                        className="block btn-ghost w-full justify-start text-sm">
+                    className="block btn-ghost w-full justify-start text-sm">
                     <ClipboardList size={16} /> {t('nav.orders')}
                   </Link>
                   <Link to="/wishlist" onClick={() => setMenuOpen(false)}
-                        className="block btn-ghost w-full justify-start text-sm">
+                    className="block btn-ghost w-full justify-start text-sm">
                     <Heart size={16} /> {t('nav.wishlist')}
                   </Link>
                 </>
               )}
               <button onClick={() => { logout(); setMenuOpen(false); nav('/'); }}
-                      className="w-full btn-ghost justify-start text-sm">
+                className="w-full btn-ghost justify-start text-sm">
                 <LogOut size={16} /> {t('nav.logout')}
               </button>
             </>

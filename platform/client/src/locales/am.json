@@ -530,7 +530,15 @@
     "confirmPassword": "አዲሱን ይለፍ ቃል ያረጋግጡ",
     "passwordsNoMatch": "ይለፍ ቃሎቹ አይመሳሰሉም",
     "passwordShort": "ይለፍ ቃሉ ቢያንስ 6 ቁጥሮች/ፊደላት መሆን አለበት",
-    "passwordChanged": "ይለፍ ቃል ተቀይሯል"
+    "passwordChanged": "ይለፍ ቃል ተቀይሯል",
+    "deleteAccount": "መለያ ሰርዝ",
+    "deleteAccountPrompt": "መለያዎን መሰረዝ ይፈልጋሉ?",
+    "deleteAccountWarning": "ይህ የእርስዎን የግል መረጃ፣ አድራሻዎች፣ ማሳወቂያዎች እና የተመረጡ ዝርዝሮችን በቋሚነት ያጠፋል። ይህን እርምጃ መመለስ አይቻልም።",
+    "deleteAccountConfirm": "አዎ፣ መለያዬን ሰርዝ",
+    "deleteAccountCancel": "ተመለስ",
+    "deleteAccountSuccess": "መለያዎ በተሳካ ሁኔታ ተሰርዟል",
+    "reportProduct": "ዕቃውን ሪፖርት አድርግ",
+    "reportProductSuccess": "እናመሰግናለን። ሪፖርትዎ ለግምገማ ቀርቧል።"
   },
   "onboarding": {
     "welcome": "ወደ {{name}} እንኳን በደህና መጡ",

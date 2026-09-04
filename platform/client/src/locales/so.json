@@ -1,4 +1,4 @@
-﻿{
+{
   "lang": {
     "en": "English",
     "am": "አማርኛ",
@@ -502,7 +502,15 @@
     "confirmPassword": "Xaqiiji fureha cusub",
     "passwordsNoMatch": "Furayaasha isma eka",
     "passwordShort": "Fureha waa inuu ugu yaraan 6 xaraf ah yahay",
-    "passwordChanged": "Fureha waa la beddelay"
+    "passwordChanged": "Fureha waa la beddelay",
+    "deleteAccount": "Tirtir koontada",
+    "deleteAccountPrompt": "Ma hubtaa inaad tirtirto koontadaada?",
+    "deleteAccountWarning": "Tani waxay si joogto ah u tirtiraysaa xogtaada gaarka ah, cinwaanadaada, fariimaha ogeysiinta, iyo waxyaabaha aad jeceshahay. Ficilkan dib looma celin karo.",
+    "deleteAccountConfirm": "Haa, tirtir koontadayda",
+    "deleteAccountCancel": "Jooji",
+    "deleteAccountSuccess": "Koontadaada si guul leh ayaa loo tirtiray",
+    "reportProduct": "Warbixi alaabtan",
+    "reportProductSuccess": "Waad mahadsan tahay. Warbixintaada dib u eegis ayaa lagu samayn doonaa."
   },
   "onboarding": {
     "welcome": "Soo dhawoow {{name}}",

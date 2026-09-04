@@ -28,6 +28,7 @@ const NAV = [
     links: [
       { to: '/terms', label: 'Terms' },
       { to: '/privacy', label: 'Privacy' },
+      { to: '/delete-account', label: 'Delete Account & Data' },
     ],
   },
 ];

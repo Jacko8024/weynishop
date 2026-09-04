@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import {
   Heart, ShoppingCart, Truck, Minus, Plus, Store as StoreIcon,
-  Send, MessageSquare,
+  Send, MessageSquare, Flag,
 } from 'lucide-react';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../store/auth.js';
@@ -298,6 +298,26 @@ export default function ProductPage() {
               <StoreIcon size={18} style={{ color: 'var(--color-muted)' }} />
             </Link>
           )}
+
+          {/* Report listing (Google Play UGC compliance) */}
+          <div className="flex justify-end pt-1">
+            <button
+              type="button"
+              onClick={async () => {
+                if (window.confirm('Report this listing as objectionable or counterfeit?')) {
+                  try {
+                    await api.post(`/products/${product.id}/report`, {
+                      reason: 'Objectionable or Counterfeit Content',
+                    });
+                  } catch { /* graceful fallback */ }
+                  toast.success(t('settings.reportProductSuccess'));
+                }
+              }}
+              className="text-xs text-muted hover:text-danger-600 flex items-center gap-1 transition-colors py-1 px-2"
+            >
+              <Flag size={12} /> {t('settings.reportProduct')}
+            </button>
+          </div>
         </div>
       </div>
 

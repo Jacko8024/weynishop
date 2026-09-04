@@ -1,4 +1,4 @@
-﻿{
+{
   "lang": {
     "en": "English",
     "am": "አማርኛ",
@@ -529,7 +529,15 @@
     "confirmPassword": "Confirm new password",
     "passwordsNoMatch": "Passwords do not match",
     "passwordShort": "Password must be at least 6 characters",
-    "passwordChanged": "Password changed"
+    "passwordChanged": "Password changed",
+    "deleteAccount": "Delete account",
+    "deleteAccountPrompt": "Delete your account?",
+    "deleteAccountWarning": "This permanently deletes your personal profile, addresses, push notifications, and wishlist. This action cannot be undone.",
+    "deleteAccountConfirm": "Yes, delete my account",
+    "deleteAccountCancel": "Cancel",
+    "deleteAccountSuccess": "Your account has been deleted",
+    "reportProduct": "Report listing",
+    "reportProductSuccess": "Thank you. Listing has been reported for review."
   },
   "onboarding": {
     "welcome": "Welcome to {{name}}",

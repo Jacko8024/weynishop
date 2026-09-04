@@ -1,4 +1,4 @@
-﻿{
+{
   "lang": {
     "en": "English",
     "am": "አማርኛ",
@@ -502,7 +502,15 @@
     "confirmPassword": "Jecha icciitii haaraa mirkaneessi",
     "passwordsNoMatch": "Jechonni icciitii wal hin qabanne",
     "passwordShort": "Jechi icciitii yoo xiqqaawa 6 qabaach qaba",
-    "passwordChanged": "Jechi icciitii jijjiirameera"
+    "passwordChanged": "Jechi icciitii jijjiirameera",
+    "deleteAccount": "Akkaawuntii haqi",
+    "deleteAccountPrompt": "Akkaawuntii kee haquu barbaaddaa?",
+    "deleteAccountWarning": "Kun odeeffannoo dhuunfaa, teessoowwan, beeksisoota fi faayiloota kee hunda guutummaatti haqa. Tarkaanfii kana deebisuun hin danda'amu.",
+    "deleteAccountConfirm": "Eeyyee, akkaawuntii koo haqi",
+    "deleteAccountCancel": "Dhiisi",
+    "deleteAccountSuccess": "Akkaawuntiin kee haqameera",
+    "reportProduct": "Mi'a kana gabaasi",
+    "reportProductSuccess": "Galatoomaa. Gabaasni keessan dhiyaateera."
   },
   "onboarding": {
     "welcome": "Baga nagaan {{name}} tti dhufte",

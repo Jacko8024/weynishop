@@ -502,7 +502,15 @@
     "confirmPassword": "ዓዲሽ መንገዲ ሓበኒ ኣረጋግጽ",
     "passwordsNoMatch": "መንገዲ ሓበኒ ኣይመሳሰሉን",
     "passwordShort": "መንገዲ ሓበኒ ቢያጕርጽ 6 ሕራይ ኩሉ",
-    "passwordChanged": "መንገዲ ሓበኒ ተቐይሩ"
+    "passwordChanged": "መንገዲ ሓበኒ ተቐይሩ",
+    "deleteAccount": "ኣካውንት ሰርዝ",
+    "deleteAccountPrompt": "ኣካውንትካ ክትሰርዞ ትደሊ ዲኻ?",
+    "deleteAccountWarning": "እዚ ንናይ ውልቂ ሓበሬታኻ፣ ኣድራሻታትካ፣ ማዕከናት መልእኽትታትን ዝተመደበ ዝርዝርካን ንሓዋሩ የጥፍኦ። እዚ ስጉምቲ እዚ ክምለስ ኣይክእልን እዩ።",
+    "deleteAccountConfirm": "እወ፣ ኣካውንተይ ሰርዝ",
+    "deleteAccountCancel": "ተመለስ",
+    "deleteAccountSuccess": "ኣካውንትካ ብዓወት ተሰሪዙ",
+    "reportProduct": "ንብረት ሪፖርት ግበር",
+    "reportProductSuccess": "የቐንየልና። ሪፖርትካ ቀሪቡ ኣሎ።"
   },
   "onboarding": {
     "welcome": "ናብ {{name}} እንቋዕ ብደሓን መጻእኩም",
