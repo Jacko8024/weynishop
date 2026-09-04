@@ -18,6 +18,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 # Application source
 COPY src ./src
+COPY *.js ./
 
 # Uploads directory — a Coolify persistent volume is mounted at /app/uploads.
 # Pre-create it owned by the non-root user; Docker copies this ownership to a
