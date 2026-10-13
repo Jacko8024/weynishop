@@ -67,6 +67,7 @@ import AdminPendingRequests from './pages/admin/PendingRequests.jsx';
 import AdminProducts from './pages/admin/Products.jsx';
 import SurpriseBookings from './pages/admin/SurpriseBookings.jsx';
 import SurpriseServices from './pages/admin/SurpriseServices.jsx';
+import AdminBroadcastNotifications from './pages/admin/BroadcastNotifications.jsx';
 
 const Protected = ({ role, children }) => {
   const { user, logout } = useAuth();
@@ -157,6 +158,7 @@ export default function App() {
           <Route path="products" element={<AdminProducts />} />
           <Route path="surprise" element={<SurpriseBookings />} />
           <Route path="surprise/services" element={<SurpriseServices />} />
+          <Route path="notifications" element={<AdminBroadcastNotifications />} />
         </Route>
 
       </Routes>

@@ -3,6 +3,7 @@ import asyncHandler from 'express-async-handler';
 import { Op, fn, col, literal } from 'sequelize';
 import { User, Order, Product, OrderItem, Dispute, Settings, VendorProfile, DeliveryProfile, SurpriseBooking, Currency, BASE_CURRENCY } from '../../models/index.js';
 import { protect, requireRole, signToken } from '../../middleware/auth.js';
+import { broadcastNotification } from '../../services/push.service.js';
 
 const router = Router();
 router.use(protect, requireRole('admin'));
@@ -433,6 +434,24 @@ router.delete(
     if (!product) return res.status(404).json({ message: 'Product not found' });
     await product.destroy();
     res.json({ message: 'Deleted' });
+  })
+);
+
+/** Broadcast push & in-app notification to all users or role */
+router.post(
+  '/notifications/broadcast',
+  asyncHandler(async (req, res) => {
+    const { targetRole, title, body, link } = req.body || {};
+    if (!title || !title.trim()) {
+      return res.status(400).json({ message: 'Title is required' });
+    }
+    const result = await broadcastNotification({
+      targetRole: targetRole || 'all',
+      title: title.trim(),
+      body: (body || '').trim(),
+      link: (link || '').trim(),
+    });
+    res.json({ ok: true, result });
   })
 );
 

@@ -9,6 +9,7 @@ import PhoneInput from '../../components/PhoneInput.jsx';
 import GoogleSignInButton from '../../components/GoogleSignInButton.jsx';
 import AnimatedCharacters from '../../components/AnimatedCharacters.jsx';
 import Logo from '../../components/Logo.jsx';
+import ForgotPasswordModal from '../../components/ForgotPasswordModal.jsx';
 
 /**
  * Simplified mobile-first sign-in.
@@ -35,6 +36,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [typing, setTyping] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
 
   const next = (user) => {
     if (user.status === 'pending') return '/pending-approval';
@@ -188,6 +190,17 @@ export default function Login() {
               </div>
             </div>
 
+            <div className="flex justify-end -mt-1 mb-2">
+              <button
+                type="button"
+                onClick={() => setForgotOpen(true)}
+                className="text-xs font-semibold hover:underline"
+                style={{ color: 'var(--color-brand)' }}
+              >
+                {t('auth.forgotPassword') || 'Forgot password?'}
+              </button>
+            </div>
+
             <button className="btn-primary w-full h-12 text-base mt-1" disabled={loading}>
               {loading ? t('auth.loggingIn') : t('auth.loginBtn')}
             </button>
@@ -262,6 +275,12 @@ export default function Login() {
           </div>
         </div>
       </div>
+
+      <ForgotPasswordModal
+        isOpen={forgotOpen}
+        onClose={() => setForgotOpen(false)}
+        initialEmail={form.email}
+      />
     </div>
   );
 }

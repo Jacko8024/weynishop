@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import crypto from 'crypto';
 import asyncHandler from 'express-async-handler';
-import { User, VendorProfile, DeliveryProfile } from '../../models/index.js';
+import { Op } from 'sequelize';
+import { User, VendorProfile, DeliveryProfile, PasswordReset } from '../../models/index.js';
 import { signToken } from '../../middleware/auth.js';
 import { verifyFirebaseIdToken } from '../../config/firebase.js';
+import { sendOtpEmail } from '../../services/email.service.js';
 
 const router = Router();
 
@@ -331,6 +333,127 @@ router.post(
       token,
       user: { id: user.id, name: user.name, email: user.email, role: user.role, status: user.status },
     });
+  })
+);
+
+/**
+ * Request password reset 6-digit OTP code via email.
+ */
+router.post(
+  '/forgot-password',
+  asyncHandler(async (req, res) => {
+    const { email } = req.body || {};
+    if (!email || !email.trim()) {
+      return res.status(400).json({ message: 'Email address is required' });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ where: { email: normalizedEmail } });
+    if (!user) {
+      // Return 404 or generic message
+      return res.status(404).json({ message: 'No account found with this email address' });
+    }
+
+    // Invalidate any existing unused OTPs for this email
+    await PasswordReset.update({ used: true }, { where: { email: normalizedEmail, used: false } });
+
+    // Generate random 6-digit OTP code
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    await PasswordReset.create({
+      email: normalizedEmail,
+      otp,
+      expiresAt,
+      used: false,
+    });
+
+    // Send email
+    const mailResult = await sendOtpEmail(normalizedEmail, otp, user.name);
+
+    res.json({
+      ok: true,
+      message: 'Verification code sent to your email',
+      simulated: !!mailResult?.simulated,
+    });
+  })
+);
+
+/**
+ * Verify 6-digit OTP code.
+ */
+router.post(
+  '/verify-otp',
+  asyncHandler(async (req, res) => {
+    const { email, otp } = req.body || {};
+    if (!email || !otp) {
+      return res.status(400).json({ message: 'Email and OTP code are required' });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const cleanOtp = String(otp).trim();
+
+    const record = await PasswordReset.findOne({
+      where: {
+        email: normalizedEmail,
+        otp: cleanOtp,
+        used: false,
+        expiresAt: { [Op.gt]: new Date() },
+      },
+    });
+
+    if (!record) {
+      return res.status(400).json({ message: 'Invalid or expired verification code' });
+    }
+
+    res.json({ ok: true, valid: true });
+  })
+);
+
+/**
+ * Reset password using verified OTP.
+ */
+router.post(
+  '/reset-password',
+  asyncHandler(async (req, res) => {
+    const { email, otp, newPassword } = req.body || {};
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: 'Email, OTP, and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const cleanOtp = String(otp).trim();
+
+    const record = await PasswordReset.findOne({
+      where: {
+        email: normalizedEmail,
+        otp: cleanOtp,
+        used: false,
+        expiresAt: { [Op.gt]: new Date() },
+      },
+    });
+
+    if (!record) {
+      return res.status(400).json({ message: 'Invalid or expired verification code' });
+    }
+
+    const user = await User.findOne({ where: { email: normalizedEmail } });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    // Mark OTP as used
+    record.used = true;
+    await record.save();
+
+    res.json({ ok: true, message: 'Password has been reset successfully. You can now log in.' });
   })
 );
 

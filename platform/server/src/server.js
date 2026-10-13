@@ -6,7 +6,7 @@ import { Server as SocketServer } from 'socket.io';
 
 import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
-import { sequelize, Settings, CommissionLedger, DeliveryEarning, SellerEarning, OrderItem, User, Product, Banner, Category, ContactInquiry, SurpriseBooking, SurpriseService, Currency } from './models/index.js';
+import { sequelize, Settings, CommissionLedger, DeliveryEarning, SellerEarning, OrderItem, User, Product, Banner, Category, ContactInquiry, SurpriseBooking, SurpriseService, Currency, PasswordReset } from './models/index.js';
 import { DeviceToken } from './models/DeviceToken.js';
 import { Notification } from './models/Notification.js';
 import { errorHandler, notFound } from './middleware/error.js';
@@ -176,6 +176,7 @@ const start = async () => {
   await safeAlter('DeviceToken', DeviceToken);     // push notifications (device_tokens)
   await safeAlter('Notification', Notification);   // in-app notifications (notifications)
   await safeAlter('Currency', Currency);           // admin FX rates (currencies)
+  await safeAlter('PasswordReset', PasswordReset); // email OTP verification codes
 
   // Seed the four launch currencies once (idempotent; admin edits survive).
   try {

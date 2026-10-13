@@ -1,4 +1,4 @@
-﻿import { sequelize } from '../config/db.js';
+import { sequelize } from '../config/db.js';
 import { User } from './User.js';
 import { Product } from './Product.js';
 import { Order, STAGES, STAGE_LABELS } from './Order.js';
@@ -24,6 +24,7 @@ import { SurpriseService } from './SurpriseService.js';
 import { DeviceToken } from './DeviceToken.js';
 import { Notification } from './Notification.js';
 import { Currency, BASE_CURRENCY } from './Currency.js';
+import { PasswordReset } from './PasswordReset.js';
 
 // Notifications: FCM device tokens (mobile push) + stored in-app rows
 DeviceToken.belongsTo(User, { as: 'user', foreignKey: 'userId' });
@@ -127,6 +128,7 @@ export {
   Notification,
   Currency,
   BASE_CURRENCY,
+  PasswordReset,
   STAGES,
   STAGE_LABELS,
 };

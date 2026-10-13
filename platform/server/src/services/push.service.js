@@ -1,6 +1,7 @@
 import { getFirebaseAdmin } from '../config/firebase.js';
 import { DeviceToken } from '../models/DeviceToken.js';
 import { Notification } from '../models/Notification.js';
+import { User } from '../models/User.js';
 
 /**
  * Push notification service (mobile app only).
@@ -176,3 +177,84 @@ const STAGE_MESSAGES = {
 
 // Exposed for tests / debugging.
 export const __testStageMessages = STAGE_MESSAGES;
+
+/**
+ * Broadcast an announcement or system notification to all users or a specific role.
+ * Persists in-app notifications and sends FCM multicast to registered devices.
+ */
+export const broadcastNotification = async ({ targetRole = 'all', title, body = '', link = '', data = {} }) => {
+    try {
+        const userWhere = targetRole === 'all' ? {} : { role: targetRole };
+        const users = await User.findAll({ where: userWhere, attributes: ['id'] });
+        if (!users.length) {
+            return { userCount: 0, sentPushCount: 0, targetRole };
+        }
+
+        const notifRows = users.map((u) => ({
+            userId: u.id,
+            type: 'broadcast',
+            title: String(title).slice(0, 160),
+            body: String(body).slice(0, 500),
+            link: link ? String(link).slice(0, 255) : '',
+        }));
+
+        // Batch in-app notification insertion (500 per batch)
+        for (let i = 0; i < notifRows.length; i += 500) {
+            await Notification.bulkCreate(notifRows.slice(i, i + 500)).catch((e) =>
+                log('bulkCreate error:', e.message)
+            );
+        }
+
+        // Send FCM push to all registered devices of target users
+        let sentPushCount = 0;
+        const admin = getFirebaseAdmin();
+        if (admin) {
+            const userIds = users.map((u) => u.id);
+            const tokens = await DeviceToken.findAll({
+                where: { userId: userIds },
+                attributes: ['token'],
+            }).catch(() => []);
+
+            const tokenStrings = Array.from(new Set(tokens.map((t) => t.token))).filter(Boolean);
+
+            if (tokenStrings.length) {
+                for (let i = 0; i < tokenStrings.length; i += 500) {
+                    const batchTokens = tokenStrings.slice(i, i + 500);
+                    const message = {
+                        tokens: batchTokens,
+                        data: {
+                            title: String(title),
+                            body: String(body),
+                            link: String(link || ''),
+                            type: 'broadcast',
+                            ...Object.fromEntries(
+                                Object.entries(data).map(([k, v]) => [k, String(v)])
+                            ),
+                        },
+                        android: { priority: 'high' },
+                    };
+
+                    try {
+                        const res = await admin.messaging().sendEachForMulticast(message);
+                        sentPushCount += res.successCount || 0;
+                        await pruneInvalid(
+                            res.responses.map((r, idx) => ({ ...r, token: batchTokens[idx] }))
+                        );
+                    } catch (e) {
+                        log('broadcast push error:', e.message);
+                    }
+                }
+            }
+        }
+
+        log(`Broadcast dispatched to ${users.length} users (${sentPushCount} push devices)`);
+        return {
+            userCount: users.length,
+            sentPushCount,
+            targetRole,
+        };
+    } catch (err) {
+        log('broadcast error:', err.message);
+        throw err;
+    }
+};

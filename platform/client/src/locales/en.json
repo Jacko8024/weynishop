@@ -80,6 +80,7 @@
     "rolePending": "Sellers and delivery accounts await admin approval.",
     "welcomeBack": "Welcome back!",
     "phoneLabel": "Phone number",
+    "forgotPassword": "Forgot password?",
     "emailOptional": "Email (optional)",
     "useEmail": "Use email instead",
     "usePhone": "Use phone number instead",

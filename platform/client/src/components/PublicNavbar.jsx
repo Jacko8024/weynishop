@@ -3,9 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Search, ShoppingCart, Heart, User as UserIcon, Menu, X,
-  ClipboardList, LogOut, Store, Zap, Gift, Info, Smartphone, Download,
+  ClipboardList, LogOut, Store, Zap, Gift, Info, Smartphone, Download, Bell,
 } from 'lucide-react';
 import { useAuth } from '../store/auth.js';
+import { api } from '../api/client.js';
 import { isNativeApp } from '../lib/platform.js';
 import LangSwitcher from './LangSwitcher.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
@@ -21,7 +22,20 @@ export default function PublicNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [q, setQ] = useState('');
+  const [unread, setUnread] = useState(0);
   const accountRef = useRef(null);
+
+  useEffect(() => {
+    if (!user) { setUnread(0); return undefined; }
+    let on = true;
+    const load = () =>
+      api.get('/notifications/unread-count')
+        .then(({ data }) => { if (on) setUnread(data.unreadCount || 0); })
+        .catch(() => {});
+    load();
+    const timer = setInterval(load, 60_000);
+    return () => { on = false; clearInterval(timer); };
+  }, [user?.id]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4);
@@ -97,6 +111,25 @@ export default function PublicNavbar() {
           <ThemeToggle />
           <LangSwitcher />
 
+          {user && (
+            <Link
+              to="/account/notifications"
+              aria-label={unread > 0 ? `${t('notif.title')} (${unread})` : t('notif.title')}
+              className="relative p-2 rounded-full btn-ghost"
+              title="Notifications"
+            >
+              <Bell size={18} />
+              {unread > 0 && (
+                <span
+                  className="absolute top-0.5 right-0.5 min-w-[16px] h-[16px] px-1 text-[9px] font-bold rounded-full grid place-items-center text-white"
+                  style={{ background: 'var(--color-flash)' }}
+                >
+                  {unread > 99 ? '99+' : unread}
+                </span>
+              )}
+            </Link>
+          )}
+
           {!user ? (
             <>
               <Link to="/login" className="btn-ghost text-sm">{t('nav.login')}</Link>
@@ -133,6 +166,18 @@ export default function PublicNavbar() {
                       </Link>
                     </>
                   )}
+                  <Link to="/account/notifications" onClick={() => setAccountOpen(false)}
+                    className="flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[var(--color-bg)]">
+                    <div className="flex items-center gap-2">
+                      <Bell size={15} /> Notifications
+                    </div>
+                    {unread > 0 && (
+                      <span className="min-w-[16px] h-[16px] px-1 text-[10px] font-bold rounded-full grid place-items-center text-white"
+                        style={{ background: 'var(--color-flash)' }}>
+                        {unread}
+                      </span>
+                    )}
+                  </Link>
                   <button onClick={() => { logout(); setAccountOpen(false); nav('/'); }}
                     className="w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-[var(--color-bg)] border-t"
                     style={{ borderColor: 'var(--color-border)' }}>

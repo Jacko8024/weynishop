@@ -78,6 +78,64 @@ const fetchJson = async (url) => {
 const okStatus = (data) => data == null || data.status == null || data.status === 'OK';
 
 // ---------------------------------------------------------------------------
+// OpenStreetMap (Nominatim) — Free, zero-credit-card, zero-billing fallback
+// ---------------------------------------------------------------------------
+
+const searchOsm = async (q, lat, lng) => {
+    try {
+        const params = new URLSearchParams({
+            q,
+            format: 'json',
+            addressdetails: '1',
+            limit: '6',
+        });
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+            params.set('viewbox', `${lng - 0.5},${lat + 0.5},${lng + 0.5},${lat - 0.5}`);
+        }
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+            headers: { 'User-Agent': 'WeyniShop/1.3 (support@weynishopping.com)' },
+        });
+        if (!res.ok) return [];
+        const items = await res.json().catch(() => []);
+        if (!Array.isArray(items)) return [];
+        return items.map((item) => {
+            const parts = (item.display_name || '').split(',').map((s) => s.trim());
+            const mainText = parts[0] || item.display_name;
+            const secondaryText = parts.slice(1, 4).join(', ');
+            return {
+                placeId: `osm:${item.place_id}:${item.lat}:${item.lon}`,
+                description: item.display_name,
+                mainText,
+                secondaryText,
+                lat: Number(item.lat),
+                lng: Number(item.lon),
+            };
+        });
+    } catch {
+        return [];
+    }
+};
+
+const reverseOsm = async (lat, lng) => {
+    try {
+        const params = new URLSearchParams({
+            lat: String(lat),
+            lon: String(lng),
+            format: 'json',
+            addressdetails: '1',
+        });
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?${params}`, {
+            headers: { 'User-Agent': 'WeyniShop/1.3 (support@weynishopping.com)' },
+        });
+        if (!res.ok) return null;
+        const item = await res.json().catch(() => null);
+        return item?.display_name || null;
+    } catch {
+        return null;
+    }
+};
+
+// ---------------------------------------------------------------------------
 // GET /search — address autocomplete
 // ---------------------------------------------------------------------------
 
@@ -99,43 +157,49 @@ router.get(
             return res.json({ predictions: cached.results });
         }
 
-        if (!PLACES_KEY) {
-            return res.json({ predictions: [], disabled: true });
-        }
+        let predictions = [];
 
-        const params = new URLSearchParams({
-            input: q,
-            key: PLACES_KEY,
-            // Session tokens group keystrokes into one billable Places session.
-            sessiontoken: String(req.query.session || q.slice(0, 3)),
-            components: 'country:et|country:sa|country:ae|country:dj|country:ke',
-        });
-        if (req.query.lat && req.query.lng) {
-            const lat = Number(req.query.lat);
-            const lng = Number(req.query.lng);
-            if (Number.isFinite(lat) && Number.isFinite(lng)) {
-                params.set('location', `${lat},${lng}`);
-                params.set('radius', '150000');
+        if (PLACES_KEY) {
+            try {
+                const params = new URLSearchParams({
+                    input: q,
+                    key: PLACES_KEY,
+                    sessiontoken: String(req.query.session || q.slice(0, 3)),
+                    components: 'country:et|country:sa|country:ae|country:dj|country:ke',
+                });
+                if (req.query.lat && req.query.lng) {
+                    const lat = Number(req.query.lat);
+                    const lng = Number(req.query.lng);
+                    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                        params.set('location', `${lat},${lng}`);
+                        params.set('radius', '150000');
+                    }
+                }
+
+                const data = await fetchJson(
+                    `https://maps.googleapis.com/maps/api/place/autocomplete/json?${params}`
+                );
+
+                if (okStatus(data) && Array.isArray(data.predictions)) {
+                    predictions = data.predictions.slice(0, 5).map((p) => ({
+                        placeId: p.place_id,
+                        description: p.description,
+                        mainText: p.structured_formatting?.main_text || p.description,
+                        secondaryText: p.structured_formatting?.secondary_text || '',
+                    }));
+                }
+            } catch (err) {
+                // Google Places failed (e.g. billing disabled) — fallback to OSM
             }
         }
 
-        const data = await fetchJson(
-            `https://maps.googleapis.com/maps/api/place/autocomplete/json?${params}`
-        );
-
-        let predictions = [];
-        if (okStatus(data) && Array.isArray(data.predictions)) {
-            predictions = data.predictions.slice(0, 5).map((p) => ({
-                placeId: p.place_id,
-                description: p.description,
-                mainText: p.structured_formatting?.main_text || p.description,
-                secondaryText: p.structured_formatting?.secondary_text || '',
-            }));
+        // If Google returned no predictions or is disabled, fallback to OpenStreetMap
+        if (!predictions.length) {
+            predictions = await searchOsm(q, Number(req.query.lat), Number(req.query.lng));
         }
 
         searchCache.set(q.toLowerCase(), { at: Date.now(), results: predictions });
         if (searchCache.size > 500) {
-            // drop the oldest quarter when over capacity
             const keys = [...searchCache.keys()].slice(0, 125);
             keys.forEach((k) => searchCache.delete(k));
         }
@@ -158,32 +222,56 @@ router.get(
         const placeId = String(req.query.placeId || '').trim();
         if (!placeId) return res.status(400).json({ message: 'placeId is required' });
 
+        // Handle OpenStreetMap placeId formatted as "osm:id:lat:lon"
+        if (placeId.startsWith('osm:')) {
+            const parts = placeId.split(':');
+            const lat = Number(parts[2]);
+            const lng = Number(parts[3]);
+            // Search cache for matching description
+            let address = '';
+            for (const item of searchCache.values()) {
+                const found = item.results?.find((p) => p.placeId === placeId);
+                if (found) {
+                    address = found.description;
+                    break;
+                }
+            }
+            return res.json({
+                lat: Number.isFinite(lat) ? lat : null,
+                lng: Number.isFinite(lng) ? lng : null,
+                address,
+            });
+        }
+
         const cached = detailsCache.get(placeId);
         if (cached && Date.now() - cached.at < CACHE_TTL_MS) {
             return res.json(cached.place);
         }
 
-        if (!PLACES_KEY) {
-            return res.json({ place: null, disabled: true });
-        }
+        let place = null;
+        if (PLACES_KEY) {
+            try {
+                const params = new URLSearchParams({
+                    place_id: placeId,
+                    fields: 'formatted_address,geometry,name',
+                    key: PLACES_KEY,
+                });
+                const data = await fetchJson(
+                    `https://maps.googleapis.com/maps/api/place/details/json?${params}`
+                );
 
-        const params = new URLSearchParams({
-            place_id: placeId,
-            fields: 'formatted_address,geometry,name',
-            key: PLACES_KEY,
-        });
-        const data = await fetchJson(
-            `https://maps.googleapis.com/maps/api/place/details/json?${params}`
-        );
-
-        const r = data?.result;
-        const place = r
-            ? {
-                lat: r.geometry?.location?.lat ?? null,
-                lng: r.geometry?.location?.lng ?? null,
-                address: r.formatted_address || r.name || '',
+                const r = data?.result;
+                if (r) {
+                    place = {
+                        lat: r.geometry?.location?.lat ?? null,
+                        lng: r.geometry?.location?.lng ?? null,
+                        address: r.formatted_address || r.name || '',
+                    };
+                }
+            } catch {
+                // Ignore Google error
             }
-            : null;
+        }
 
         if (place) detailsCache.set(placeId, { at: Date.now(), place });
         res.json({ place });
@@ -205,28 +293,37 @@ router.get(
             return res.status(400).json({ message: 'lat and lng are required' });
         }
 
-        if (!PLACES_KEY) {
-            return res.json({ formatted: null });
+        let formatted = null;
+
+        if (PLACES_KEY) {
+            try {
+                const params = new URLSearchParams({
+                    latlng: `${lat},${lng}`,
+                    key: PLACES_KEY,
+                });
+                const data = await fetchJson(
+                    `https://maps.googleapis.com/maps/api/geocode/json?${params}`
+                );
+
+                const results = Array.isArray(data.results) ? data.results : [];
+                const best =
+                    results.find((r) =>
+                        (r.types || []).some((t) =>
+                            ['street_address', 'premise', 'subpremise', 'plus_code'].includes(t)
+                        )
+                    ) || results[0];
+
+                formatted = best?.formatted_address || null;
+            } catch {
+                // Google failed (billing/restriction) — fallback to OpenStreetMap
+            }
         }
 
-        const params = new URLSearchParams({
-            latlng: `${lat},${lng}`,
-            key: PLACES_KEY,
-        });
-        const data = await fetchJson(
-            `https://maps.googleapis.com/maps/api/geocode/json?${params}`
-        );
+        if (!formatted) {
+            formatted = await reverseOsm(lat, lng);
+        }
 
-        // Use the most specific result: prefer a street-address type, else rooftop.
-        const results = Array.isArray(data.results) ? data.results : [];
-        const best =
-            results.find((r) =>
-                (r.types || []).some((t) =>
-                    ['street_address', 'premise', 'subpremise', 'plus_code'].includes(t)
-                )
-            ) || results[0];
-
-        res.json({ formatted: best?.formatted_address || null });
+        res.json({ formatted });
     })
 );
 
@@ -247,49 +344,53 @@ router.get(
             return res.status(400).json({ message: 'lat and lng are required' });
         }
 
-        if (!PLACES_KEY) {
-            res.set('Cache-Control', 'no-store');
-            return res.status(404).json({ message: 'Static maps disabled' });
-        }
-
         const zoom = clamp(parseInt(req.query.zoom || '14', 10) || 14, 3, 20);
         const w = clamp(parseInt(req.query.w || '640', 10) || 640, 64, 640);
         const h = clamp(parseInt(req.query.h || '240', 10) || 240, 64, 640);
-        const scale = req.query.scale === '2' ? '2' : '1';
-        const maptype = ['roadmap', 'satellite', 'terrain', 'hybrid'].includes(req.query.maptype)
-            ? req.query.maptype
-            : 'roadmap';
 
-        const params = new URLSearchParams({
-            center: `${lat},${lng}`,
-            zoom: String(zoom),
-            size: `${w}x${h}`,
-            scale,
-            maptype,
-            markers: `color:0xec5c2c|${lat},${lng}`,
-            key: PLACES_KEY,
-        });
+        if (PLACES_KEY) {
+            try {
+                const scale = req.query.scale === '2' ? '2' : '1';
+                const maptype = ['roadmap', 'satellite', 'terrain', 'hybrid'].includes(req.query.maptype)
+                    ? req.query.maptype
+                    : 'roadmap';
 
-        const upstream = await fetch(`https://maps.googleapis.com/maps/api/staticmap?${params}`);
-        if (!upstream.ok) {
-            return res.status(502).json({ message: 'Static map upstream error' });
-        }
+                const params = new URLSearchParams({
+                    center: `${lat},${lng}`,
+                    zoom: String(zoom),
+                    size: `${w}x${h}`,
+                    scale,
+                    maptype,
+                    markers: `color:0xec5c2c|${lat},${lng}`,
+                    key: PLACES_KEY,
+                });
 
-        // Stream the image bytes straight through with cache headers.
-        res.set('Content-Type', upstream.headers.get('content-type') || 'image/png');
-        res.set('Cache-Control', 'public, max-age=86400');
-        if (upstream.headers.get('content-length')) {
-            res.set('Content-Length', upstream.headers.get('content-length'));
-        }
-        if (upstream.body) {
-            const reader = upstream.body.getReader();
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                res.write(Buffer.from(value));
+                const upstream = await fetch(`https://maps.googleapis.com/maps/api/staticmap?${params}`);
+                if (upstream.ok) {
+                    res.set('Content-Type', upstream.headers.get('content-type') || 'image/png');
+                    res.set('Cache-Control', 'public, max-age=86400');
+                    const arrayBuffer = await upstream.arrayBuffer();
+                    return res.send(Buffer.from(arrayBuffer));
+                }
+            } catch {
+                // Fall through to free Carto/OSM static image
             }
         }
-        res.end();
+
+        // OpenStreetMap free static tile image via Wikimedia / OpenStreetMap static helper
+        try {
+            const osmStaticUrl = `https://static-maps.yandex.ru/1.x/?ll=${lng},${lat}&z=${zoom}&l=map&size=${Math.min(w, 450)},${Math.min(h, 450)}&pt=${lng},${lat},pm2rdm`;
+            const upstreamOsm = await fetch(osmStaticUrl);
+            if (upstreamOsm.ok) {
+                res.set('Content-Type', 'image/png');
+                res.set('Cache-Control', 'public, max-age=86400');
+                const arrayBuffer = await upstreamOsm.arrayBuffer();
+                return res.send(Buffer.from(arrayBuffer));
+            }
+        } catch { }
+
+        res.set('Cache-Control', 'no-store');
+        return res.status(404).json({ message: 'Static map unavailable' });
     })
 );
 

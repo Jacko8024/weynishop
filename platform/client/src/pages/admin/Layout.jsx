@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Users, Map, AlertCircle, Settings, Coins, DollarSign, Image, Tags,
-  ClipboardCheck, Package, Gift, Candy,
+  ClipboardCheck, Package, Gift, Candy, Bell,
 } from 'lucide-react';
 import PortalShell from '../../components/PortalShell.jsx';
 
@@ -43,9 +43,10 @@ export default function AdminLayout() {
           ],
         },
         {
-          title: 'Users',
+          title: 'Users & Alerts',
           items: [
             { to: '/admin/users', label: 'All users', icon: <Users size={18} /> },
+            { to: '/admin/notifications', label: 'Broadcast alerts', icon: <Bell size={18} /> },
           ],
         },
         {
