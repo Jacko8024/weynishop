@@ -6,6 +6,7 @@ import { protect, requireRole } from '../../middleware/auth.js';
 import { broadcastStage } from '../../sockets/index.js';
 import { creditOnDelivered, reverseOnCancel } from '../../services/wallet.service.js';
 import { notifyOrderPlaced, notifyStage, notifyDelivered, notifyCancelled } from '../../services/push.service.js';
+import { sendOrderConfirmationEmail } from '../../services/email.service.js';
 
 const router = Router();
 
@@ -175,6 +176,10 @@ router.post(
       broadcastStage(io, full, full.stages);
       // Mobile push: seller gets a "new order" notification.
       safePush(() => notifyOrderPlaced(full));
+      // Buyer gets an itemized order receipt / confirmation email.
+      sendOrderConfirmationEmail(full, req.user).catch((err) =>
+        console.error('[email] order confirmation failed:', err?.message)
+      );
     }
     res.status(201).json({ orders: fullOrders });
   })

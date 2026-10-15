@@ -5,7 +5,7 @@ import { Op } from 'sequelize';
 import { User, VendorProfile, DeliveryProfile, PasswordReset } from '../../models/index.js';
 import { signToken } from '../../middleware/auth.js';
 import { verifyFirebaseIdToken } from '../../config/firebase.js';
-import { sendOtpEmail } from '../../services/email.service.js';
+import { sendOtpEmail, sendWelcomeEmail } from '../../services/email.service.js';
 
 const router = Router();
 
@@ -132,6 +132,9 @@ router.post(
       status: role === 'seller' || role === 'delivery' ? 'pending' : 'active',
     });
     const token = signToken(user);
+    sendWelcomeEmail(user.email, user.name, user.role).catch((err) =>
+      console.error('[email] welcome email failed:', err?.message)
+    );
     res.status(201).json({
       token,
       user: { id: user.id, name: user.name, email: user.email, role: user.role, status: user.status },
@@ -216,6 +219,9 @@ router.post(
         photoUrl: picture || '',
         status: newRole === 'buyer' ? 'active' : 'pending',
       });
+      sendWelcomeEmail(user.email, user.name, user.role).catch((err) =>
+        console.error('[email] google welcome email failed:', err?.message)
+      );
     }
 
     if (user.status === 'suspended') {
@@ -275,6 +281,9 @@ router.post(
     });
 
     const token = signToken(user);
+    sendWelcomeEmail(user.email, user.name, 'seller').catch((err) =>
+      console.error('[email] vendor welcome email failed:', err?.message)
+    );
     res.status(201).json({
       token,
       user: { id: user.id, name: user.name, email: user.email, role: user.role, status: user.status },
@@ -329,6 +338,9 @@ router.post(
     });
 
     const token = signToken(user);
+    sendWelcomeEmail(user.email, user.name, 'delivery').catch((err) =>
+      console.error('[email] delivery welcome email failed:', err?.message)
+    );
     res.status(201).json({
       token,
       user: { id: user.id, name: user.name, email: user.email, role: user.role, status: user.status },
